@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portland DayTime Singers — Homepage Comp (March 2026)</title>
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sky:      #c8dce8;
+  --sky-mid:  #a8c4d4;
+  --sky-deep: #6a9ab8;
+  --forest:   #1a1a1a;
+  --sage:     #4e6e4e;
+  --cream:    #f7f3ee;
+  --warm:     #c8a882;
+  --gold:     #c4a24a;
+  --white:    #ffffff;
+  --text:     #2a2a2a;
+  --muted:    #5a5a5a;
+  --rule:     rgba(0,0,0,0.07);
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+/* ── REVIEW BANNER ────────────────────────────────────────────────── */
+.review-banner {
+  background: #2c3e50;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+.review-banner strong { color: #f9d342; }
+
+/* ── NAV ──────────────────────────────────────────────────────────── */
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.nav-logo {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: var(--forest);
+  letter-spacing: 0.01em;
+}
+.nav-logo .accent { color: var(--sky-deep); }
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+  align-items: center;
+}
+.nav-links a {
+  font-family: Arial, sans-serif;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--forest) !important;
+  color: var(--white) !important;
+  padding: 0.42rem 1.1rem;
+  border-radius: 3px;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.04em !important;
+  transition: background 0.2s !important;
+}
+.nav-cta:hover { background: var(--sky-deep) !important; }
+
+/* ── HERO ─────────────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(180deg,
+    #b8d0e0 0%, #cddee8 25%, #dde9f0 55%, #edf3f7 78%, var(--cream) 100%);
+  padding: 4rem 2rem 0;
+  text-align: center;
+  position: relative;
+}
+.hero-eyebrow {
+  font-family: Arial, sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: 1.1rem;
+}
+.hero-title {
+  font-family: Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: bold;
+  color: var(--forest);
+  line-height: 1.14;
+  margin-bottom: 0.5rem;
+}
+.hero-subtitle {
+  font-family: Georgia, serif;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+}
+.tagline-pill {
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage);
+  border: 1px solid var(--sage);
+  padding: 0.38rem 1.2rem;
+  border-radius: 2px;
+  margin-bottom: 2.2rem;
+}
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+.btn-primary {
+  background: var(--forest);
+  color: var(--white);
+  padding: 0.75rem 2rem;
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  transition: background 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--sky-deep); }
+.btn-secondary {
+  background: transparent;
+  color: var(--forest);
+  padding: 0.73rem 2rem;
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  border: 1px solid rgba(26,26,26,0.28);
+  transition: border-color 0.2s;
+  display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--forest); }
+
+/* ── HERO SVG SKYLINE ─────────────────────────────────────────────── */
+.hero-skyline { display: block; width: 100%; max-width: 820px; margin: 0 auto; }
+
+/* ── MISSION BAND ─────────────────────────────────────────────────── */
+.mission-band {
+  background: var(--forest);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.mission-band blockquote {
+  font-family: Georgia, serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  font-style: italic;
+  color: rgba(255,255,255,0.9);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* ── TWO-COL ABOUT ────────────────────────────────────────────────── */
+.about-section {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+@media (max-width: 700px) {
+  .about-section { grid-template-columns: 1fr; gap: 2rem; }
+  .nav-links { display: none; }
+}
+.section-label {
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: 0.5rem;
+}
+.section-title {
+  font-family: Georgia, serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  font-weight: bold;
+  color: var(--forest);
+  line-height: 1.25;
+  margin-bottom: 1rem;
+}
+.section-body {
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+/* ── FEATURE CARDS ────────────────────────────────────────────────── */
+.cards { display: flex; flex-direction: column; gap: 1.1rem; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.4rem 1.6rem;
+}
+.card-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+.card-title {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: var(--forest);
+  margin-bottom: 0.4rem;
+}
+.card-body { font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+
+/* ── JOIN SECTION ─────────────────────────────────────────────────── */
+.join-section { background: var(--sky); padding: 4.5rem 2rem; }
+.join-inner { max-width: 780px; margin: 0 auto; }
+.join-section .section-title { margin-bottom: 0.8rem; }
+.join-section .section-body { max-width: 580px; }
+
+.join-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+@media (max-width: 560px) { .join-grid { grid-template-columns: 1fr; } }
+.join-detail {
+  background: var(--white);
+  border-radius: 4px;
+  padding: 1.4rem 1.5rem;
+}
+.detail-label {
+  font-family: Arial, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: 0.35rem;
+}
+.detail-value {
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--forest);
+  margin-bottom: 0.3rem;
+}
+.detail-sub { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+.voice-box {
+  background: var(--white);
+  border-left: 3px solid var(--sky-deep);
+  padding: 1.3rem 1.6rem;
+  margin-top: 1.8rem;
+  border-radius: 0 4px 4px 0;
+}
+.voice-box p {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.75;
+}
+.voice-box .attr {
+  font-style: normal;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  letter-spacing: 0.04em;
+}
+.join-ctas { margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* ── WBQA BAND ────────────────────────────────────────────────────── */
+.wbqa-band {
+  background: var(--white);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 2.8rem 2rem;
+}
+.wbqa-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.wbqa-badge {
+  width: 86px; height: 86px;
+  background: var(--forest);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-family: Arial, sans-serif;
+  font-size: 0.64rem;
+  color: var(--white);
+  text-align: center;
+  letter-spacing: 0.07em;
+  line-height: 1.45;
+  padding: 0.6rem;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.wbqa-text { flex: 1; min-width: 240px; }
+.wbqa-title {
+  font-family: Georgia, serif;
+  font-size: 1.08rem;
+  font-weight: bold;
+  color: var(--forest);
+  margin-bottom: 0.35rem;
+}
+.wbqa-body { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────── */
+footer {
+  background: var(--forest);
+  color: rgba(255,255,255,0.65);
+  padding: 3.5rem 2rem 2rem;
+}
+.footer-grid {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 2.5rem;
+}
+@media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } }
+.footer-brand {
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+.footer-tagline {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 1rem;
+}
+.footer-desc {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.65;
+}
+.footer-col-label {
+  font-family: Arial, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.8rem;
+}
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 0.45rem; }
+.footer-col a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.86rem;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--white); }
+.footer-col .sub-label {
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+hr.footer-rule {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin: 2.2rem auto 1.6rem;
+  max-width: 1020px;
+}
+.footer-bottom {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.3);
+}
+.footer-badges { display: flex; gap: 1rem; }
+.badge {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  padding: 0.35rem 0.75rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.5;
+}
+.badge strong {
+  display: block;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.75rem;
+  margin-bottom: 1px;
+}
+
+/* ── COMP ANNOTATION ──────────────────────────────────────────────── */
+.annotation-bar {
+  background: #1a252f;
+  color: rgba(255,255,255,0.55);
+  font-family: Arial, sans-serif;
+  font-size: 0.74rem;
+  text-align: center;
+  padding: 1.4rem 2rem;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+}
+.annotation-bar strong { color: #f9d342; }
+</style>
+</head>
+<body>
+
+<!-- REVIEW BANNER -->
+<div class="review-banner">
+  <strong>DESIGN COMP — FOR REVIEW</strong> &nbsp;·&nbsp;
+  Portland DayTime Singers &nbsp;·&nbsp; pdtsingers.org &nbsp;·&nbsp; Prepared March 2026
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Portland <span class="accent">DayTime</span> Singers</div>
+  <ul class="nav-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#">Performances</a></li>
+    <li><a href="#">Our Music</a></li>
+    <li><a href="#">Friends of PDT</a></li>
+    <li><a href="#" class="nav-cta">Join Us</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Portland, Oregon &nbsp;·&nbsp; Men's Barbershop Chorus</p>
+  <h1 class="hero-title">Portland DayTime Singers</h1>
+  <p class="hero-subtitle">Bringing harmony and joy to those who need it most</p>
+  <div class="tagline-pill">Music, Fellowship &amp; Fun</div>
+  <div class="hero-buttons">
+    <a href="#" class="btn-primary">See Our Performances</a>
+    <a href="#" class="btn-secondary">Come Sing With Us</a>
+  </div>
+
+  <!-- SVG Skyline — spirit of the PDT logo -->
+  <svg class="hero-skyline" viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg">
+    <!-- Soft watercolor wash -->
+    <ellipse cx="380" cy="115" rx="360" ry="85" fill="#b8d0e0" opacity="0.22"/>
+    <ellipse cx="380" cy="130" rx="300" ry="60" fill="#c8dce8" opacity="0.18"/>
+
+    <!-- Mt Hood (right background) -->
+    <polygon points="565,48 635,158 495,158" fill="#dde8ec" opacity="0.75"/>
+    <polygon points="565,48 582,84 548,84" fill="#ecf2f4" opacity="0.88"/>
+
+    <!-- Portland skyline buildings -->
+    <rect x="295" y="96" width="24" height="66" rx="1" fill="#1a1a1a" opacity="0.86"/>
+    <rect x="325" y="75" width="20" height="87" rx="1" fill="#1a1a1a" opacity="0.88"/>
+    <rect x="351" y="84" width="28" height="78" rx="1" fill="#1a1a1a" opacity="0.86"/>
+    <rect x="385" y="100" width="18" height="62" rx="1" fill="#1a1a1a" opacity="0.84"/>
+    <rect x="409" y="82" width="22" height="80" rx="1" fill="#1a1a1a" opacity="0.87"/>
+    <rect x="437" y="93" width="16" height="69" rx="1" fill="#1a1a1a" opacity="0.83"/>
+
+    <!-- Left tree cluster -->
+    <polygon points="72,160 94,100 116,160" fill="#1a1a1a" opacity="0.90"/>
+    <polygon points="94,152 114,96 134,152" fill="#1a1a1a" opacity="0.90"/>
+    <polygon points="50,160 68,112 86,160" fill="#1a1a1a" opacity="0.85"/>
+    <polygon points="112,160 134,104 156,160" fill="#1a1a1a" opacity="0.87"/>
+    <polygon points="30,160 50,116 70,160" fill="#1a1a1a" opacity="0.80"/>
+    <polygon points="140,162 160,108 180,162" fill="#1a1a1a" opacity="0.82"/>
+
+    <!-- Right tree cluster -->
+    <polygon points="594,160 614,101 634,160" fill="#1a1a1a" opacity="0.90"/>
+    <polygon points="616,155 636,99 656,155" fill="#1a1a1a" opacity="0.88"/>
+    <polygon points="572,160 590,110 608,160" fill="#1a1a1a" opacity="0.85"/>
+    <polygon points="638,158 658,106 678,158" fill="#1a1a1a" opacity="0.87"/>
+    <polygon points="658,162 678,112 698,162" fill="#1a1a1a" opacity="0.80"/>
+    <polygon points="680,160 700,116 720,160" fill="#1a1a1a" opacity="0.75"/>
+
+    <!-- Ground strip -->
+    <rect x="0" y="157" width="760" height="20" rx="3" fill="#1a1a1a" opacity="0.88"/>
+
+    <!-- Musical notes -->
+    <text x="212" y="76" font-size="20" fill="#1a1a1a" opacity="0.55" font-family="serif">♩</text>
+    <text x="176" y="63" font-size="15" fill="#1a1a1a" opacity="0.45" font-family="serif">♪</text>
+    <text x="530" y="68" font-size="18" fill="#1a1a1a" opacity="0.52" font-family="serif">♩</text>
+    <text x="553" y="54" font-size="13" fill="#1a1a1a" opacity="0.42" font-family="serif">♪</text>
+    <text x="574" y="72" font-size="15" fill="#1a1a1a" opacity="0.48" font-family="serif">♩</text>
+  </svg>
+</section>
+
+<!-- MISSION BAND -->
+<div class="mission-band">
+  <blockquote>
+    "We are a men's barbershop chorus that performs free concerts for seniors and
+    residents of care facilities across greater Portland — bringing live music and
+    genuine connection to those who need it most."
+  </blockquote>
+</div>
+
+<!-- ABOUT SECTION -->
+<div class="about-section">
+  <div>
+    <p class="section-label">Who we are</p>
+    <h2 class="section-title">A chorus born from a love of singing and service</h2>
+    <p class="section-body">
+      Founded by Director Chris Gable and Grand Poohbah Kevin Bier, Portland DayTime Singers
+      brings men together on Monday mornings to rehearse and perform the barbershop tradition —
+      close-harmony singing at its warmest and most human.
+    </p>
+    <p class="section-body">
+      We are proud Lodge&nbsp;#18 of the Worldwide Barbershop Quartet Association, and we
+      welcome men of all experience levels — from seasoned barbershoppers to those who've
+      never sung in a group before.
+    </p>
+    <a href="#" class="btn-primary" style="margin-top: 1.6rem;">Our Full Story &rarr;</a>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">&#127925;</div>
+      <div class="card-title">Barbershop Tradition</div>
+      <div class="card-body">Four-part close harmony, ringing chords, and a repertoire ranging from classic standards to contemporary arrangements.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#10084;&#65039;</div>
+      <div class="card-title">Singing for Seniors</div>
+      <div class="card-body">Free concerts at care facilities and senior centers throughout Portland — twice a month, and more during Christmastime.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">&#9728;&#65039;</div>
+      <div class="card-title">Daytime Hours</div>
+      <div class="card-body">Monday morning rehearsals — designed for men whose schedules work better during the day.</div>
+    </div>
+  </div>
+</div>
+
+<!-- JOIN SECTION -->
+<div class="join-section">
+  <div class="join-inner">
+    <p class="section-label">Come sing with us</p>
+    <h2 class="section-title">No audition. Just a song.</h2>
+    <p class="section-body">
+      We don't audition — we do a friendly voice placement. Sing Happy Birthday for us
+      in whatever key feels natural, and we'll know exactly how to make you part of the
+      sound. If you love to sing, you belong here.
+    </p>
+
+    <div class="join-grid">
+      <div class="join-detail">
+        <div class="detail-label">Rehearsals</div>
+        <div class="detail-value">Mondays, 10:30 am – 12:30 pm</div>
+        <div class="detail-sub">
+          Westside United Methodist Church<br>
+          13420 SW Butner Rd, Beaverton OR 97005
+        </div>
+      </div>
+      <div class="join-detail">
+        <div class="detail-label">Getting started</div>
+        <div class="detail-value">Just show up — or reach out first</div>
+        <div class="detail-sub">
+          Come to any Monday rehearsal, or drop us a note and
+          we'll be in touch before your first visit.
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-box">
+      <p>"Sing Happy Birthday wherever it's comfortable in your range.
+         That tells us everything we need to know about how to help you
+         find your voice in our sound."</p>
+      <p class="attr">— Chris Gable, Director</p>
+    </div>
+
+    <div class="join-ctas">
+      <a href="#" class="btn-primary">Express Interest</a>
+      <a href="#" class="btn-secondary">Learn More About Joining</a>
+    </div>
+  </div>
+</div>
+
+<!-- WBQA AFFILIATION -->
+<div class="wbqa-band">
+  <div class="wbqa-inner">
+    <div class="wbqa-badge">
+      WBQA<br>Lodge<br>#18<br>
+      <span style="font-size:0.55rem;opacity:0.7;">Est. 2026</span>
+    </div>
+    <div class="wbqa-text">
+      <div class="wbqa-title">Worldwide Barbershop Quartet Association — Lodge #18</div>
+      <div class="wbqa-body">
+        Portland DayTime Singers was chartered as Lodge&nbsp;#18 of the WBQA at the
+        Association's 2026 Annual Convention in San Antonio, Texas. We are proud members
+        of a worldwide community united by a love of barbershop harmony —
+        <em>Music, Fellowship &amp; Fun</em>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">A men's barbershop chorus<br>serving Portland, Oregon<br>WBQA Lodge #18</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Pages</div>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Performances</a></li>
+        <li><a href="#">Our Music</a></li>
+        <li><a href="#">Friends of PDT</a></li>
+        <li><a href="#">Join Us</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Members</div>
+      <ul>
+        <li><a href="#">Member Login</a></li>
+        <li><a href="#">Leadership Blog</a></li>
+        <li><a href="#">Resources</a></li>
+      </ul>
+      <div class="footer-col-label sub-label">Follow Us</div>
+      <ul>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+    <div class="footer-badges">
+      <div class="badge"><strong>PDT Singers</strong>Portland, OR</div>
+      <div class="badge"><strong>WBQA Lodge #18</strong>Est. 2026</div>
+    </div>
+  </div>
+</footer>
+
+<!-- COMP ANNOTATION -->
+<div class="annotation-bar">
+  <strong>Design notes for the High Council &mdash; March 2026</strong><br>
+  Palette drawn directly from the PDT logo watercolor wash &nbsp;&middot;&nbsp;
+  Actual PDT &amp; WBQA logos will replace placeholder treatments in final build<br>
+  All nav links, buttons, and member portal are non-functional in this comp &nbsp;&middot;&nbsp;
+  Fonts: Georgia (headings) / Arial (UI) as system fallbacks &mdash; final build uses Playfair Display + Source Serif 4<br>
+  Questions? Contact Kevin Bier &nbsp;&middot;&nbsp; Comp prepared with Claude (Anthropic) &nbsp;&middot;&nbsp; pdtsingers.org
+</div>
+
+</body>
+</html>

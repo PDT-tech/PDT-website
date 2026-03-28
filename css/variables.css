@@ -1,0 +1,59 @@
+/* ============================================================
+   PDT SINGERS — Design Tokens
+   Single source of truth for all colors, type, spacing, etc.
+   ============================================================ */
+
+:root {
+
+  /* ── Palette ────────────────────────────────────────────── */
+  --sky:        #c8dce8;   /* hero gradient top               */
+  --sky-mid:    #a8c4d4;   /* hero gradient mid               */
+  --sky-deep:   #6a9ab8;   /* accents, links, labels          */
+  --forest:     #1a1a1a;   /* primary dark, nav, dark bands   */
+  --forest-mid: #2e2e2e;   /* slightly lighter dark           */
+  --cream:      #f7f3ee;   /* page background                 */
+  --warm:       #c8a882;   /* warm accent                     */
+  --gold:       #c4a24a;   /* gold accent                     */
+  --sage:       #4e6e4e;   /* tagline pill, green accent      */
+  --white:      #ffffff;   /* cards, nav background           */
+  --text:       #2a2a2a;   /* body text                       */
+  --muted:      #5a5a5a;   /* secondary text                  */
+  --rule:       rgba(0, 0, 0, 0.07);  /* subtle dividers      */
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Source Serif 4', 'Times New Roman', serif;
+  --font-ui:      'Source Sans 3', Arial, sans-serif;
+
+  /* ── Type Scale ─────────────────────────────────────────── */
+  --text-xs:   0.72rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.3rem;
+  --text-2xl:  1.6rem;
+  --text-3xl:  2.1rem;
+  --text-4xl:  clamp(2.2rem, 5vw, 3.4rem);
+
+  /* ── Spacing ────────────────────────────────────────────── */
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --max-width:      1020px;
+  --max-width-text: 680px;
+  --nav-height:     64px;
+  --border-radius:  4px;
+
+  /* ── Shadows ────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition: 0.2s ease;
+}

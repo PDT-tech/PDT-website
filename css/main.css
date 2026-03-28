@@ -1,0 +1,311 @@
+/* ============================================================
+   PDT SINGERS — Main Styles
+   Base typography, nav, footer, and placeholder page styles.
+   ============================================================ */
+
+/* ── Base ──────────────────────────────────────────────────── */
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--text);
+  font-size: var(--text-base);
+}
+
+/* ── Nav ───────────────────────────────────────────────────── */
+.site-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--forest);
+  letter-spacing: 0.01em;
+}
+
+.nav-brand .accent {
+  color: var(--sky-deep);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  align-items: center;
+}
+
+.nav-links a {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  transition: color var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.site-footer {
+  background: var(--forest);
+  color: rgba(255, 255, 255, 0.75);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
+}
+
+.footer-grid {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+
+.footer-tagline {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-sm);
+}
+
+.footer-desc {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.footer-col-label {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 0.75rem;
+}
+
+.footer-col-label.sub { margin-top: var(--space-md); }
+
+.footer-col ul li {
+  margin-bottom: 0.45rem;
+}
+
+.footer-col ul li a {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.65);
+  transition: color var(--transition);
+}
+
+.footer-col ul li a:hover {
+  color: var(--white);
+}
+
+.footer-rule {
+  max-width: var(--max-width);
+  margin: 0 auto var(--space-md);
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-bottom {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer-badges {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.footer-badge {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--border-radius);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.footer-badge strong {
+  display: block;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Placeholder / Coming Soon ─────────────────────────────── */
+.placeholder-hero {
+  background: linear-gradient(180deg,
+    #b8d0e0 0%, #cddee8 25%, #dde9f0 55%, #edf3f7 78%, var(--cream) 100%);
+  padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
+  text-align: center;
+}
+
+.placeholder-eyebrow {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: var(--space-md);
+}
+
+.placeholder-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--forest);
+  line-height: 1.14;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder-subtitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: var(--space-md);
+}
+
+.tagline-pill {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage);
+  border: 1px solid var(--sage);
+  padding: 0.38rem 1.2rem;
+  border-radius: 2px;
+  margin-bottom: var(--space-xl);
+}
+
+.coming-soon-band {
+  background: var(--forest);
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+}
+
+.coming-soon-band p {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+.info-section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+.info-label {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: 0.5rem;
+}
+
+.info-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--forest);
+  line-height: 1.25;
+  margin-bottom: var(--space-sm);
+}
+
+.info-body {
+  font-size: var(--text-base);
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-sm);
+}
+
+.rehearsal-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--border-radius);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.rehearsal-card .detail-label {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  margin-bottom: 0.3rem;
+}
+
+.rehearsal-card .detail-value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 0.25rem;
+}
+
+.rehearsal-card .detail-sub {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-block;
+  background: var(--forest);
+  color: var(--white);
+  padding: 0.75rem 2rem;
+  border-radius: var(--border-radius);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  letter-spacing: 0.03em;
+  transition: background var(--transition);
+}
+
+.btn-primary:hover {
+  background: var(--sky-deep);
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .nav-links { display: none; }
+  .info-section { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+}

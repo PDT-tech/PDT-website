@@ -1,0 +1,47 @@
+# ============================================================
+# PDT SINGERS — Netlify Configuration
+# ============================================================
+
+# ── Build settings ──────────────────────────────────────────
+[build]
+  publish = "."          # serve from repo root (static site, no build step)
+
+# ── Security headers ────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ── Redirects ───────────────────────────────────────────────
+# Force HTTPS (Netlify handles SSL but this ensures redirect)
+[[redirects]]
+  from = "http://pdtsingers.org/*"
+  to   = "https://pdtsingers.org/:splat"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "http://www.pdtsingers.org/*"
+  to   = "https://pdtsingers.org/:splat"
+  status = 301
+  force  = true
+
+# Redirect www to apex
+[[redirects]]
+  from = "https://www.pdtsingers.org/*"
+  to   = "https://pdtsingers.org/:splat"
+  status = 301
+  force  = true
+
+# ── Member area protection (Phase 3 — activate when Supabase auth is ready) ──
+# Uncomment this block when the member portal is built:
+#
+# [[redirects]]
+#   from   = "/members/*"
+#   to     = "/login"
+#   status = 302
+#   conditions = {Role = ["member"]}
+#   force  = false

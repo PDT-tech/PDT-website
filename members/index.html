@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Member Home — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/members.css">
+</head>
+<body class="members-page">
+
+<!-- MEMBER NAV -->
+<nav class="member-nav">
+  <a href="/members/" class="member-nav-brand">
+    Portland <span class="accent">DayTime</span> Singers
+    <span class="member-badge">Members</span>
+  </a>
+  <ul class="member-nav-links">
+    <li><a href="/members/" class="active">Home</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+    <li><a href="/members/poohbah.html">Grand Poohbah</a></li>
+    <li><a href="/members/events.html">Events</a></li>
+    <li><a href="/members/comms.html">Comms</a></li>
+    <li><a href="/members/calendar.html">Calendar</a></li>
+    <li><a href="/members/music.html">Music</a></li>
+  </ul>
+  <div class="member-nav-right">
+    <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
+    <a href="#" class="pdt-logout-btn nav-logout">Sign out</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="members-main">
+
+  <!-- WELCOME BAND -->
+  <div class="welcome-band">
+    <div class="welcome-inner">
+      <p class="welcome-eyebrow">Portland DayTime Singers — Member Portal</p>
+      <h1 class="welcome-title">Welcome back, <span class="pdt-user-name">friend</span>.</h1>
+      <p class="welcome-subtitle">Music, Fellowship &amp; Fun</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+
+    <!-- NEXT REHEARSAL -->
+    <div class="dash-card dash-card--featured" id="next-rehearsal-card">
+      <div class="dash-card-label">Next Rehearsal</div>
+      <div class="dash-card-title" id="next-rehearsal-date">Loading…</div>
+      <div class="dash-card-body">
+        Mondays, 10:30 am – 12:30 pm<br>
+        Westside Journey United Methodist Church<br>
+        13420 SW Butner Rd, Beaverton OR 97005
+      </div>
+      <div id="next-rehearsal-absences" class="dash-absences" hidden>
+        <span class="dash-absences-label">Out this week:</span>
+        <span id="absences-list"></span>
+      </div>
+      <div class="dash-card-actions">
+        <a href="/members/calendar.html" class="btn-primary btn-sm">Full Calendar</a>
+        <button class="btn-secondary btn-sm pdt-admin-only" id="mark-absent-btn">
+          Mark myself absent
+        </button>
+      </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="dash-card">
+      <div class="dash-card-label">Quick Links</div>
+      <ul class="quick-links">
+        <li>
+          <a href="/members/directors-notes.html" class="quick-link">
+            <span class="quick-link-icon">🎵</span>
+            <span>
+              <strong>Director's Notes</strong>
+              <em>From Chris Gabel</em>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/poohbah.html" class="quick-link">
+            <span class="quick-link-icon">📜</span>
+            <span>
+              <strong>Grand Poohbah's Prattlings</strong>
+              <em>From Kevin Bier</em>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/events.html" class="quick-link">
+            <span class="quick-link-icon">📅</span>
+            <span>
+              <strong>Events</strong>
+              <em>Performances &amp; sing-outs</em>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/comms.html" class="quick-link">
+            <span class="quick-link-icon">📢</span>
+            <span>
+              <strong>Communications</strong>
+              <em>Announcements &amp; notes</em>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/music.html" class="quick-link quick-link--muted">
+            <span class="quick-link-icon">🎼</span>
+            <span>
+              <strong>Music Library</strong>
+              <em>Coming soon — awaiting Google Workspace</em>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- RECENT: DIRECTOR'S NOTES -->
+    <div class="dash-card">
+      <div class="dash-card-label">Latest from the Director</div>
+      <div id="directors-notes-preview" class="post-preview-list">
+        <div class="post-preview-empty">No posts yet.</div>
+      </div>
+      <a href="/members/directors-notes.html" class="dash-card-more">
+        All Director's Notes &rarr;
+      </a>
+    </div>
+
+    <!-- RECENT: GRAND POOHBAH -->
+    <div class="dash-card">
+      <div class="dash-card-label">Latest from the Grand Poohbah</div>
+      <div id="poohbah-preview" class="post-preview-list">
+        <div class="post-preview-empty">No posts yet.</div>
+      </div>
+      <a href="/members/poohbah.html" class="dash-card-more">
+        All Prattlings &rarr;
+      </a>
+    </div>
+
+    <!-- RECENT: EVENTS -->
+    <div class="dash-card">
+      <div class="dash-card-label">Upcoming Events</div>
+      <div id="events-preview" class="post-preview-list">
+        <div class="post-preview-empty">No upcoming events posted.</div>
+      </div>
+      <a href="/members/events.html" class="dash-card-more">
+        All Events &rarr;
+      </a>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div class="dash-card pdt-admin-only" id="admin-panel">
+      <div class="dash-card-label">Admin</div>
+      <ul class="quick-links">
+        <li>
+          <a href="/members/comms.html#new" class="quick-link">
+            <span class="quick-link-icon">✏️</span>
+            <span><strong>New Announcement</strong></span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/calendar.html#new-event" class="quick-link">
+            <span class="quick-link-icon">➕</span>
+            <span><strong>Add Calendar Event</strong></span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/directors-notes.html#new" class="quick-link">
+            <span class="quick-link-icon">🎵</span>
+            <span><strong>New Director's Note</strong></span>
+          </a>
+        </li>
+        <li>
+          <a href="/members/poohbah.html#new" class="quick-link">
+            <span class="quick-link-icon">📜</span>
+            <span><strong>New Poohbah Post</strong></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /dashboard-grid -->
+</main>
+
+<!-- FOOTER -->
+<footer class="members-footer">
+  <div class="members-footer-inner">
+    <span>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; Members Only</span>
+    <a href="/">Public site &rarr;</a>
+  </div>
+</footer>
+
+<script type="module">
+  import '../js/auth-guard.js'
+  import { supabase } from '../js/supabase.js'
+
+  // ── Load next rehearsal from calendar ─────────────────────
+  async function loadNextRehearsal () {
+    const today = new Date().toISOString().split('T')[0]
+
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('event_type', 'rehearsal')
+      .eq('is_cancelled', false)
+      .gte('event_date', today)
+      .order('event_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (error || !data) return
+
+    // Format date nicely
+    const date = new Date(data.event_date + 'T12:00:00') // noon to avoid TZ issues
+    const formatted = date.toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric'
+    })
+    document.getElementById('next-rehearsal-date').textContent = formatted
+
+    // Load absences for this event
+    const { data: absences } = await supabase
+      .from('absences')
+      .select('note, profiles(full_name)')
+      .eq('event_id', data.id)
+
+    if (absences && absences.length > 0) {
+      const names = absences.map(a =>
+        a.profiles.full_name + (a.note ? ` (${a.note})` : '')
+      ).join(', ')
+      document.getElementById('absences-list').textContent = names
+      document.getElementById('next-rehearsal-absences').hidden = false
+    }
+  }
+
+  // ── Load recent blog posts ─────────────────────────────────
+  async function loadRecentPosts (blogType, containerId) {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('id, title, created_at, excerpt')
+      .eq('blog_type', blogType)
+      .order('created_at', { ascending: false })
+      .limit(3)
+
+    if (error || !data || data.length === 0) return
+
+    const container = document.getElementById(containerId)
+    container.innerHTML = data.map(post => {
+      const date = new Date(post.created_at).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric'
+      })
+      return `
+        <div class="post-preview">
+          <div class="post-preview-meta">${date}</div>
+          <div class="post-preview-title">${post.title}</div>
+          ${post.excerpt ? `<div class="post-preview-excerpt">${post.excerpt}</div>` : ''}
+        </div>`
+    }).join('')
+  }
+
+  // ── Init ───────────────────────────────────────────────────
+  loadNextRehearsal()
+
+  // Posts table doesn't exist yet — wrap in try/catch
+  // These will populate once we build the posts table
+  try {
+    loadRecentPosts('directors_notes', 'directors-notes-preview')
+    loadRecentPosts('poohbah', 'poohbah-preview')
+    loadRecentPosts('events', 'events-preview')
+  } catch (e) {
+    // Posts table not yet created — previews show "No posts yet"
+  }
+</script>
+
+</body>
+</html>

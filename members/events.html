@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Events — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/members.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body class="members-page">
+
+<!-- MEMBER NAV -->
+<nav class="member-nav">
+  <a href="/members/" class="member-nav-brand">
+    Portland <span class="accent">DayTime</span> Singers
+    <span class="member-badge">Members</span>
+  </a>
+  <ul class="member-nav-links">
+    <li><a href="/members/">Home</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+    <li><a href="/members/poohbah.html">Grand Poohbah</a></li>
+    <li><a href="/members/events.html" class="active">Events</a></li>
+    <li><a href="/members/comms.html">Comms</a></li>
+    <li><a href="/members/calendar.html">Calendar</a></li>
+    <li><a href="/members/music.html">Music</a></li>
+  </ul>
+  <div class="member-nav-right">
+    <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
+    <a href="#" class="pdt-logout-btn nav-logout">Sign out</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="members-main">
+
+  <div class="blog-header" style="--blog-color: #4e6e4e;">
+    <div class="blog-header-inner">
+      <p class="blog-eyebrow">Member Portal</p>
+      <h1 class="blog-title">Events</h1>
+      <p class="blog-byline">Performances, sing-outs &amp; social events</p>
+    </div>
+    <!-- Shown to events_editor AND admin -->
+    <button class="btn-primary pdt-events-editor-only" id="new-post-btn">
+      + New Event Post
+    </button>
+  </div>
+
+  <div class="blog-layout">
+    <div class="post-list" id="post-list">
+      <div class="post-list-loading">Loading events…</div>
+    </div>
+    <div class="post-detail" id="post-detail" hidden>
+      <button class="post-back-btn" id="back-btn">&larr; All events</button>
+      <article class="post-article">
+        <div class="post-article-meta" id="detail-meta"></div>
+        <h2 class="post-article-title" id="detail-title"></h2>
+        <div class="post-article-body" id="detail-body"></div>
+      </article>
+      <div class="post-article-actions pdt-events-editor-only">
+        <button class="btn-secondary btn-sm" id="edit-btn">Edit</button>
+        <button class="btn-danger btn-sm" id="delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-modal-overlay" id="modal-overlay" hidden>
+    <div class="post-modal">
+      <div class="post-modal-header">
+        <h2 class="post-modal-title" id="modal-title">New Event Post</h2>
+        <button class="post-modal-close" id="modal-close">&times;</button>
+      </div>
+      <form id="post-form">
+        <input type="hidden" id="post-id">
+        <div class="form-group">
+          <label class="form-label" for="post-title">Title</label>
+          <input type="text" id="post-title" class="form-input" required
+                 placeholder="e.g. Sing-Out at Marquis Gardens — April 12">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="post-excerpt">
+            Short summary <span class="form-hint">(optional — shown in preview)</span>
+          </label>
+          <input type="text" id="post-excerpt" class="form-input"
+                 placeholder="One sentence summary">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="post-body">Details</label>
+          <textarea id="post-body" class="form-input form-textarea" required
+                    placeholder="Event details, what to wear, when to arrive, parking, etc."></textarea>
+        </div>
+        <div class="form-group form-check">
+          <label class="form-check-label">
+            <input type="checkbox" id="post-published" checked>
+            Published (visible to all members)
+          </label>
+        </div>
+        <div class="post-modal-actions">
+          <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary" id="modal-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<footer class="members-footer">
+  <div class="members-footer-inner">
+    <span>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; Members Only</span>
+    <a href="/">Public site &rarr;</a>
+  </div>
+</footer>
+
+<script type="module">
+  import '../js/auth-guard.js'
+  import { supabase } from '../js/supabase.js'
+
+  const BLOG_TYPE = 'events'
+  let currentPostId = null
+
+  // Show edit controls to events_editor AND admin
+  document.addEventListener('pdt:profile-loaded', (e) => {
+    const profile = e.detail
+    if (profile.role === 'events_editor' || profile.role === 'admin') {
+      document.querySelectorAll('.pdt-events-editor-only').forEach(el => {
+        el.style.display = ''
+      })
+    }
+  })
+
+  async function loadPosts () {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('id, title, excerpt, created_at, published, profiles(full_name)')
+      .eq('blog_type', BLOG_TYPE)
+      .order('created_at', { ascending: false })
+
+    const list = document.getElementById('post-list')
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<div class="post-list-empty">No events posted yet.</div>'
+      return
+    }
+    list.innerHTML = data.map(post => `
+      <div class="post-list-item ${!post.published ? 'post-unpublished' : ''}"
+           data-id="${post.id}">
+        <div class="post-list-meta">
+          ${formatDate(post.created_at)}
+          ${!post.published ? '<span class="post-draft-badge">Draft</span>' : ''}
+        </div>
+        <div class="post-list-title">${post.title}</div>
+        ${post.excerpt ? `<div class="post-list-excerpt">${post.excerpt}</div>` : ''}
+      </div>
+    `).join('')
+    list.querySelectorAll('.post-list-item').forEach(item => {
+      item.addEventListener('click', () => openPost(item.dataset.id))
+    })
+  }
+
+  async function openPost (id) {
+    currentPostId = id
+    const { data } = await supabase
+      .from('posts').select('*, profiles(full_name)').eq('id', id).single()
+    if (data) renderDetail(data)
+  }
+
+  function renderDetail (post) {
+    document.getElementById('detail-meta').textContent =
+      formatDate(post.created_at) + (post.profiles?.full_name ? ` · ${post.profiles.full_name}` : '')
+    document.getElementById('detail-title').textContent = post.title
+    document.getElementById('detail-body').innerHTML =
+      '<p>' + post.body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>'
+    document.getElementById('edit-btn').dataset.post = JSON.stringify(post)
+    document.getElementById('post-list').hidden = true
+    document.getElementById('post-detail').hidden = false
+  }
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    document.getElementById('post-detail').hidden = true
+    document.getElementById('post-list').hidden = false
+    currentPostId = null
+  })
+
+  document.getElementById('new-post-btn')?.addEventListener('click', () => openModal())
+
+  document.getElementById('edit-btn').addEventListener('click', (e) => {
+    openModal(JSON.parse(e.target.dataset.post || '{}'))
+  })
+
+  document.getElementById('delete-btn').addEventListener('click', async () => {
+    if (!confirm('Delete this event post? This cannot be undone.')) return
+    const { error } = await supabase.from('posts').delete().eq('id', currentPostId)
+    if (!error) {
+      document.getElementById('post-detail').hidden = true
+      document.getElementById('post-list').hidden = false
+      currentPostId = null
+      await loadPosts()
+    }
+  })
+
+  function openModal (post = null) {
+    document.getElementById('modal-title').textContent = post?.id ? 'Edit Event Post' : 'New Event Post'
+    document.getElementById('post-id').value = post?.id || ''
+    document.getElementById('post-title').value = post?.title || ''
+    document.getElementById('post-excerpt').value = post?.excerpt || ''
+    document.getElementById('post-body').value = post?.body || ''
+    document.getElementById('post-published').checked = post ? post.published : true
+    document.getElementById('modal-overlay').hidden = false
+  }
+
+  function closeModal () {
+    document.getElementById('modal-overlay').hidden = true
+    document.getElementById('post-form').reset()
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeModal)
+  document.getElementById('modal-cancel').addEventListener('click', closeModal)
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal()
+  })
+
+  document.getElementById('post-form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const saveBtn = document.getElementById('modal-save')
+    saveBtn.textContent = 'Saving…'
+    saveBtn.disabled = true
+
+    const id        = document.getElementById('post-id').value
+    const title     = document.getElementById('post-title').value.trim()
+    const excerpt   = document.getElementById('post-excerpt').value.trim() || null
+    const body      = document.getElementById('post-body').value.trim()
+    const published = document.getElementById('post-published').checked
+    const payload   = { blog_type: BLOG_TYPE, title, excerpt, body, published,
+                        author_id: window.__PDT_USER?.id }
+
+    let error
+    if (id) {
+      ;({ error } = await supabase.from('posts').update(payload).eq('id', id))
+    } else {
+      ;({ error } = await supabase.from('posts').insert(payload))
+    }
+
+    saveBtn.textContent = 'Save'
+    saveBtn.disabled = false
+
+    if (error) { alert('Error saving: ' + error.message); return }
+    closeModal()
+    await loadPosts()
+    document.getElementById('post-detail').hidden = true
+    document.getElementById('post-list').hidden = false
+    currentPostId = null
+  })
+
+  function formatDate (iso) {
+    return new Date(iso).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    })
+  }
+
+  if (window.location.hash === '#new') openModal()
+  loadPosts()
+</script>
+
+</body>
+</html>

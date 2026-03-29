@@ -37,6 +37,9 @@ async function initAuthGuard () {
   // Attach profile to window for use by page scripts
   window.__PDT_USER = profile
 
+  // Fire event so page scripts can react to the loaded profile
+  document.dispatchEvent(new CustomEvent('pdt:profile-loaded', { detail: profile }))
+
   // Render the user's name in any .pdt-user-name elements
   document.querySelectorAll('.pdt-user-name').forEach(el => {
     el.textContent = profile.full_name

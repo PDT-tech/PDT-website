@@ -59,19 +59,26 @@ repo is created.
 - [x] Review homepage comp (PDT_Singers_Homepage_Comp.html)
 - [x] Resolve director name spelling (Chris Gabel ✓)
 - [x] Confirm all logos in hand
-- [ ] Get GitHub repo URL from Kevin
+- [x] Get GitHub repo URL — https://github.com/kevin36v/PDT-website
 
 ### Phase 1 — Foundation / Scaffolding (current)
-- [ ] Kevin creates GitHub repo → share URL
-- [ ] Scaffold full file/folder structure in repo
-- [ ] Set up Netlify project, connect to GitHub repo
-- [ ] Configure custom domain (pdtsingers.org → Netlify)
-- [ ] Set up Supabase project (auth + DB schema)
-- [ ] Create base HTML template (head, nav, footer, meta)
-- [ ] Create base CSS (variables, reset, typography, layout)
-- [ ] Deploy skeleton site to verify pipeline end-to-end
-- [ ] Apply for Google Workspace for Nonprofits (once IRS letter arrives)
-- [ ] Build Home page
+- [x] Kevin creates GitHub repo
+- [x] Scaffold full file/folder structure in repo
+- [x] Set up Netlify project, connect to GitHub repo
+- [x] Configure custom domain (pdtsingers.org → Netlify) ✅ DNS cutover complete
+- [x] GreenGeeks decommission — Trevor notified ✅
+- [x] Create base HTML template (head, nav, footer, meta)
+- [x] Create base CSS (variables, reset, typography, layout)
+- [x] Deploy skeleton site — placeholder live and looking great ✅
+- [x] Apply for Google Workspace for Nonprofits — TechSoup registered (4139-GERS-YP8U), awaiting verification
+- [x] Set up Supabase project (Americas region) ✅
+- [x] Deploy DB schema: profiles, events, absences + RLS policies ✅
+- [x] Auto-profile trigger on auth.users insert ✅
+- [x] Netlify env vars: SUPABASE_URL, SUPABASE_ANON_KEY ✅
+- [x] Write pdt-calendar-spec.md ✅
+- [ ] Build member auth flow (login page, Supabase JS client, auth-guard)
+- [ ] Build member calendar (priority — requested by Kevin)
+- [ ] Build Home page (copy updates pending from group)
 - [ ] Build About Us page
 - [ ] Build Join Us page
 
@@ -99,11 +106,12 @@ repo is created.
 - [ ] Accessibility audit (WCAG AA)
 - [ ] Cross-browser testing
 - [ ] Final content review
-- [ ] DNS cutover: pdtsingers.org → Netlify (retire GreenGeeks)
+- [x] DNS cutover: pdtsingers.org → Netlify ✅ Complete
+- [x] GreenGeeks retired — Trevor notified ✅
 - [ ] Notify deceased member's son to deactivate old site
 
 ### Phase 5 — Post-Launch
-- [ ] Google Workspace for Nonprofits activation (once IRS letter + TechSoup)
+- [ ] Google Workspace for Nonprofits activation — TechSoup verification pending (code 4139-GERS-YP8U)
 - [ ] Migrate sheet music from Dropbox to Google Drive
 - [ ] Social media accounts live → update Friends page links
 - [ ] Onboard second site maintainer
@@ -203,9 +211,13 @@ pdtsingers/                  ← repo root
 **WBQA:** sppbsqsus.org / facebook.com/WBQA.Sings  
 **Charter:** Lodge #18, WBQA Annual Convention, San Antonio TX, March 14, 2026  
 **GitHub repo:** https://github.com/kevin36v/PDT-website  
+**Netlify project:** astonishing-douhua-7cfbb7.netlify.app  
+**pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete; GreenGeeks decommission notified (Trevor)  
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Dropbox (temporary) → Google Workspace (IRS letter now in hand — apply now)  
 **Lodge phone:** TBD — Kevin has phone to donate; Mint Mobile ~$180/yr; blocks business cards  
+**TechSoup:** ✅ Registered — Association code **4139-GERS-YP8U** — awaiting verification  
+⚠️ **Reminder: Update TechSoup account email to @pdtsingers.org once Google Workspace is live**
 
 ---
 
@@ -242,7 +254,9 @@ pdtsingers/                  ← repo root
 - ✅ Fixed dark mode color flash on Firefox/Linux (Bazzite) — hardcoded hex colors with forced-color-adjust
 - ✅ Netlify confirmed connected to github.com/kevin36v/PDT-website, auto-deploy on push
 - ✅ Netlify DNS nameservers: dns1-4.p07.nsone.net — entered at helpinghosting.com
-- ⏳ DNS propagation in progress — pdtsingers.org still on GreenGeeks, check whatsmydns.net
+- ✅ DNS propagation complete — pdtsingers.org live on Netlify
+- ✅ TechSoup registered — association code 4139-GERS-YP8U, awaiting verification
+- ⚠️ Reminder: update TechSoup email to @pdtsingers.org once Google Workspace is live
 - Phase 1 scaffold complete and looking great
 - ✅ Two key photos received and documented:
   - `IMG_5879.JPEG` — First sing-out at The Social Kitchen, Vancouver WA, 2/6/2026 (hero candidate)
@@ -260,3 +274,11 @@ pdtsingers/                  ← repo root
   - Groups.io for Friends of PDT tabled until Google Workspace established
   - Grant to send Kevin prioritized landing page elements
   - Next BoD meeting: April 16, 10:00am
+- ✅ LAMP/VPS approach evaluated and rejected — Netlify+Supabase confirmed final
+- ✅ Supabase project created (Americas region)
+- ✅ Full DB schema deployed: profiles, events, absences tables + RLS policies
+- ✅ Auto-profile trigger on auth.users insert
+- ✅ Netlify env vars configured: SUPABASE_URL, SUPABASE_ANON_KEY
+- ✅ pdt-calendar-spec.md written — full feature spec, schema, roles, UI, build order
+- ✅ Homepage copy updates pending — group discussing new mission statement language
+- ▶️ Next session: member auth flow (login page, Supabase JS client, auth-guard) → calendar frontend

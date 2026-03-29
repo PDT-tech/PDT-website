@@ -25,8 +25,18 @@
     <li><a href="#rehearsals">Rehearsals</a></li>
     <li><a href="#about">About Us</a></li>
     <li><a href="mailto:info@pdtsingers.org">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
   </ul>
 </nav>
+
+<script type="module">
+  import { getSession } from './js/supabase.js'
+  getSession().then(session => {
+    if (session) {
+      document.getElementById('nav-members-link').href = '/members/'
+    }
+  })
+</script>
 
 <!-- HERO -->
 <section class="placeholder-hero">

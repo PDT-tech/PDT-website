@@ -58,6 +58,18 @@ body {
   color: var(--text);
 }
 
+.nav-cta {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  padding: 0.38rem 1rem;
+  border-radius: 3px;
+  font-size: var(--text-xs) !important;
+  letter-spacing: 0.04em !important;
+  transition: background 0.2s !important;
+}
+
+.nav-cta:hover { background: #6a9ab8 !important; }
+
 /* ── Footer ────────────────────────────────────────────────── */
 .site-footer {
   background: var(--forest);

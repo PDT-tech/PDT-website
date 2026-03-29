@@ -6,6 +6,11 @@
 [build]
   publish = "."          # serve from repo root (static site, no build step)
 
+# ── Edge functions ───────────────────────────────────────────
+[[edge_functions]]
+  path = "/*"
+  function = "inject-env"
+
 # ── Security headers ────────────────────────────────────────
 [[headers]]
   for = "/*"

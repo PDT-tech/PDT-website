@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Member Login — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/members.css">
+</head>
+<body class="login-page">
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+  </ul>
+</nav>
+
+<!-- LOGIN CARD -->
+<main class="login-main">
+  <div class="login-card">
+
+    <div class="login-header">
+      <p class="login-eyebrow">Members Only</p>
+      <h1 class="login-title">Member Portal</h1>
+      <p class="login-subtitle">Portland DayTime Singers</p>
+    </div>
+
+    <!-- STATE: Default — magic link form -->
+    <div id="state-form">
+      <p class="login-instructions">
+        Enter your email address and we'll send you a link to sign in.
+        No password needed.
+      </p>
+
+      <form id="magic-link-form" novalidate>
+        <div class="form-group">
+          <label for="email" class="form-label">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+          <div class="form-error" id="email-error" hidden></div>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full" id="submit-btn">
+          Send me a sign-in link
+        </button>
+      </form>
+
+      <!-- PASSWORD LOGIN STUB (hidden — uncomment form + button to enable) -->
+      <!--
+      <div class="login-divider"><span>or</span></div>
+      <form id="password-form" novalidate>
+        <div class="form-group">
+          <label for="pw-email" class="form-label">Email address</label>
+          <input type="email" id="pw-email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="pw-password" class="form-label">Password</label>
+          <input type="password" id="pw-password" class="form-input" required>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Sign in with password</button>
+      </form>
+      -->
+
+      <p class="login-help">
+        Not a member yet? <a href="/join.html">Learn about joining PDT Singers &rarr;</a>
+      </p>
+    </div>
+
+    <!-- STATE: Success — link sent -->
+    <div id="state-success" hidden>
+      <div class="login-success-icon">✉️</div>
+      <h2 class="login-success-title">Check your email</h2>
+      <p class="login-success-body">
+        We sent a sign-in link to <strong id="sent-to-email"></strong>.
+        Click the link in that email to access the member portal.
+      </p>
+      <p class="login-success-note">
+        Didn't get it? Check your spam folder, or
+        <button class="btn-text" id="try-again-btn">try again</button>.
+      </p>
+    </div>
+
+    <!-- STATE: Error -->
+    <div id="state-error" hidden>
+      <div class="login-error-icon">⚠️</div>
+      <h2 class="login-error-title">Something went wrong</h2>
+      <p class="login-error-body" id="error-message"></p>
+      <button class="btn-primary" id="error-retry-btn">Try again</button>
+    </div>
+
+    <!-- STATE: Inactive member -->
+    <div id="state-inactive" hidden>
+      <div class="login-error-icon">🎵</div>
+      <h2 class="login-error-title">Account not active</h2>
+      <p class="login-error-body">
+        Your account is not currently active. Please contact
+        <a href="mailto:grandpoohbah@pdtsingers.org">Kevin Bier</a>
+        if you think this is an error.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER (minimal) -->
+<footer class="login-footer">
+  <p>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; <a href="/">pdtsingers.org</a></p>
+</footer>
+
+<script type="module">
+  import { sendMagicLink } from './js/supabase.js'
+  import { getSession } from './js/supabase.js'
+
+  // Check URL params for special states
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('reason') === 'inactive') {
+    showState('inactive')
+  }
+
+  // If already logged in, redirect to members area
+  getSession().then(session => {
+    if (session) {
+      const next = params.get('next') || '/members/'
+      window.location.href = next
+    }
+  })
+
+  // ── State management ───────────────────────────────────────
+  function showState (state) {
+    const states = ['form', 'success', 'error', 'inactive']
+    states.forEach(s => {
+      document.getElementById(`state-${s}`).hidden = (s !== state)
+    })
+  }
+
+  // ── Magic link form ────────────────────────────────────────
+  const form      = document.getElementById('magic-link-form')
+  const emailInput = document.getElementById('email')
+  const submitBtn  = document.getElementById('submit-btn')
+  const emailError = document.getElementById('email-error')
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const email = emailInput.value.trim()
+
+    // Basic validation
+    if (!email || !email.includes('@')) {
+      emailError.textContent = 'Please enter a valid email address.'
+      emailError.hidden = false
+      emailInput.focus()
+      return
+    }
+
+    emailError.hidden = true
+    submitBtn.textContent = 'Sending…'
+    submitBtn.disabled = true
+
+    const { error } = await sendMagicLink(email)
+
+    if (error) {
+      document.getElementById('error-message').textContent = error.message
+      showState('error')
+      return
+    }
+
+    // Success
+    document.getElementById('sent-to-email').textContent = email
+    showState('success')
+  })
+
+  // ── Try again ──────────────────────────────────────────────
+  document.getElementById('try-again-btn').addEventListener('click', () => {
+    submitBtn.textContent = 'Send me a sign-in link'
+    submitBtn.disabled = false
+    showState('form')
+  })
+
+  document.getElementById('error-retry-btn').addEventListener('click', () => {
+    submitBtn.textContent = 'Send me a sign-in link'
+    submitBtn.disabled = false
+    showState('form')
+  })
+</script>
+
+</body>
+</html>

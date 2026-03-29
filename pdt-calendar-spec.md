@@ -22,9 +22,11 @@ primary purposes:
 
 | Role | Supabase Value | Who | Permissions |
 |------|---------------|-----|-------------|
-| `admin` | `admin` | Kevin Bier, Chris Gabel | Full access: create/edit/delete events, view all absences, manage members |
+| `admin` | `admin` | Kevin Bier | Full access: create/edit/delete events, view all absences, manage members, post to any blog |
+| `musical_director` | `musical_director` | Chris Gabel | Post to Director's Notes blog; read all member content |
+| `events_editor` | `events_editor` | Social media manager, Wives Auxiliary, etc. | Post to Events blog only |
 | `calendar_manager` | `calendar_manager` | Future social media hire (non-member) | Create/edit/delete events only; cannot see member data |
-| `member` | `member` | All active PDT Singers members | Mark own absence; view calendar and absence list |
+| `member` | `member` | All active PDT Singers members | Mark own absence; view all member content; read-only on blogs |
 
 ---
 

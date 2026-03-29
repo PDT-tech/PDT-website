@@ -228,7 +228,8 @@ pdtsingers/                  ← repo root
 ## Notes & Gotchas
 
 - PDT Singers is **NOT BHS** — must be stated on About page; some visitors will assume BHS affiliation
-- **Three member blogs**: Director's Notes (Chris), Prattling from the Grand Poohbah (Kevin), Events blog
+- **Three member blogs**: Director's Notes (musical_director + admin), Prattling from the Grand Poohbah (admin only), Events blog (events_editor + admin)
+- **Roles**: admin (Kevin), musical_director (Chris), events_editor (social media mgr/Wives Auxiliary/etc.), calendar_manager, member
 - **Music Library**: song catalog with PDF sheet music + MP3 learning tracks per song; files on Google Drive (currently Dropbox); migrate once Workspace live. Needs `songs` table in Supabase + Google Drive integration. Placeholder nav link at launch.
 - Duane Lundsten (Poohbah of Complex Stuff) passed March 2026 — memorial placeholder in design; no action before Phase 1
 - WBQA lodge list page is nearly empty — no central directory driving traffic to lodge sites; PDT SEO work is important

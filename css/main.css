@@ -9,8 +9,7 @@ body {
   background: #f7f3ee;
   color: #2a2a2a;
   font-size: var(--text-base);
-  color-scheme: light;
-  -webkit-color-scheme: light;
+  color-scheme: light dark;
 }
 
 /* ── Nav ───────────────────────────────────────────────────── */
@@ -172,53 +171,131 @@ body {
   color: rgba(255, 255, 255, 0.55);
 }
 
-/* ── Placeholder / Coming Soon ─────────────────────────────── */
-.placeholder-hero {
+/* ── Hero (split-logo layered design) ──────────────────────── */
+.site-hero {
+  position: relative;
   background: linear-gradient(180deg,
     #b8d0e0 0%, #cddee8 25%, #dde9f0 55%, #edf3f7 78%, #f7f3ee 100%);
-  padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
   text-align: center;
-  color-scheme: light;
+  overflow: hidden;
+  padding: 0;
 }
 
-.placeholder-eyebrow {
+/* Inner column — all content except cityscape */
+.hero-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Words + notes — top logo piece */
+.hero-words {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  display: block;
+  mix-blend-mode: multiply;
+  margin-bottom: var(--space-sm);
+}
+
+/* Eyebrow */
+.hero-eyebrow {
   font-family: var(--font-ui);
   font-size: var(--text-xs);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #6a9ab8 !important;
-  margin-bottom: var(--space-md);
+  color: var(--sky-deep);
+  margin-bottom: var(--space-xs);
 }
 
-.placeholder-title {
+/* Subhead */
+.hero-subhead {
   font-family: var(--font-display);
-  font-size: var(--text-4xl);
-  font-weight: 700;
-  color: #1a1a1a !important;
-  line-height: 1.14;
-  margin-bottom: 0.5rem;
-}
-
-.placeholder-subtitle {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
   font-style: italic;
-  color: #5a5a5a !important;
+  color: var(--muted);
+  line-height: 1.5;
   margin-bottom: var(--space-md);
 }
 
+/* Tagline pill */
 .tagline-pill {
   display: inline-block;
   font-family: var(--font-ui);
   font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #4e6e4e !important;
-  border: 1px solid #4e6e4e;
+  color: var(--sage);
+  border: 1px solid var(--sage);
   padding: 0.38rem 1.2rem;
   border-radius: 2px;
-  margin-bottom: var(--space-xl);
-  background: transparent !important;
+  margin-bottom: var(--space-md);
+}
+
+/* CTAs */
+.hero-ctas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+.hero-cta-ghost {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1px;
+  transition: color var(--transition);
+}
+
+.hero-cta-ghost:hover {
+  color: var(--text);
+}
+
+/* Cityscape — bottom logo piece, full bleed */
+.hero-cityscape {
+  display: block;
+  width: 70%;
+  max-width: 70%;
+  height: auto;
+  mix-blend-mode: multiply;
+  margin: 0 auto -4px;
+}
+
+/* WBQA credential badge */
+.hero-wbqa-badge {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: #1a1a2e;
+  border: 1px solid rgba(106,154,184,0.35);
+  border-radius: var(--border-radius);
+  padding: 0.4rem 0.55rem;
+  text-decoration: none;
+  transition: background var(--transition);
+  z-index: 10;
+}
+
+.hero-wbqa-badge:hover {
+  background: #252540;
+}
+
+.hero-wbqa-badge img {
+  width: 186px;
+  height: 186px;
+  object-fit: contain;
+  display: block;
 }
 
 .coming-soon-band {
@@ -326,4 +403,72 @@ body {
   .nav-links { display: none; }
   .info-section { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .hero-words { max-width: 320px; }
+  .hero-wbqa-badge { top: 0.6rem; right: 0.6rem; }
+  .hero-wbqa-badge img { width: 34px; height: 34px; }
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+  }
+
+  /* Hero */
+  .site-hero {
+    background: linear-gradient(180deg,
+      #0d1a24 0%, #112030 25%, #192630 55%, #1a1a12 100%);
+  }
+
+  /* multiply doesn't work on dark — screen drops out the whites */
+  .hero-words,
+  .hero-cityscape {
+    mix-blend-mode: screen;
+    opacity: 0.88;
+  }
+
+  .hero-eyebrow { color: var(--sky-mid); }
+
+  .hero-subhead { color: rgba(255,255,255,0.62); }
+
+  .hero-cta-ghost {
+    color: rgba(255,255,255,0.5);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .hero-cta-ghost:hover { color: rgba(255,255,255,0.85); }
+
+  /* Nav */
+  .site-nav {
+    background: #111;
+    border-color: rgba(255,255,255,0.06);
+  }
+
+  .nav-brand { color: var(--sky-mid); }
+  .nav-brand .accent { color: var(--sky-deep); }
+  .nav-links a { color: rgba(255,255,255,0.55); }
+  .nav-links a:hover { color: rgba(255,255,255,0.9); }
+
+  /* Coming-soon band already dark — fine as-is */
+
+  /* Info section */
+  .info-section {
+    background: #161410;
+    color: rgba(255,255,255,0.87);
+  }
+
+  .info-label { color: var(--sky-mid); }
+  .info-title { color: rgba(255,255,255,0.92); }
+  .info-body  { color: rgba(255,255,255,0.6); }
+
+  .rehearsal-card {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.07);
+  }
+
+  .rehearsal-card .detail-label { color: var(--sky-mid); }
+  .rehearsal-card .detail-value { color: rgba(255,255,255,0.88); }
+  .rehearsal-card .detail-sub   { color: rgba(255,255,255,0.55); }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <title>Portland DayTime Singers — New Site Coming Soon</title>
   <meta name="description" content="Portland DayTime Singers — a men's barbershop chorus serving greater Portland, Oregon. New website coming soon. Rehearsals every Monday morning.">
 
@@ -24,12 +24,12 @@
   <ul class="nav-links">
     <li><a href="#rehearsals">Rehearsals</a></li>
     <li><a href="#about">About Us</a></li>
-    <li><a href="mailto:info@pdtsingers.org">Contact</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#1b72757d745b6b7f6f6872757c7e69683574697c">Contact</a></li>
     <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
   </ul>
 </nav>
 
-<script type="module">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
   import { getSession } from './js/supabase.js'
   getSession().then(session => {
     if (session) {
@@ -39,50 +39,35 @@
 </script>
 
 <!-- HERO -->
-<section class="placeholder-hero">
-  <p class="placeholder-eyebrow">Portland, Oregon &nbsp;·&nbsp; Men's Barbershop Chorus &nbsp;·&nbsp; WBQA Lodge #18</p>
-  <h1 class="placeholder-title">Portland DayTime Singers</h1>
-  <p class="placeholder-subtitle">Bringing harmony and joy to those who need it most</p>
-  <div class="tagline-pill">Music, Fellowship &amp; Fun</div>
+<section class="site-hero">
 
-  <!-- SVG Skyline — mirrors the PDT logo -->
-  <svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg"
-       style="display:block; width:100%; max-width:820px; margin:0 auto;">
-    <ellipse cx="380" cy="115" rx="360" ry="85" fill="#b8d0e0" opacity="0.22"/>
-    <ellipse cx="380" cy="130" rx="300" ry="60" fill="#c8dce8" opacity="0.18"/>
-    <!-- Mt Hood -->
-    <polygon points="565,48 635,158 495,158" fill="#dde8ec" opacity="0.75"/>
-    <polygon points="565,48 582,84 548,84" fill="#ecf2f4" opacity="0.88"/>
-    <!-- Portland skyline -->
-    <rect x="295" y="96" width="24" height="66" rx="1" fill="#1a1a1a" opacity="0.86"/>
-    <rect x="325" y="75" width="20" height="87" rx="1" fill="#1a1a1a" opacity="0.88"/>
-    <rect x="351" y="84" width="28" height="78" rx="1" fill="#1a1a1a" opacity="0.86"/>
-    <rect x="385" y="100" width="18" height="62" rx="1" fill="#1a1a1a" opacity="0.84"/>
-    <rect x="409" y="82" width="22" height="80" rx="1" fill="#1a1a1a" opacity="0.87"/>
-    <rect x="437" y="93" width="16" height="69" rx="1" fill="#1a1a1a" opacity="0.83"/>
-    <!-- Left trees -->
-    <polygon points="72,160 94,100 116,160"  fill="#1a1a1a" opacity="0.90"/>
-    <polygon points="94,152 114,96 134,152"  fill="#1a1a1a" opacity="0.90"/>
-    <polygon points="50,160 68,112 86,160"   fill="#1a1a1a" opacity="0.85"/>
-    <polygon points="112,160 134,104 156,160" fill="#1a1a1a" opacity="0.87"/>
-    <polygon points="30,160 50,116 70,160"   fill="#1a1a1a" opacity="0.80"/>
-    <polygon points="140,162 160,108 180,162" fill="#1a1a1a" opacity="0.82"/>
-    <!-- Right trees -->
-    <polygon points="594,160 614,101 634,160" fill="#1a1a1a" opacity="0.90"/>
-    <polygon points="616,155 636,99 656,155"  fill="#1a1a1a" opacity="0.88"/>
-    <polygon points="572,160 590,110 608,160" fill="#1a1a1a" opacity="0.85"/>
-    <polygon points="638,158 658,106 678,158" fill="#1a1a1a" opacity="0.87"/>
-    <polygon points="658,162 678,112 698,162" fill="#1a1a1a" opacity="0.80"/>
-    <polygon points="680,160 700,116 720,160" fill="#1a1a1a" opacity="0.75"/>
-    <!-- Ground -->
-    <rect x="0" y="157" width="760" height="20" rx="3" fill="#1a1a1a" opacity="0.88"/>
-    <!-- Musical notes -->
-    <text x="212" y="76" font-size="20" fill="#1a1a1a" opacity="0.55" font-family="serif">♩</text>
-    <text x="176" y="63" font-size="15" fill="#1a1a1a" opacity="0.45" font-family="serif">♪</text>
-    <text x="530" y="68" font-size="18" fill="#1a1a1a" opacity="0.52" font-family="serif">♩</text>
-    <text x="553" y="54" font-size="13" fill="#1a1a1a" opacity="0.42" font-family="serif">♪</text>
-    <text x="574" y="72" font-size="15" fill="#1a1a1a" opacity="0.48" font-family="serif">♩</text>
-  </svg>
+  <!-- WBQA credential badge — top right corner -->
+  <a href="https://www.sppbsqsus.org" target="_blank" rel="noopener" class="hero-wbqa-badge" aria-label="Worldwide Barbershop Quartet Association — Lodge #18">
+    <img src="assets/images/WBQA_logo.png" alt="WBQA">
+  </a>
+
+  <!-- Hero content column -->
+  <div class="hero-inner">
+
+    <!-- Eyebrow above the words logo -->
+    <p class="hero-eyebrow">Portland, Oregon &nbsp;·&nbsp; Men's Barbershop Chorus &nbsp;·&nbsp; WBQA Lodge #18</p>
+
+    <!-- Words + notes — top logo piece -->
+    <img src="assets/images/PDT_logo_words_cropped.png"
+         alt="Portland DayTime Singers"
+         class="hero-words">
+
+    <!-- Subhead and tagline pill -->
+    <p class="hero-subhead">Bringing harmony and joy through community activity</p>
+    <div class="tagline-pill">Music, Fellowship &amp; Fun</div>
+
+    <!-- Cityscape — bottom logo piece, bleeds to edges -->
+    <img src="assets/images/PDT_logo_cityscape_cropped.png"
+         alt="Portland skyline, Mt Hood, and Pacific Northwest forest"
+         class="hero-cityscape">
+
+  </div>
+
 </section>
 
 <!-- COMING SOON BAND -->
@@ -98,15 +83,14 @@
     <p class="info-label">Who we are</p>
     <h2 class="info-title">Men who love to sing — and sing for those who need it most</h2>
     <p class="info-body">
-      Portland DayTime Singers is a men's barbershop chorus that performs free concerts
-      for seniors and residents of care facilities throughout greater Portland.
+      Portland DayTime Singers is a men's barbershop chorus that performs concerts for community events and in care facilities throughout greater Portland.
       We rehearse Monday mornings and welcome men of all experience levels —
       no audition required.
     </p>
     <p class="info-body">
       We are proud Lodge&nbsp;#18 of the Worldwide Barbershop Quartet Association.
     </p>
-    <a href="mailto:info@pdtsingers.org" class="btn-primary" style="margin-top: 1.2rem;">
+    <a href="/cdn-cgi/l/email-protection#e0898e868fa090849493898e87859293ce8f9287" class="btn-primary" style="margin-top: 1.2rem;">
       Get in touch &rarr;
     </a>
   </div>
@@ -154,7 +138,7 @@
       <ul>
         <li><a href="#about">About Us</a></li>
         <li><a href="#rehearsals">Rehearsals</a></li>
-        <li><a href="mailto:info@pdtsingers.org">Contact</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#cfa6a1a9a08fbfabbbbca6a1a8aabdbce1a0bda8">Contact</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -169,12 +153,4 @@
   <hr class="footer-rule">
   <div class="footer-bottom">
     <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
-    <div class="footer-badges">
-      <div class="footer-badge"><strong>PDT Singers</strong>Portland, OR</div>
-      <div class="footer-badge"><strong>WBQA Lodge #18</strong>Est. 2026</div>
-    </div>
-  </div>
-</footer>
-
-</body>
-</html>
+   

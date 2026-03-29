@@ -17,3 +17,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# GIMP working files
+*.xcf

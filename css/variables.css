@@ -57,3 +57,20 @@
   /* ── Transitions ─────────────────────────────────────────── */
   --transition: 0.2s ease;
 }
+
+/* ── Dark Mode Token Overrides ───────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cream:      #161410;   /* page background → near-black warm  */
+    --white:      #1e1c18;   /* cards, nav background               */
+    --text:       rgba(255,255,255,0.87);
+    --muted:      rgba(255,255,255,0.55);
+    --rule:       rgba(255,255,255,0.07);
+    --sky:        #0d1f2d;   /* hero dark top                       */
+    --sky-mid:    #7aaecc;   /* accents readable on dark            */
+    --sky-deep:   #5a90b0;   /* slightly muted deep sky             */
+    --sage:       #7aaa88;   /* green accent readable on dark       */
+    --gold:       #c4a24a;   /* unchanged — works on dark           */
+    /* --forest stays #1a1a1a — used for dark bands, correct in both modes */
+  }
+}

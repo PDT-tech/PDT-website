@@ -48,19 +48,8 @@ export async function getProfile () {
 }
 
 /**
- * Send a magic link to the given email address.
+ * Sign in with email + password.
  */
-export async function sendMagicLink (email) {
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${window.location.origin}/members/`
-    }
-  })
-  return { error }
-}
-
-/* ── PASSWORD LOGIN STUB (uncomment to enable) ─────────────── *
 export async function signInWithPassword (email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -69,6 +58,11 @@ export async function signInWithPassword (email, password) {
   return { data, error }
 }
 
+/**
+ * Sign up with email + password + full name.
+ * Profile row is created automatically by the DB trigger.
+ * Account will be inactive until Kevin approves it.
+ */
 export async function signUpWithPassword (email, password, fullName) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -77,7 +71,6 @@ export async function signUpWithPassword (email, password, fullName) {
   })
   return { data, error }
 }
-* ─────────────────────────────────────────────────────────── */
 
 /**
  * Sign out the current user.

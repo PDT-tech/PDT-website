@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="robots" content="noindex, nofollow">
   <title>Member Login — Portland DayTime Singers</title>
 
@@ -38,14 +38,15 @@
       <p class="login-subtitle">Portland DayTime Singers</p>
     </div>
 
-    <!-- STATE: Default — magic link form -->
+    <hr class="login-rule">
+
+    <!-- STATE: Default — login form -->
     <div id="state-form">
       <p class="login-instructions">
-        Enter your email address and we'll send you a link to sign in.
-        No password needed.
+        Sign in with your email address and password.
       </p>
 
-      <form id="magic-link-form" novalidate>
+      <form id="login-form" novalidate>
         <div class="form-group">
           <label for="email" class="form-label">Email address</label>
           <input
@@ -60,43 +61,27 @@
           <div class="form-error" id="email-error" hidden></div>
         </div>
 
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-input"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+          <div class="form-error" id="password-error" hidden></div>
+        </div>
+
         <button type="submit" class="btn-primary btn-full" id="submit-btn">
-          Send me a sign-in link
+          Sign in
         </button>
       </form>
 
-      <!-- PASSWORD LOGIN STUB (hidden — uncomment form + button to enable) -->
-      <!--
-      <div class="login-divider"><span>or</span></div>
-      <form id="password-form" novalidate>
-        <div class="form-group">
-          <label for="pw-email" class="form-label">Email address</label>
-          <input type="email" id="pw-email" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label for="pw-password" class="form-label">Password</label>
-          <input type="password" id="pw-password" class="form-input" required>
-        </div>
-        <button type="submit" class="btn-primary btn-full">Sign in with password</button>
-      </form>
-      -->
-
       <p class="login-help">
         Not a member yet? <a href="/join.html">Learn about joining PDT Singers &rarr;</a>
-      </p>
-    </div>
-
-    <!-- STATE: Success — link sent -->
-    <div id="state-success" hidden>
-      <div class="login-success-icon">✉️</div>
-      <h2 class="login-success-title">Check your email</h2>
-      <p class="login-success-body">
-        We sent a sign-in link to <strong id="sent-to-email"></strong>.
-        Click the link in that email to access the member portal.
-      </p>
-      <p class="login-success-note">
-        Didn't get it? Check your spam folder, or
-        <button class="btn-text" id="try-again-btn">try again</button>.
       </p>
     </div>
 
@@ -128,8 +113,7 @@
 </footer>
 
 <script type="module">
-  import { sendMagicLink } from './js/supabase.js'
-  import { getSession } from './js/supabase.js'
+  import { signInWithPassword, getSession } from './js/supabase.js'
 
   // Check URL params for special states
   const params = new URLSearchParams(window.location.search)
@@ -147,58 +131,69 @@
 
   // ── State management ───────────────────────────────────────
   function showState (state) {
-    const states = ['form', 'success', 'error', 'inactive']
+    const states = ['form', 'error', 'inactive']
     states.forEach(s => {
       document.getElementById(`state-${s}`).hidden = (s !== state)
     })
   }
 
-  // ── Magic link form ────────────────────────────────────────
-  const form      = document.getElementById('magic-link-form')
-  const emailInput = document.getElementById('email')
-  const submitBtn  = document.getElementById('submit-btn')
-  const emailError = document.getElementById('email-error')
+  // ── Login form ─────────────────────────────────────────────
+  const form          = document.getElementById('login-form')
+  const emailInput    = document.getElementById('email')
+  const passwordInput = document.getElementById('password')
+  const submitBtn     = document.getElementById('submit-btn')
+  const emailError    = document.getElementById('email-error')
+  const passwordError = document.getElementById('password-error')
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
-    const email = emailInput.value.trim()
+    const email    = emailInput.value.trim()
+    const password = passwordInput.value
 
     // Basic validation
+    let valid = true
     if (!email || !email.includes('@')) {
       emailError.textContent = 'Please enter a valid email address.'
       emailError.hidden = false
-      emailInput.focus()
-      return
+      valid = false
+    } else {
+      emailError.hidden = true
     }
 
-    emailError.hidden = true
-    submitBtn.textContent = 'Sending…'
+    if (!password) {
+      passwordError.textContent = 'Please enter your password.'
+      passwordError.hidden = false
+      valid = false
+    } else {
+      passwordError.hidden = true
+    }
+
+    if (!valid) return
+
+    submitBtn.textContent = 'Signing in…'
     submitBtn.disabled = true
 
-    const { error } = await sendMagicLink(email)
+    const { error } = await signInWithPassword(email, password)
 
     if (error) {
-      document.getElementById('error-message').textContent = error.message
+      document.getElementById('error-message').textContent =
+        error.message === 'Invalid login credentials'
+          ? 'Email or password not recognised. Please try again.'
+          : error.message
       showState('error')
+      submitBtn.textContent = 'Sign in'
+      submitBtn.disabled = false
       return
     }
 
-    // Success
-    document.getElementById('sent-to-email').textContent = email
-    showState('success')
+    // Success — redirect
+    const next = params.get('next') || '/members/'
+    window.location.href = next
   })
 
-  // ── Try again ──────────────────────────────────────────────
-  document.getElementById('try-again-btn').addEventListener('click', () => {
-    submitBtn.textContent = 'Send me a sign-in link'
-    submitBtn.disabled = false
-    showState('form')
-  })
-
+  // ── Retry ──────────────────────────────────────────────────
   document.getElementById('error-retry-btn').addEventListener('click', () => {
-    submitBtn.textContent = 'Send me a sign-in link'
-    submitBtn.disabled = false
     showState('form')
   })
 </script>

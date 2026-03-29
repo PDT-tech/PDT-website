@@ -76,8 +76,16 @@ repo is created.
 - [x] Auto-profile trigger on auth.users insert ✅
 - [x] Netlify env vars: SUPABASE_URL, SUPABASE_ANON_KEY ✅
 - [x] Write pdt-calendar-spec.md ✅
-- [ ] Build member auth flow (login page, Supabase JS client, auth-guard)
-- [ ] Build member calendar (priority — requested by Kevin)
+- [x] Build member auth flow (login page, Supabase JS client, auth-guard) ✅
+- [x] Build member dashboard (members/index.html) ✅
+- [x] Build Director's Notes blog (members/directors-notes.html) ✅
+- [x] Build Grand Poohbah's Prattlings blog (members/poohbah.html) ✅
+- [x] Build Events blog (members/events.html) ✅
+- [x] Build blog CSS (css/blog.css) ✅
+- [x] posts table + RLS policies deployed to Supabase ✅
+- [ ] Build member calendar (members/calendar.html)
+- [ ] Build Communications page (members/comms.html)
+- [ ] Build Music Library placeholder (members/music.html)
 - [ ] Build Home page (copy updates pending from group)
 - [ ] Build About Us page
 - [ ] Build Join Us page
@@ -288,4 +296,10 @@ pdtsingers/                  ← repo root
 - ✅ Netlify env vars configured: SUPABASE_URL, SUPABASE_ANON_KEY
 - ✅ pdt-calendar-spec.md written — full feature spec, schema, roles, UI, build order
 - ✅ Homepage copy updates pending — group discussing new mission statement language
-- ▶️ Next session: member auth flow (login page, Supabase JS client, auth-guard) → calendar frontend
+- ✅ Three blog pages built: Director's Notes, Grand Poohbah's Prattlings, Events
+- ✅ posts table + RLS policies deployed to Supabase
+- ✅ Role model finalized: admin, musical_director, events_editor, calendar_manager, member
+- ✅ auth-guard.js updated to fire pdt:profile-loaded event for role-based UI
+- ✅ Magic link auth troubleshooting — blocked by Supabase built-in mailer limitations;
+     will resolve once Google Workspace SMTP is wired into Supabase
+- ▶️ Next session: member calendar → comms → music library placeholder → public pages

@@ -79,11 +79,15 @@ retired once new site is live. DNS cutover at that time.
 
 | Page | URL | Key Content |
 |------|-----|-------------|
-| Member Home | `/members` | Dashboard, recent posts, quick links |
-| Leadership Blog | `/members/blog` | Posts from Chris, Kevin, and other leaders |
-| Communications | `/members/comms` | Announcements, meeting notes |
-| Resources | `/members/resources` | Sheet music, recordings, rehearsal schedules |
-| Login | `/login` | Email magic link; new accounts require admin approval |
+| Member Home | `/members/` | Dashboard, recent posts from all blogs, quick links |
+| Director's Notes | `/members/directors-notes.html` | Blog — Chris Gabel |
+| Grand Poohbah's Prattlings | `/members/poohbah.html` | Blog — Kevin Bier |
+| Events Blog | `/members/events.html` | Performances, sing-outs, social event announcements |
+| Communications | `/members/comms.html` | Announcements, meeting notes |
+| Chorus Calendar | `/members/calendar.html` | Rehearsal + performance schedule; absence tracking |
+| Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; hosted on Google Drive. **Blocked on Workspace — placeholder nav link at launch** |
+| Resources | `/members/resources.html` | Additional documents, links |
+| Login | `/login.html` | Email magic link; new accounts require admin approval |
 
 ### 4.3 Utility
 - **404** — Friendly error page in site style
@@ -112,8 +116,9 @@ retired once new site is live. DNS cutover at that time.
 ### 5c. Email
 - Group email via **Google Workspace for Nonprofits** (Google Groups)
 - Free for 501(c)(3) orgs — apply via TechSoup
-- ⚠️ **Blocked**: Requires IRS nonprofit approval letter — expected imminently at Chris Gabel's
-  address. Does NOT block Phase 1 or Phase 2 site build.
+- ✅ **IRS 501(c)(3) exemption letter now in hand** (confirmed at 3/26/26 BoD meeting)
+- **Action required**: Kevin to share IRS documentation with Google to set up Workspace
+- Groups.io for Friends of PDT email list — tabled until Google Workspace established
 
 ### 5d. Social Media
 | Platform | Plan | Notes |
@@ -178,6 +183,8 @@ Palette drawn directly from the PDT logo watercolor wash.
 | `PDT_logo_color_1.jpeg` | Color variant 1 | Hero, marketing |
 | `PDT_logo_color_2.jpeg` | Color variant 2 | Alternate placements |
 | `WBQA_logo.png` | WBQA badge (black on transparent) | Footer, About page |
+| *(pending)* | Vectorized PDT logo files (SVG/EPS) | From Mercedes Gibson via Dropbox — Grant coordinating |
+| *(pending)* | "Words only" logo variant | Text element only — from Mercedes Gibson |
 
 WBQA logo also available as `WBQA_logo.avif` (424×434px, RGBA, black on transparent — works on any background).
 
@@ -228,7 +235,15 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
 - **BHS relationship**: Not affiliated, but warm collegial relationship. State clearly on About page.
 - **Sheet music**: Dropbox now; migrate to Google Workspace after nonprofit approval
 - **Duane Lundsten memorial**: TBD pending group discussion. Reserve placeholder in design.
-  No action needed before Phase 1.
+  No action needed before Phase 1. Memorial plaque also being procured (Kevin).
+- **Performance fee policy**: $150 for standard 40-minute performance; free for
+  philanthropic, recruitment, and mission-aligned performances
+- **Current repertoire**: 8 songs (just reached goal with addition of God Bless America)
+- **Christmas repertoire**: 10–12 songs planned; Chris starting with songs members know
+- **Lodge phone**: TBD — Kevin has phone to donate, Mint Mobile ~$180/yr.
+  Business cards cannot be printed until resolved.
+- **Social media**: Website prioritized first; Facebook deferred. May hire young
+  freelancer for social media management.
 
 ---
 
@@ -239,18 +254,18 @@ Active in the barbershop world since the 1990s; has sung in multiple award-winni
 Previously directed the **Tualatin Valley Harmony Masters** in Hillsboro, OR. Had the original
 vision for a daytime chorus; founding director of PDT Singers.
 
-### Kevin Bier — Grand Poohbah (Admin Director) & Co-Founder
+### Kevin Bier — President, Grand Poohbah (Admin Director) & Co-Founder
 Began his barbershop journey in Boise, Idaho in 1980. Directed choruses in Boise and Boulder,
 CO; on the founding team for the **Denver Tech Chorus**. He and Chris most recently sang
 together in the quartet **7th Heaven** for nine years. Handles administration and serves as
-assistant director.
+assistant director. Formal corporate title: **President**.
 
 ### Other Leadership
-| Name | Title | Role |
+| Name | Title | Corporate Role |
 |------|-------|------|
-| Grant Gibson | Nearly-Grand Poohbah | Leadership support |
-| Sam Vigil | Poohbah-at-Large | Marketing |
-| Ray Heller | Poohbah-at-Large | Chorus contact / outreach |
+| Grant Gibson | Nearly-Grand Poohbah | Secretary/Treasurer |
+| Sam Vigil | Poohbah-at-Large | Board Member at Large — Marketing |
+| Ray Heller | Poohbah-at-Large | Board Member at Large — Chorus contact / outreach |
 | Duane Lundsten † | Poohbah of Complex Stuff | In memoriam — our tech guy, passed March 2026 |
 
 ---
@@ -304,20 +319,25 @@ assistant director.
 ## 11. Open Questions
 
 - [x] Domain: pdtsingers.org at helpinghosting.com; GreenGeeks placeholder to be retired
-- [x] Director name: **Chris Gabel** (confirmed)
+- [x] Director name: **Chris Gabel** (German spelling confirmed)
 - [x] Voice parts: TTBB barbershop chorus
-- [x] Logos: all in hand
+- [x] Logos: current raster versions in hand; vectorized + "words only" pending from Mercedes Gibson
 - [x] Rehearsal details: confirmed (see §7.3)
-- [x] Charter: Lodge #18, WBQA Convention 2026, San Antonio TX
+- [x] Charter: Lodge #18, WBQA Convention 2026, San Antonio TX (certificate reissue pending)
 - [x] Photos: group photos available
-- [x] Social media: Facebook + Instagram at launch; YouTube Phase 2
+- [x] Social media: website first; Facebook deferred; may hire freelancer
 - [x] Tagline: "Music, Fellowship & Fun"
-- [ ] **GitHub repo URL** — Kevin creating now
+- [x] Performance fee: $150 standard; free for mission-aligned performances
+- [x] GitHub repo: **https://github.com/kevin36v/PDT-website**
+- [x] IRS 501(c)(3) letter: **in hand** — Google Workspace application now unblocked
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Who is the second site maintainer (post-launch)?
 - [ ] Should member Blog allow comments, or read-only initially?
-- [ ] Duane Lundsten memorial — form and placement (pending group discussion)
-- [ ] IRS nonprofit approval letter received? (triggers Google Workspace application)
+- [ ] Duane Lundsten memorial — form/placement TBD (pending group discussion)
+- [ ] Lodge phone decision — affects contact info and business cards
+- [ ] Grant's prioritized website landing page elements — input pending
+- [ ] Vectorized logo files — pending delivery from Mercedes Gibson via Dropbox
+- [ ] Groups.io for Friends of PDT — tabled until Google Workspace established
 
 ---
 

@@ -175,10 +175,14 @@ pdtsingers/                  ← repo root
 ├── login.html
 ├── 404.html
 ├── members/
-│   ├── index.html           ← Member dashboard (Supabase-gated)
-│   ├── blog.html
-│   ├── comms.html
-│   └── resources.html
+│   ├── index.html              ← Member dashboard (Supabase-gated)
+│   ├── directors-notes.html    ← Blog — Chris Gabel
+│   ├── poohbah.html            ← Blog — Kevin Bier ("Prattling from the Grand Poohbah")
+│   ├── events.html             ← Events blog (performances, sing-outs, socials)
+│   ├── comms.html              ← Communications / announcements
+│   ├── calendar.html           ← Chorus calendar + absence tracking
+│   ├── music.html              ← Music library (Google Drive; blocked on Workspace)
+│   └── resources.html          ← Additional resources
 ├── css/
 │   ├── reset.css
 │   ├── variables.css        ← All CSS custom properties (palette, type)
@@ -224,6 +228,8 @@ pdtsingers/                  ← repo root
 ## Notes & Gotchas
 
 - PDT Singers is **NOT BHS** — must be stated on About page; some visitors will assume BHS affiliation
+- **Three member blogs**: Director's Notes (Chris), Prattling from the Grand Poohbah (Kevin), Events blog
+- **Music Library**: song catalog with PDF sheet music + MP3 learning tracks per song; files on Google Drive (currently Dropbox); migrate once Workspace live. Needs `songs` table in Supabase + Google Drive integration. Placeholder nav link at launch.
 - Duane Lundsten (Poohbah of Complex Stuff) passed March 2026 — memorial placeholder in design; no action before Phase 1
 - WBQA lodge list page is nearly empty — no central directory driving traffic to lodge sites; PDT SEO work is important
 - Supabase free tier is generous but has a 1-week inactivity pause policy — member activity should prevent this

@@ -43,8 +43,8 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 0 complete → Phase 1 (Foundation) ready to start once GitHub
-repo is created.
+**Current phase:** Phase 1 in progress — placeholder site live on Netlify; DNS
+propagating to pdtsingers.org. Next: build Home, About, and Join Us pages.
 
 ---
 
@@ -59,17 +59,17 @@ repo is created.
 - [x] Review homepage comp (PDT_Singers_Homepage_Comp.html)
 - [x] Resolve director name spelling (Chris Gabel ✓)
 - [x] Confirm all logos in hand
-- [ ] Get GitHub repo URL from Kevin
+- [x] Get GitHub repo URL from Kevin → github.com/kevin36v/PDT-website
 
 ### Phase 1 — Foundation / Scaffolding (current)
-- [ ] Kevin creates GitHub repo → share URL
-- [ ] Scaffold full file/folder structure in repo
-- [ ] Set up Netlify project, connect to GitHub repo
-- [ ] Configure custom domain (pdtsingers.org → Netlify)
+- [x] Kevin creates GitHub repo → github.com/kevin36v/PDT-website
+- [x] Scaffold full file/folder structure in repo
+- [x] Set up Netlify project, connect to GitHub repo
+- [x] Configure custom domain (pdtsingers.org → Netlify) ⏳ DNS propagating — check whatsmydns.net for dns1.p07.nsone.net
+- [x] Deploy skeleton site to verify pipeline end-to-end ✅ live on Netlify
 - [ ] Set up Supabase project (auth + DB schema)
 - [ ] Create base HTML template (head, nav, footer, meta)
 - [ ] Create base CSS (variables, reset, typography, layout)
-- [ ] Deploy skeleton site to verify pipeline end-to-end
 - [ ] Apply for Google Workspace for Nonprofits (once IRS letter arrives)
 - [ ] Build Home page
 - [ ] Build About Us page
@@ -139,7 +139,7 @@ repo is created.
 - [x] Group photos: available
 - [x] Social media plan: Facebook + Instagram launch; YouTube Phase 2
 - [x] Tagline: "Music, Fellowship & Fun"
-- [ ] **GitHub repo URL** — Kevin creating now
+- [x] **GitHub repo URL** — github.com/kevin36v/PDT-website
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Second site maintainer — who?
 - [ ] Member Blog: allow comments or read-only initially?
@@ -213,6 +213,16 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 2 — 2026-03-28
+- Created GitHub repo (kevin36v/PDT-website, private)
+- Pushed all project docs: pdt-requirements.md, pdt-session-context.md, PDT_Singers_Site_Brief.md, homepage comp (design/)
+- Built and pushed Phase 1 scaffold: index.html, netlify.toml, css/{reset,variables,main}.css, js/main.js
+- Connected repo to Netlify; placeholder site live ✅
+- Configured pdtsingers.org custom domain on Netlify ⏳ DNS propagating
+- Fixed Firefox/Linux dark mode flash: hardcoded hex colors with !important, forced-color-adjust: none, color-scheme: light only
+- Once pdtsingers.org shows dns1.p07.nsone.net on whatsmydns.net → Trevor closes GreenGeeks
+- **Next session:** Build Home, About, and Join Us pages (Phase 1)
 
 ### Session 1 — 2026-03-28
 - Defined project goals, audiences, site structure, tech stack

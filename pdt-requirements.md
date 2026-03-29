@@ -1,7 +1,7 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-03-28  
-**Status:** Draft — substantially complete; pending GitHub repo URL  
+**Last updated:** 2026-03-29  
+**Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
 ---
@@ -87,7 +87,7 @@ retired once new site is live. DNS cutover at that time.
 | Chorus Calendar | `/members/calendar.html` | Rehearsal + performance schedule; absence tracking |
 | Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; hosted on Google Drive. **Blocked on Workspace — placeholder nav link at launch** |
 | Resources | `/members/resources.html` | Additional documents, links |
-| Login | `/login.html` | Email magic link; new accounts require admin approval |
+| Login | `/login.html` | Email + password; accounts created by admin; inactive accounts blocked |
 
 ### 4.3 Utility
 - **404** — Friendly error page in site style
@@ -97,15 +97,27 @@ retired once new site is live. DNS cutover at that time.
 ## 5. Functional Requirements
 
 ### 5a. Authentication & Member Area
-- Login via **Supabase** — magic link / email (no password to forget)
+- Login via **Supabase** — email + password (switched from magic link 2026-03-29;
+  see note below)
 - Admin approval workflow:
   1. Prospective member submits interest form on /join
   2. Admin (Kevin / Grand Poohbah) receives email notification
-  3. Admin approves in Supabase dashboard → member receives login link
-  4. Approved member accesses /members area
-  5. Unapproved visitors see "Pending approval" message
+  3. Admin creates account in Supabase dashboard and sets `is_active = true`
+  4. Member receives credentials and logs in at /login
+  5. Unapproved/inactive visitors see "Account not active" message
 - Role-based: approved members see /members; others do not
-- No self-registration — all accounts require admin approval
+- No self-registration — all accounts require admin creation
+
+**⚠️ Auth note — magic link removed 2026-03-29:**
+Supabase free tier allows only 2 magic link emails/month to non-domain addresses.
+Since most members use personal email (Gmail, Comcast, etc.), magic link is not viable
+on the free tier. Switched to email + password.
+
+**TODO (Phase 3 polish): Offer both password AND magic link at login**
+Supabase supports both simultaneously. Stubs are already present in `supabase.js`
+and `login.html`. When Google Workspace SMTP is wired into Supabase the email quota
+restriction goes away — at that point restore magic link as an optional path so
+members can choose whichever they prefer.
 
 ### 5b. Content Management
 - Public content: hand-edited HTML files, updated by maintainer

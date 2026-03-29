@@ -250,6 +250,25 @@ pdtsingers/                  ← repo root
 
 ## Session History
 
+### Session 2 — 2026-03-29
+- ✅ Hero redesigned: replaced SVG skyline with split-logo design
+  - PDT words/notes logo (top) + cityscape panorama (bottom, full-bleed)
+  - mix-blend-mode: multiply (light) / screen (dark) for white-background PNGs
+  - WBQA badge: solid dark background (#1a1a2e), 186px logo, top-right corner
+  - Eyebrow line above words logo; tagline pill replaces highlight strips; CTAs removed
+  - Subhead updated: "Bringing harmony and joy through community activity"
+- ✅ Dark mode: @media (prefers-color-scheme: dark) added to variables.css + main.css
+- ✅ meta color-scheme updated to "light dark"
+- ✅ Netlify auto-publish disabled — push to git freely; manual deploy only
+- ✅ Local dev confirmed: python3 -m http.server 8080 from ~/PDT-website
+- ✅ assets/images/ folder created; logos renamed to underscore convention
+- ✅ Auth switched from magic link to email + password
+  - Supabase "Confirm email" disabled
+  - supabase.js: sendMagicLink removed; signInWithPassword + signUpWithPassword activated
+  - login.html: rewritten with email + password form; magic link UI removed
+- ✅ Music Fairy test account created (is_active=true, role=member)
+- ✅ pdt-requirements.md updated: auth section, login page description, TODO for magic link restore
+
 ### Session 1 — 2026-03-28
 - Defined project goals, audiences, site structure, tech stack
 - Created initial pdt-requirements.md and pdt-session-context.md
@@ -300,6 +319,10 @@ pdtsingers/                  ← repo root
 - ✅ posts table + RLS policies deployed to Supabase
 - ✅ Role model finalized: admin, musical_director, events_editor, calendar_manager, member
 - ✅ auth-guard.js updated to fire pdt:profile-loaded event for role-based UI
-- ✅ Magic link auth troubleshooting — blocked by Supabase built-in mailer limitations;
-     will resolve once Google Workspace SMTP is wired into Supabase
-- ▶️ Next session: member calendar → comms → music library placeholder → public pages
+- ✅ Magic link auth removed — Supabase free tier limits to 2 emails/month to
+     non-domain addresses; most members use personal email. Switched to email + password.
+- ✅ Supabase "Confirm email" disabled — admin controls access via is_active flag
+- ✅ Music Fairy test account created in Supabase (is_active=true, role=member)
+- ▶️ TODO (Phase 3): restore magic link alongside password when Google Workspace
+     SMTP is wired into Supabase — stubs in supabase.js and login.html
+- ▶️ Next session: test Music Fairy login → member dashboard → then public pages (About, Join)

@@ -23,3 +23,6 @@ Thumbs.db
 
 # Local env override (never commit)
 env.local.js
+
+# Supabase CLI temp files
+supabase/.temp/

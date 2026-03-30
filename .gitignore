@@ -20,3 +20,6 @@ Thumbs.db
 
 # GIMP working files
 *.xcf
+
+# Local env override (never commit)
+env.local.js

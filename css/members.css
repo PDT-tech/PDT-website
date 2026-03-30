@@ -253,7 +253,7 @@
 /* ── Role-based visibility (set by auth-guard.js) ──────────── */
 .pdt-admin-only,
 .pdt-manager-only {
-  display: none; /* shown by auth-guard.js for appropriate roles */
+  display: none !important; /* shown by auth-guard.js for appropriate roles */
 }
 
 /* ── Members Page Base ─────────────────────────────────────── */

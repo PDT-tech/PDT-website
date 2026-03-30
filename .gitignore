@@ -26,3 +26,5 @@ env.local.js
 
 # Supabase CLI temp files
 supabase/.temp/
+*.kate-swp
+.*.kate-swp

@@ -86,7 +86,7 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [x] Music Fairy test account — full CRUD on events blog verified ✅
 - [x] env.local.js local dev solution — Supabase creds injected locally, gitignored ✅
 - [x] Netlify auto-publish disabled — manual deploy only, credits preserved ✅
-- [ ] Build member calendar (members/calendar.html)
+- [x] Build member calendar (members/calendar.html) ✅
 - [ ] Build Communications page (members/comms.html)
 - [ ] Build Music Library placeholder (members/music.html)
 - [ ] Build Home page (copy updates pending from group)
@@ -295,7 +295,25 @@ pdtsingers/                  ← repo root
   - posts_select_author: new — authors see own unpublished posts
   - posts_select_authenticated: confirmed — published posts to all members
 - ✅ Full CRUD verified on events blog as Music Fairy (events_editor)
-- ▶️ Next session: comms.html → calendar.html → music.html placeholder → public pages (About, Join)
+- ✅ Chorus calendar built (members/calendar.html + css/calendar.css):
+  - Monthly grid with color-coded event chips by type
+  - Prev/next month navigation; Today button
+  - Event detail panel: date, time, location, notes, who's out
+  - Absence mark/unmark with optional note (future events only)
+  - Admin/calendar_manager: create/edit/delete events
+  - Cancelled events shown struck-through
+- ✅ Supabase: unique constraint on events(event_type, event_date)
+- ✅ Supabase CLI installed via brew; project linked
+- ✅ generate-rehearsals Edge Function deployed and verified
+  - Generates 12 rolling Monday rehearsals
+  - Seeded with 12 correct Mondays (Apr 6 – Jun 22 2026)
+- ✅ Music Fairy role tested as calendar_manager for event creation
+- ⚠️ Calendar polish TODO (Phase 3):
+  - Move prev/next arrows to flank calendar grid (not in title bar)
+  - Detail panel should not show on page load without event selected
+  - "I won't be there" from dashboard Next Rehearsal card (not just calendar)
+  - Black button fixes
+- ▶️ Next session: comms.html → music.html placeholder → public pages (About, Join)
 
 ### Session 1 — 2026-03-28
 - Defined project goals, audiences, site structure, tech stack

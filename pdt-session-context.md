@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-03-28  
+**Last updated:** 2026-03-29  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -29,7 +29,7 @@ be retired at DNS cutover when new site launches.
 **Tech stack:**
 - Hand-coded HTML5 / CSS3 / vanilla JS — no frameworks, no WordPress
 - Hosted on **Netlify** (free tier) — GitHub CI/CD deploy
-- Auth via **Supabase** (magic link, admin approval workflow, member content storage)
+- Auth via **Supabase** (email + password, admin controls access via is_active flag, member content storage)
 - Forms via **Netlify Forms**
 - Source control on **GitHub** (repo URL TBD — Kevin creating)
 - Email via **Google Workspace for Nonprofits** (blocked on IRS letter; doesn't block build)
@@ -43,8 +43,7 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 0 complete → Phase 1 (Foundation) ready to start once GitHub
-repo is created.
+**Current phase:** Phase 1 active — member portal functional, public pages next.
 
 ---
 
@@ -83,6 +82,10 @@ repo is created.
 - [x] Build Events blog (members/events.html) ✅
 - [x] Build blog CSS (css/blog.css) ✅
 - [x] posts table + RLS policies deployed to Supabase ✅
+- [x] Switch auth from magic link to email + password ✅
+- [x] Music Fairy test account — full CRUD on events blog verified ✅
+- [x] env.local.js local dev solution — Supabase creds injected locally, gitignored ✅
+- [x] Netlify auto-publish disabled — manual deploy only, credits preserved ✅
 - [ ] Build member calendar (members/calendar.html)
 - [ ] Build Communications page (members/comms.html)
 - [ ] Build Music Library placeholder (members/music.html)
@@ -141,6 +144,11 @@ repo is created.
 | 2026-03-28 | SVG skyline as hero illustration | Mirrors PDT logo; no photo dependency at launch |
 | 2026-03-28 | Netlify + Supabase confirmed as final hosting/auth stack | Evaluated LAMP/VPS (DigitalOcean, Hetzner, Neoserve) — rejected: unnecessary ops burden, no matching use case, free tier is genuinely sufficient. Decision is final. |
 | 2026-03-28 | BHS non-affiliation stated on About page | Visitors may assume BHS connection; important to clarify |
+| 2026-03-29 | Switched from magic link to email + password | Supabase free tier: 2 magic link emails/month to non-domain addresses — incompatible with member base using personal email |
+| 2026-03-29 | Hero redesigned: split logo (words top + cityscape bottom) | Logo anchors hero; mix-blend-mode handles white-background PNGs |
+| 2026-03-29 | Netlify auto-publish disabled | Preserve 300 credits/month; manual deploy only when phase complete |
+| 2026-03-29 | env.local.js for local dev credentials | Gitignored; Supabase creds injected at runtime; production uses Netlify env vars |
+| 2026-03-29 | role-visibility via window.__PDT_USER check | pdt:profile-loaded event has timing race; direct check + fallback is reliable |
 
 ---
 
@@ -245,6 +253,11 @@ pdtsingers/                  ← repo root
 - Netlify Forms free tier: 100 submissions/month — more than sufficient for this site
 - Google Workspace nonprofit application takes 2–4 weeks via TechSoup after IRS letter in hand
 - Director's name is **Gabel** (German spelling) — confirmed by Kevin. Earlier comp had "Gable" which was the typo.
+- **Local dev**: `cd ~/PDT-website && python3 -m http.server 8080` — keep browser dev tools open with cache disabled
+- **env.local.js**: gitignored local file that sets window.__PDT_ENV with Supabase URL + publishable key. Must be present in repo root for local dev. Never commit.
+- **Role visibility pattern**: use `applyRoleVisibility()` checking `window.__PDT_USER` directly, falling back to `pdt:profile-loaded` event — direct event listener alone has a timing race condition
+- **Supabase posts RLS policies**: insert/update/delete are role+blog_type scoped; select has two policies — `posts_select_authenticated` (published only, all members) + `posts_select_admin` (all posts, admin only) + `posts_select_author` (own posts, any role)
+- **TODO (Phase 3)**: restore magic link alongside password when Google Workspace SMTP wired into Supabase — stubs in supabase.js and login.html
 
 ---
 
@@ -266,8 +279,23 @@ pdtsingers/                  ← repo root
   - Supabase "Confirm email" disabled
   - supabase.js: sendMagicLink removed; signInWithPassword + signUpWithPassword activated
   - login.html: rewritten with email + password form; magic link UI removed
-- ✅ Music Fairy test account created (is_active=true, role=member)
+- ✅ Music Fairy test account created (is_active=true, role=member initially, tested as events_editor)
 - ✅ pdt-requirements.md updated: auth section, login page description, TODO for magic link restore
+- ✅ env.local.js local dev solution implemented and gitignored
+- ✅ env.local.js script tag added to all member pages
+- ✅ Modal overlay fix: HTML hidden attr → modal-hidden CSS class; X and Cancel now work
+- ✅ Role visibility timing fix: applyRoleVisibility() pattern with window.__PDT_USER check
+- ✅ auth-guard.js: display='' → display='block' for role elements
+- ✅ blog.css: .blog-header .btn-primary — readable green button on dark header
+- ✅ members.css: body .pdt-*-only selectors without !important
+- ✅ events.html: date field added to New/Edit Event Post modal
+- ✅ Supabase posts RLS policies fixed and verified:
+  - posts_delete_by_role: role+blog_type scoped (was admin-only)
+  - posts_select_admin: admins see all posts including drafts
+  - posts_select_author: new — authors see own unpublished posts
+  - posts_select_authenticated: confirmed — published posts to all members
+- ✅ Full CRUD verified on events blog as Music Fairy (events_editor)
+- ▶️ Next session: comms.html → calendar.html → music.html placeholder → public pages (About, Join)
 
 ### Session 1 — 2026-03-28
 - Defined project goals, audiences, site structure, tech stack
@@ -325,4 +353,4 @@ pdtsingers/                  ← repo root
 - ✅ Music Fairy test account created in Supabase (is_active=true, role=member)
 - ▶️ TODO (Phase 3): restore magic link alongside password when Google Workspace
      SMTP is wired into Supabase — stubs in supabase.js and login.html
-- ▶️ Next session: test Music Fairy login → member dashboard → then public pages (About, Join)
+- ▶️ Next session: (continued in Session 2)

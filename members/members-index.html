@@ -219,29 +219,44 @@
       .gte('event_date', today)
       .order('event_date', { ascending: true })
       .limit(1)
-      .single()
+      .maybeSingle()  // returns null instead of 406 when no rows found
 
-    if (error || !data) return
+    const dateEl = document.getElementById('next-rehearsal-date')
 
-    // Format date nicely
-    const date = new Date(data.event_date + 'T12:00:00') // noon to avoid TZ issues
-    const formatted = date.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric'
-    })
-    document.getElementById('next-rehearsal-date').textContent = formatted
+    if (error) {
+      // Fall through to client-side calculation
+    }
 
-    // Load absences for this event
-    const { data: absences } = await supabase
-      .from('absences')
-      .select('note, profiles(full_name)')
-      .eq('event_id', data.id)
+    if (data) {
+      // Use database event
+      const date = new Date(data.event_date + 'T12:00:00')
+      dateEl.textContent = date.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric'
+      })
 
-    if (absences && absences.length > 0) {
-      const names = absences.map(a =>
-        a.profiles.full_name + (a.note ? ` (${a.note})` : '')
-      ).join(', ')
-      document.getElementById('absences-list').textContent = names
-      document.getElementById('next-rehearsal-absences').hidden = false
+      // Load absences for this event
+      const { data: absences } = await supabase
+        .from('absences')
+        .select('note, profiles(full_name)')
+        .eq('event_id', data.id)
+
+      if (absences && absences.length > 0) {
+        const names = absences.map(a =>
+          a.profiles.full_name + (a.note ? ` (${a.note})` : '')
+        ).join(', ')
+        document.getElementById('absences-list').textContent = names
+        document.getElementById('next-rehearsal-absences').hidden = false
+      }
+    } else {
+      // No DB events — calculate next Monday client-side
+      const now = new Date()
+      const day = now.getDay() // 0=Sun, 1=Mon...
+      const daysUntilMonday = day === 1 ? 7 : (8 - day) % 7
+      const nextMonday = new Date(now)
+      nextMonday.setDate(now.getDate() + daysUntilMonday)
+      dateEl.textContent = nextMonday.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric'
+      })
     }
   }
 

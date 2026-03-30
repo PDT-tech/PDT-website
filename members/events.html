@@ -134,14 +134,19 @@
   let currentPostId = null
 
   // Show edit controls to events_editor AND admin
-  document.addEventListener('pdt:profile-loaded', (e) => {
-    const profile = e.detail
+  function applyRoleVisibility () {
+    const profile = window.__PDT_USER
+    if (!profile) {
+      document.addEventListener('pdt:profile-loaded', () => applyRoleVisibility())
+      return
+    }
     if (profile.role === 'events_editor' || profile.role === 'admin') {
       document.querySelectorAll('.pdt-events-editor-only').forEach(el => {
-        el.style.display = ''
+        el.style.display = 'block'
       })
     }
-  })
+  }
+  applyRoleVisibility()
 
   async function loadPosts () {
     const { data, error } = await supabase

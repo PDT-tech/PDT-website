@@ -48,14 +48,14 @@ async function initAuthGuard () {
   // Show admin-only elements if user is admin
   if (profile.role === 'admin') {
     document.querySelectorAll('.pdt-admin-only').forEach(el => {
-      el.style.display = ''
+      el.style.display = 'block'
     })
   }
 
   // Show calendar-manager elements
   if (profile.role === 'admin' || profile.role === 'calendar_manager') {
     document.querySelectorAll('.pdt-manager-only').forEach(el => {
-      el.style.display = ''
+      el.style.display = 'block'
     })
   }
 

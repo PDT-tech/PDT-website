@@ -125,14 +125,19 @@
 
   // ── Show director-only elements ────────────────────────────
   // auth-guard handles admin; we add musical_director here
-  document.addEventListener('pdt:profile-loaded', (e) => {
-    const profile = e.detail
+  function applyRoleVisibility () {
+    const profile = window.__PDT_USER
+    if (!profile) {
+      document.addEventListener('pdt:profile-loaded', () => applyRoleVisibility())
+      return
+    }
     if (profile.role === 'musical_director' || profile.role === 'admin') {
       document.querySelectorAll('.pdt-director-only').forEach(el => {
-        el.style.display = ''
+        el.style.display = 'block'
       })
     }
-  })
+  }
+  applyRoleVisibility()
 
   // ── Load posts ─────────────────────────────────────────────
   async function loadPosts () {

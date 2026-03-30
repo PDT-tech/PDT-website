@@ -41,6 +41,18 @@
   color: rgba(255,255,255,0.55);
 }
 
+/* Button in blog header — needs light treatment on dark background */
+.blog-header .btn-primary {
+  background: #4a7a4c;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.2);
+  white-space: nowrap;
+}
+
+.blog-header .btn-primary:hover {
+  background: #6a9ab8;
+}
+
 /* ── Blog Layout ───────────────────────────────────────────── */
 .blog-layout {
   max-width: var(--max-width);

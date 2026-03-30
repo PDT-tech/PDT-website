@@ -251,11 +251,11 @@
 }
 
 /* ── Role-based visibility (set by auth-guard.js) ──────────── */
-.pdt-admin-only,
-.pdt-manager-only,
-.pdt-director-only,
-.pdt-events-editor-only {
-  display: none !important; /* shown by JS for appropriate roles */
+body .pdt-admin-only,
+body .pdt-manager-only,
+body .pdt-director-only,
+body .pdt-events-editor-only {
+  display: none; /* shown by JS for appropriate roles */
 }
 
 /* ── Members Page Base ─────────────────────────────────────── */

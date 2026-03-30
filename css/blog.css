@@ -199,6 +199,17 @@
   padding: var(--space-lg);
 }
 
+.post-modal-overlay.modal-hidden {
+  display: none;
+}
+
+/* Readable primary button for dark backgrounds */
+.btn-forest {
+  background: #2c5f2e !important;
+  color: #ffffff !important;
+}
+.btn-forest:hover { background: #6a9ab8 !important; }
+
 .post-modal {
   background: #ffffff;
   border-radius: 6px;

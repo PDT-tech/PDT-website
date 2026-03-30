@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/members.css">
   <link rel="stylesheet" href="../css/blog.css">
+  <script src="/env.local.js"></script>
 </head>
 <body class="members-page">
 
@@ -73,7 +74,7 @@
     </div>
   </div>
 
-  <div class="post-modal-overlay" id="modal-overlay" hidden>
+  <div class="post-modal-overlay modal-hidden" id="modal-overlay">
     <div class="post-modal">
       <div class="post-modal-header">
         <h2 class="post-modal-title" id="modal-title">New Event Post</h2>
@@ -85,6 +86,10 @@
           <label class="form-label" for="post-title">Title</label>
           <input type="text" id="post-title" class="form-input" required
                  placeholder="e.g. Sing-Out at Marquis Gardens — April 12">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="post-event-date">Event date <span class="form-hint">(optional)</span></label>
+          <input type="date" id="post-event-date" class="form-input">
         </div>
         <div class="form-group">
           <label class="form-label" for="post-excerpt">
@@ -106,7 +111,7 @@
         </div>
         <div class="post-modal-actions">
           <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
-          <button type="submit" class="btn-primary" id="modal-save">Save</button>
+          <button type="submit" class="btn-primary btn-forest" id="modal-save">Save</button>
         </div>
       </form>
     </div>
@@ -211,14 +216,15 @@
     document.getElementById('modal-title').textContent = post?.id ? 'Edit Event Post' : 'New Event Post'
     document.getElementById('post-id').value = post?.id || ''
     document.getElementById('post-title').value = post?.title || ''
+    document.getElementById('post-event-date').value = post?.event_date || ''
     document.getElementById('post-excerpt').value = post?.excerpt || ''
     document.getElementById('post-body').value = post?.body || ''
     document.getElementById('post-published').checked = post ? post.published : true
-    document.getElementById('modal-overlay').hidden = false
+    document.getElementById('modal-overlay').classList.remove('modal-hidden')
   }
 
   function closeModal () {
-    document.getElementById('modal-overlay').hidden = true
+    document.getElementById('modal-overlay').classList.add('modal-hidden')
     document.getElementById('post-form').reset()
   }
 
@@ -234,13 +240,14 @@
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true
 
-    const id        = document.getElementById('post-id').value
-    const title     = document.getElementById('post-title').value.trim()
-    const excerpt   = document.getElementById('post-excerpt').value.trim() || null
-    const body      = document.getElementById('post-body').value.trim()
-    const published = document.getElementById('post-published').checked
-    const payload   = { blog_type: BLOG_TYPE, title, excerpt, body, published,
-                        author_id: window.__PDT_USER?.id }
+    const id         = document.getElementById('post-id').value
+    const title      = document.getElementById('post-title').value.trim()
+    const event_date = document.getElementById('post-event-date').value || null
+    const excerpt    = document.getElementById('post-excerpt').value.trim() || null
+    const body       = document.getElementById('post-body').value.trim()
+    const published  = document.getElementById('post-published').checked
+    const payload    = { blog_type: BLOG_TYPE, title, event_date, excerpt, body, published,
+                         author_id: window.__PDT_USER?.id }
 
     let error
     if (id) {

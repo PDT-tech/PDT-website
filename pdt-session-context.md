@@ -244,7 +244,7 @@ pdtsingers/                  ← repo root
 **pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete  
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
-**Music folder ID:** `1qTgo3DKtQFtQ-CDwiJozxsBAEpQiQBpA`  
+**Music folder ID:** stored in Netlify env vars as `GOOGLE_DRIVE_MUSIC_FOLDER_ID`
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  

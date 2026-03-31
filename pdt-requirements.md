@@ -1,6 +1,6 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-03-29  
+**Last updated:** 2026-03-30  
 **Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
@@ -85,7 +85,7 @@ retired once new site is live. DNS cutover at that time.
 | Events Blog | `/members/events.html` | Performances, sing-outs, social event announcements |
 | Communications | `/members/comms.html` | Announcements, meeting notes |
 | Chorus Calendar | `/members/calendar.html` | Rehearsal + performance schedule; absence tracking |
-| Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; hosted on Google Drive. **Blocked on Workspace — placeholder nav link at launch** |
+| Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; served via Netlify Function + Google Drive service account. See §5g. |
 | Resources | `/members/resources.html` | Additional documents, links |
 | Login | `/login.html` | Email + password; accounts created by admin; inactive accounts blocked |
 
@@ -123,7 +123,9 @@ members can choose whichever they prefer.
 - Public content: hand-edited HTML files, updated by maintainer
 - Member content: stored in Supabase (blog posts, announcements) — rendered via JS fetch
 - **Decap CMS** (optional, Phase 3+): lets non-technical admin post without touching code
-- Sheet music/resources: on Dropbox now; migrate to Google Drive once nonprofit approval received
+- Sheet music/resources: on Dropbox now; files being migrated to Google Drive (Kevin's
+  personal account, `pdtsingers.music@gmail.com` created as staging account but not used —
+  files live in Kevin's Drive under `.PDT/Music/`)
 
 ### 5c. Email
 - Group email via **Google Workspace for Nonprofits** (Google Groups)
@@ -153,6 +155,86 @@ members can choose whichever they prefer.
 - XML sitemap + Google Search Console setup at launch
 - Mobile-responsive design
 - WCAG AA accessibility target
+
+### 5g. Music Library — Architecture & Rationale
+
+**Decision: Netlify Serverless Function proxy with Google Drive service account (Option C)**
+
+The Music Library serves sheet music PDFs and MP3 learning tracks from Google Drive to
+authenticated members. Three approaches were considered and rejected before settling on
+the current architecture:
+
+**Option A — "Anyone with the link" public sharing: REJECTED**
+Making the Drive folder publicly accessible (even with an obscure link) exposes licensed
+sheet music and learning tracks to anyone who discovers the URL. This creates known legal
+liability under copyright law. Unacceptable.
+
+**Option B — OAuth / member Google login: REJECTED**
+Requiring members to authenticate with Google introduces multiple problems for this
+membership: many members use ISP email addresses (Comcast, Xfinity, etc.) that are not
+Google accounts; members would need to create a Google account linked to their personal
+email just to access sheet music; the email address a member uses for Google may differ
+from the address on their PDT website account, creating a mismatch the admin must
+resolve; this creates ongoing IT help desk burden inappropriate for a volunteer chorus.
+
+**Option B variant — issue pdtsingers.org Workspace accounts to all members: REJECTED**
+Theoretically clean, but depends on members actually adopting and consistently using
+their PDT email address. In practice, members forget passwords, ignore new accounts,
+and continue using personal email. Same mismatch and help desk problems as Option B.
+
+**Option C — Netlify Function proxy with service account (CHOSEN)**
+A Netlify serverless function (`netlify/functions/drive-music.js`) authenticates to
+Google Drive using a service account — a non-human Google identity with read-only
+access to the Music folder only. Members call the function (authenticated via Supabase
+session), the function fetches file listings from Drive, and returns them. Members never
+interact with Google at all. No OAuth popup, no Google account required, no email
+mismatch possible.
+
+**Why this is right for PDT Singers:**
+- Members just log into the PDT website — the music is there
+- Zero Google friction for members who are 40–75 years old
+- Credentials never exposed to browser
+- Adding a new song = drop files in the Drive folder, done
+- No DB changes needed (Drive is source of truth for song list)
+- Well within Netlify free tier (125k function calls/month vs. ~30/day actual)
+- Portable: the function is plain JS, not Netlify-proprietary
+
+**Implementation details:**
+- Service account: `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
+- GCP project: `pdt-singers-music-library`
+- Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
+- Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
+- Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
+- Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` (Music folder
+  must be temporarily set to "Anyone with link" for local testing — revert after)
+- Production: page calls `/.netlify/functions/drive-music` which holds all credentials
+- **Future migration path**: when Google Workspace for Nonprofits is active, update the
+  service account's Drive share to point to the Workspace Drive. No website code changes.
+
+**Drive folder structure:**
+```
+.PDT/ (Kevin's Google Drive — restricted)
+└── Music/ (shared with service account — Viewer)
+    ├── Ain't Misbehavin'/        ← performance repertoire
+    ├── God Bless America/        ← performance repertoire
+    ├── If There's Anybody Here (From Out Of Town)/
+    ├── Irish Blessing (Mel Knight)/   ← rehearsal only
+    ├── Just in Time/
+    ├── Just Men Singing Our Song/     ← rehearsal only
+    ├── Let The Rest Of The World Go By/
+    ├── Ride the Chariot/
+    ├── That's An Irish Lullaby/
+    ├── Who Told You/
+    └── You're As Welcome As The Flowers In May/  ← rehearsal only
+```
+
+Each song folder contains: one PDF (sheet music) + MP3 learning tracks (naming varies
+by song — some have simple Tenor/Lead/Bari/Bass tracks, some have Dominant/Left/Removed
+variants). The page sorts the member's own voice part tracks to the top and offers
+"My Tracks + Sheet Music" one-click download alongside "Download All."
+
+No Supabase `songs` table — Drive folder list is the source of truth. Adding a song
+requires only creating a new folder in Drive and dropping files in.
 
 ---
 
@@ -245,15 +327,16 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
 - **Voice placement**: Not an audition — sing Happy Birthday in comfortable range.
   All men who love to sing are welcome.
 - **BHS relationship**: Not affiliated, but warm collegial relationship. State clearly on About page.
-- **Sheet music**: Dropbox now; migrate to Google Workspace after nonprofit approval
+- **Sheet music**: In Kevin's Google Drive (`.PDT/Music/`); served via Netlify Function +
+  service account. Migrate to Google Workspace Drive when Workspace is live — no code changes.
 - **Duane Lundsten memorial**: TBD pending group discussion. Reserve placeholder in design.
   No action needed before Phase 1. Memorial plaque also being procured (Kevin).
 - **Performance fee policy**: $150 for standard 40-minute performance; free for
   philanthropic, recruitment, and mission-aligned performances
 - **Current repertoire**: 8 songs (just reached goal with addition of God Bless America)
 - **Christmas repertoire**: 10–12 songs planned; Chris starting with songs members know
-- **Lodge phone**: TBD — Kevin has phone to donate, Mint Mobile ~$180/yr.
-  Business cards cannot be printed until resolved.
+- **Lodge phone**: Kevin has iPhone 11 ready; Mint Mobile ~$180/yr. Decoupled from website
+  dependencies — can proceed independently.
 - **Social media**: Website prioritized first; Facebook deferred. May hire young
   freelancer for social media management.
 
@@ -290,7 +373,9 @@ assistant director. Formal corporate title: **President**.
 | Interactivity | Vanilla JavaScript | Minimal JS needed; no framework required |
 | Auth & DB | **Supabase** (free tier) | Member login, admin approval workflow, blog/post storage |
 | Hosting | Netlify (free tier) | Free SSL, GitHub deploy, custom domain, Forms included |
+| Serverless Functions | Netlify Functions (free tier) | Drive proxy for Music Library; 125k calls/month free |
 | Forms | Netlify Forms | No backend needed, free tier sufficient |
+| Music Library | Google Drive + Netlify Function | Service account proxy; see §5g for full rationale |
 | CMS (optional) | Decap CMS | Non-technical blog posting — Phase 3+ |
 | Repo | GitHub | Version control, Netlify CI/CD integration |
 | Email | Google Workspace for Nonprofits | Free via TechSoup; blocked on IRS letter |
@@ -302,29 +387,38 @@ assistant director. Formal corporate title: **President**.
 
 ## 10. Build Phases
 
-### Phase 1 — Foundation (Weeks 1–2)
-- Set up GitHub repo and Netlify hosting; connect pdtsingers.org DNS
-- Apply for Google Workspace for Nonprofits (once IRS letter in hand)
-- Set up Supabase project for auth
-- Design system: CSS variables, fonts, base components
-- Build Home, About Us, and Join Us pages
+### Phase 1 — Foundation (current)
+- ✅ GitHub repo, Netlify hosting, pdtsingers.org DNS
+- ✅ Supabase project, DB schema, auth
+- ✅ Member portal: login, dashboard, three blogs, calendar, Music Library
+- ✅ Netlify env vars: Supabase + Google Drive credentials
+- ✅ Netlify Function: Drive proxy (`netlify/functions/drive-music.js`)
+- ✅ Edge Function: env var injector updated for Drive credentials
+- [ ] `members/comms.html` — Communications page
+- [ ] Public pages: Home (copy updates), About Us, Join Us
 
-### Phase 2 — Public Site Complete (Weeks 3–4)
-- Build Performances, Our Music, Friends of PDT, and Contact pages
-- Integrate Netlify Forms for contact, join interest, booking inquiry
-- Upload group photos, finalize all public copy
-- SEO: meta tags, XML sitemap, Google Search Console
+### Phase 2 — Public Site Complete
+- [ ] Performances page (+ Netlify Form: booking inquiry)
+- [ ] Our Music page
+- [ ] Friends of PDT page
+- [ ] Contact page (+ Netlify Form)
+- [ ] Upload group photos
+- [ ] Finalize all public copy
+- [ ] SEO: meta tags, XML sitemap, Google Search Console
 
-### Phase 3 — Member Portal (Weeks 5–6)
-- Implement Supabase auth: login, registration, admin approval flow
-- Build /members dashboard, blog, comms, and resources pages
-- Test end-to-end: new member applies → admin approves → member logs in
-- Optionally add Decap CMS for non-technical blog posting
+### Phase 3 — Polish & Launch
+- [ ] Mobile responsiveness audit
+- [ ] Accessibility audit (WCAG AA)
+- [ ] Cross-browser testing
+- [ ] Final content review
+- [ ] Populate Drive Music folders with files from Dropbox
 
-### Phase 4 — Handover & Training
-- Document: how to post a blog, add a member, update the schedule
-- Onboard second site maintainer
-- Connect social media accounts to Friends page
+### Phase 4 — Post-Launch
+- [ ] Google Workspace for Nonprofits activation
+- [ ] Migrate Music Library Drive share to Workspace Drive
+- [ ] Social media accounts live → update Friends page links
+- [ ] Onboard second site maintainer
+- [ ] Document update procedures
 
 ---
 
@@ -342,14 +436,17 @@ assistant director. Formal corporate title: **President**.
 - [x] Performance fee: $150 standard; free for mission-aligned performances
 - [x] GitHub repo: **https://github.com/kevin36v/PDT-website**
 - [x] IRS 501(c)(3) letter: **in hand** — Google Workspace application now unblocked
+- [x] Music Library architecture: Netlify Function + service account (see §5g)
+- [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile path, proceed independently
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Who is the second site maintainer (post-launch)?
 - [ ] Should member Blog allow comments, or read-only initially?
 - [ ] Duane Lundsten memorial — form/placement TBD (pending group discussion)
-- [ ] Lodge phone decision — affects contact info and business cards
 - [ ] Grant's prioritized website landing page elements — input pending
 - [ ] Vectorized logo files — pending delivery from Mercedes Gibson via Dropbox
 - [ ] Groups.io for Friends of PDT — tabled until Google Workspace established
+- [ ] Music Library local dev testing — Music folder must be temporarily set to
+      "Anyone with link" for local API key calls to work; revert after testing
 
 ---
 
@@ -361,3 +458,4 @@ assistant director. Formal corporate title: **President**.
 - Contact, Join Us, and booking forms submitting via Netlify Forms
 - Google Workspace for Nonprofits email active (post IRS letter)
 - At least one member blog post and one announcement visible to logged-in members
+- Music Library functional: members can browse songs, download tracks and sheet music

@@ -28,3 +28,4 @@ env.local.js
 supabase/.temp/
 *.kate-swp
 .*.kate-swp
+pdt-singers-music-library-*.json

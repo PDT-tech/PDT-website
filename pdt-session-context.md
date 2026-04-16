@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-03-31  
+**Last updated:** 2026-04-15  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -44,8 +44,7 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 1 active — member portal functional, Music Library live,
-comms.html and public pages (About, Join) next. Nav logo fix deployed.
+**Current phase:** Phase 1 active — member portal complete, comms.html live, six public placeholder pages deployed, magic link login in progress.
 
 ---
 
@@ -95,16 +94,16 @@ comms.html and public pages (About, Join) next. Nav logo fix deployed.
 - [x] Set up Google Drive + service account for Music Library ✅
 - [x] Fix nav logo oversized on music.html — added `.nav-logo img` height constraint to main.css ✅
 - [ ] Fix env.local.js console error in production (nosniff header blocking onerror suppression)
-- [ ] Build Communications page (members/comms.html)
+- [x] Build Communications page (members/comms.html) ✅
 - [ ] Build Home page (copy updates pending from group)
-- [ ] Build About Us page
-- [ ] Build Join Us page
+- [x] Build About Us page (placeholder) ✅
+- [x] Build Join Us page (placeholder) ✅
 
 ### Phase 2 — Public Site Complete
-- [ ] Build Performances page (+ Netlify Form: booking inquiry)
-- [ ] Build Our Music page
-- [ ] Build Friends of PDT page
-- [ ] Build Contact page (+ Netlify Form)
+- [x] Build Performances page — placeholder live ✅
+- [x] Build Our Music page — placeholder live ✅
+- [x] Build Friends of PDT page — placeholder live ✅
+- [x] Build Contact page — placeholder live ✅
 - [ ] Upload group photos
 - [ ] Finalize all public copy
 - [ ] SEO: meta tags, XML sitemap, Google Search Console
@@ -156,6 +155,8 @@ comms.html and public pages (About, Join) next. Nav logo fix deployed.
 | 2026-03-30 | No Supabase songs table | Google Drive folder list is source of truth; adding a song = add a folder in Drive |
 | 2026-03-30 | Music Library local dev uses API key + direct Drive calls | Service account JWT signing requires Node.js crypto — not available in browser; Netlify function handles production; local dev temporarily requires "Anyone with link" on Music folder |
 | 2026-03-30 | Lodge phone decoupled from website dependencies | Kevin has iPhone 11 + Mint Mobile path; can proceed independently of website timeline |
+| 2026-04-15 | Switched auth back to magic link (Resend SMTP) | Resend provides reliable transactional email; pdtsingers.org domain verified; Supabase SMTP wired in. Simpler UX — members never manage passwords. Password auth to be disabled once magic link confirmed. |
+| 2026-04-15 | Music Library migrated to Workspace Drive | president@pdtsingers.org is now the Drive owner; folder ID updated in Netlify env vars. Service account and proxy unchanged. |
 
 ---
 
@@ -255,7 +256,7 @@ pdtsingers/                  ← repo root
 **pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete  
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
-**Music folder ID:** `1qTgo3DKtQFtQ-CDwiJozxsBAEpQiQBpA`  
+**Music folder ID:** `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a` (Workspace Drive, president@pdtsingers.org — updated Session 4)  
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
@@ -302,6 +303,24 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 4 — 2026-04-15
+
+- ✅ members/comms.html built and deployed
+- ✅ Google Drive Music Library migrated to Workspace Drive (president@pdtsingers.org), folder ID: 1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a
+- ✅ GOOGLE_DRIVE_MUSIC_FOLDER_ID updated in Netlify env vars
+- ✅ Member portal consistency pass: directors-notes rebuilt, music.html nav fixed, "Home" link fixed across all member pages, Resources dead link removed, Cloudflare email obfuscation fixed via Cache-Control: no-transform in netlify.toml
+- ✅ Six public placeholder pages built: about.html, performances.html, join.html, music.html, friends.html, contact.html
+- ✅ Public nav restructured to full 7-link structure with real URLs
+- ✅ Resend account created, pdtsingers.org domain verified, wired into Supabase SMTP
+- ▶️ IN PROGRESS: Magic link login — login.html needs redesign to magic-link-only using supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } })
+- ▶️ TODO: Customize Supabase magic link email template (subject + body) to be warm and on-brand
+- ▶️ TODO: Test magic link end-to-end with a real email
+- ▶️ TODO: Build Tech Support / Maintainer's Guide document
+- ▶️ TODO: Disable password auth once magic link is confirmed working
+- ▶️ TODO: Check is_active default in profiles table
+- ▶️ TODO: Deploy public pages (commit abea34a pushed but verify live)
+- ▶️ TODO: Populate real content on all public placeholder pages
 
 ### Session 3 addendum — 2026-03-31 (Tuesday morning)
 - ✅ Nav logo oversized on music.html — fixed by adding `.nav-logo img { height: 48px; width: auto; }` to main.css; deployed

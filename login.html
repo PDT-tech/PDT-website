@@ -165,7 +165,10 @@
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false }
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: 'https://pdtsingers.org/login.html'
+      }
     })
 
     if (error) {

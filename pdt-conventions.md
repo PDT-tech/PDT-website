@@ -56,6 +56,11 @@ Exceptions that are intentionally dark or colored in their resting state:
 **When generating any new page, verify button default state before committing.** Do not
 commit a page where buttons require hover to show their intended color.
 
+**Dark mode trap — `var(--white)`:** In dark mode `--white` overrides to `#1e1c18`
+(near-black). Never use `var(--white)` for text on a permanently-dark background such as
+`.page-hero` (dark forest gradient) or `.site-footer`. Use `#ffffff` or a hardcoded
+`rgba(255,255,255,…)` instead so the color is immune to the dark mode token override.
+
 ---
 
 ## Git & Commits

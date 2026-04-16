@@ -16,7 +16,8 @@ reference the variable name — never the literal value.
 const folderId = window.__PDT_ENV?.GOOGLE_DRIVE_MUSIC_FOLDER_ID
 
 // WRONG — will trigger Netlify secret scanning and fail the build
-const folderId = '1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a'
+// (value below is illustrative only — not a real secret)
+const folderId = 'aB3xK9mNpQ7rTvWy2ZdLhE5cFgJuRsX1'
 ```
 
 Secrets live in exactly two places:
@@ -25,6 +26,11 @@ Secrets live in exactly two places:
 
 This applies to: Supabase URL, Supabase anon key, Google Drive folder ID, Google
 Drive API key, Google service account JSON. No exceptions.
+
+**Never write real secret values in documentation or code examples.** Use synthetic
+placeholders (e.g. `aB3xK9mNpQ7r`) and add a comment noting the value is illustrative
+only — the real value is in Netlify (Project configuration → Environment variables)
+or the relevant service dashboard.
 
 ---
 

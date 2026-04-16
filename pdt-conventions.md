@@ -38,8 +38,14 @@ or the relevant service dashboard.
 
 **All buttons and CTA links must have a visible, correctly-styled default/resting state.**
 Never rely on hover to reveal the intended color. The correct resting style for `.btn-primary`
-and `.nav-cta` is a light/sky background (`var(--sky)`) with dark text (`var(--forest)`).
-Hover may deepen to `var(--sky-deep)` with white text.
+and `.nav-cta` is a light/sky background with dark text (`var(--forest)`). Hover deepens to
+`var(--sky-deep)` with white text.
+
+**Dark mode trap:** `var(--sky)` is overridden to `#0d1f2d` (near-black) in dark mode for
+the hero gradient. Never use `var(--sky)` as a button background in CSS — it will appear
+dark on dark-mode systems. The dark mode section of `main.css` explicitly overrides button
+backgrounds to `var(--sky-mid)`, which is tuned for dark mode readability. Light mode uses
+`var(--sky)` via the default rule; dark mode uses `var(--sky-mid)` via the media query override.
 
 Exceptions that are intentionally dark or colored in their resting state:
 - `.btn-forest` — dark forest background, used for modal save/confirm actions

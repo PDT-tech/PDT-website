@@ -643,4 +643,23 @@ body {
   .rehearsal-card .detail-label { color: var(--sky-mid); }
   .rehearsal-card .detail-value { color: rgba(255,255,255,0.88); }
   .rehearsal-card .detail-sub   { color: rgba(255,255,255,0.55); }
+
+  /* Buttons — --sky overrides to near-black in dark mode for the hero
+     gradient, so buttons must explicitly use --sky-mid instead */
+  .btn-primary {
+    background: var(--sky-mid);
+    color: var(--forest);
+  }
+  .btn-primary:hover {
+    background: var(--sky-deep);
+    color: var(--white);
+  }
+  .nav-cta {
+    background: var(--sky-mid) !important;
+    color: var(--forest) !important;
+  }
+  .nav-cta:hover {
+    background: var(--sky-deep) !important;
+    color: var(--white) !important;
+  }
 }

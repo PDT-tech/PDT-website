@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,9..40,400;1,9..40,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/variables.css">
@@ -42,10 +42,10 @@
 
     <hr class="login-rule">
 
-    <!-- STATE: Default — login form -->
+    <!-- STATE: Default — email input -->
     <div id="state-form">
       <p class="login-instructions">
-        Sign in with your email address and password.
+        Enter your email and we'll send you a secure login link — no password needed.
       </p>
 
       <form id="login-form" novalidate>
@@ -63,36 +63,26 @@
           <div class="form-error" id="email-error" hidden></div>
         </div>
 
-        <div class="form-group">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="form-input"
-            placeholder="••••••••"
-            autocomplete="current-password"
-            required
-          >
-          <div class="form-error" id="password-error" hidden></div>
-        </div>
-
         <button type="submit" class="btn-primary btn-full" id="submit-btn">
-          Sign in
+          Send me a login link
         </button>
-      </form>
 
-      <p class="login-help">
-        Not a member yet? <a href="/join.html">Learn about joining PDT Singers &rarr;</a>
-      </p>
+        <div class="form-error" id="submit-error" hidden></div>
+      </form>
     </div>
 
-    <!-- STATE: Error -->
-    <div id="state-error" hidden>
-      <div class="login-error-icon">⚠️</div>
-      <h2 class="login-error-title">Something went wrong</h2>
-      <p class="login-error-body" id="error-message"></p>
-      <button class="btn-primary" id="error-retry-btn">Try again</button>
+    <!-- STATE: Confirmation -->
+    <div id="state-confirmation" hidden>
+      <div class="login-confirm-icon">✉️</div>
+      <h2 class="login-confirm-title">Check your email</h2>
+      <p class="login-confirm-body">
+        We sent a login link to <strong id="confirm-email"></strong>.
+        Click the link in that email to sign in — it's good for a few minutes.
+      </p>
+      <p class="login-confirm-help">
+        Didn't get it? Check your spam folder, or
+        <a href="#" id="try-different-email">try a different email address</a>.
+      </p>
     </div>
 
     <!-- STATE: Inactive member -->
@@ -115,10 +105,11 @@
 </footer>
 
 <script type="module">
-  import { signInWithPassword, getSession } from './js/supabase.js'
+  import { supabase, getSession } from './js/supabase.js'
+
+  const params = new URLSearchParams(window.location.search)
 
   // Check URL params for special states
-  const params = new URLSearchParams(window.location.search)
   if (params.get('reason') === 'inactive') {
     showState('inactive')
   }
@@ -131,72 +122,77 @@
     }
   })
 
+  // Handle magic link callback: when Supabase processes the token in the URL
+  // hash, it fires SIGNED_IN — this is the reliable redirect path for magic links.
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      const next = params.get('next') || '/members/'
+      window.location.href = next
+    }
+  })
+
   // ── State management ───────────────────────────────────────
   function showState (state) {
-    const states = ['form', 'error', 'inactive']
+    const states = ['form', 'confirmation', 'inactive']
     states.forEach(s => {
       document.getElementById(`state-${s}`).hidden = (s !== state)
     })
   }
 
   // ── Login form ─────────────────────────────────────────────
-  const form          = document.getElementById('login-form')
-  const emailInput    = document.getElementById('email')
-  const passwordInput = document.getElementById('password')
-  const submitBtn     = document.getElementById('submit-btn')
-  const emailError    = document.getElementById('email-error')
-  const passwordError = document.getElementById('password-error')
+  const form        = document.getElementById('login-form')
+  const emailInput  = document.getElementById('email')
+  const submitBtn   = document.getElementById('submit-btn')
+  const emailError  = document.getElementById('email-error')
+  const submitError = document.getElementById('submit-error')
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
-    const email    = emailInput.value.trim()
-    const password = passwordInput.value
+    const email = emailInput.value.trim()
 
     // Basic validation
-    let valid = true
     if (!email || !email.includes('@')) {
       emailError.textContent = 'Please enter a valid email address.'
       emailError.hidden = false
-      valid = false
-    } else {
-      emailError.hidden = true
+      return
     }
+    emailError.hidden = true
+    submitError.hidden = true
 
-    if (!password) {
-      passwordError.textContent = 'Please enter your password.'
-      passwordError.hidden = false
-      valid = false
-    } else {
-      passwordError.hidden = true
-    }
-
-    if (!valid) return
-
-    submitBtn.textContent = 'Signing in…'
+    submitBtn.textContent = 'Sending…'
     submitBtn.disabled = true
 
-    const { error } = await signInWithPassword(email, password)
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false }
+    })
 
     if (error) {
-      document.getElementById('error-message').textContent =
-        error.message === 'Invalid login credentials'
-          ? 'Email or password not recognised. Please try again.'
-          : error.message
-      showState('error')
-      submitBtn.textContent = 'Sign in'
+      submitError.textContent = 'Something went wrong. Please try again or contact Kevin.'
+      submitError.hidden = false
+      submitBtn.textContent = 'Send me a login link'
       submitBtn.disabled = false
       return
     }
 
-    // Success — redirect
-    const next = params.get('next') || '/members/'
-    window.location.href = next
+    // Show confirmation — Supabase returns success even for unknown emails
+    // (with shouldCreateUser: false it simply won't send anything), so we
+    // show the same confirmation either way to avoid user enumeration.
+    document.getElementById('confirm-email').textContent = email
+    showState('confirmation')
   })
 
-  // ── Retry ──────────────────────────────────────────────────
-  document.getElementById('error-retry-btn').addEventListener('click', () => {
+  // ── Try a different email ──────────────────────────────────
+  document.getElementById('try-different-email').addEventListener('click', (e) => {
+    e.preventDefault()
+    emailInput.value = ''
+    submitBtn.textContent = 'Send me a login link'
+    submitBtn.disabled = false
+    emailError.hidden = true
+    submitError.hidden = true
     showState('form')
+    emailInput.focus()
   })
 </script>
 

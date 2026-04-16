@@ -49,6 +49,7 @@ export async function getProfile () {
 
 /**
  * Sign in with email + password.
+ * TODO: remove once magic link auth is confirmed working in production.
  */
 export async function signInWithPassword (email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({

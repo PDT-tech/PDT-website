@@ -192,6 +192,45 @@
   text-align: center;
 }
 
+/* ── Magic link confirmation state ────────────────────────── */
+.login-confirm-icon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+.login-confirm-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+.login-confirm-body {
+  font-size: var(--text-sm);
+  color: #5a5a5a;
+  line-height: 1.7;
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+.login-confirm-body strong {
+  color: #2a2a2a;
+}
+
+.login-confirm-help {
+  font-size: var(--text-sm);
+  color: #5a5a5a;
+  text-align: center;
+}
+
+.login-confirm-help a {
+  color: #6a9ab8;
+  text-decoration: underline;
+}
+
 /* ── Login Footer ──────────────────────────────────────────── */
 .login-footer {
   text-align: center;

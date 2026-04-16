@@ -1,6 +1,6 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-03-31  
+**Last updated:** 2026-04-15  
 **Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
@@ -87,7 +87,7 @@ retired once new site is live. DNS cutover at that time.
 | Chorus Calendar | `/members/calendar.html` | Rehearsal + performance schedule; absence tracking |
 | Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; served via Netlify Function + Google Drive service account. See §5g. |
 | Resources | `/members/resources.html` | Additional documents, links |
-| Login | `/login.html` | Email + password; accounts created by admin; inactive accounts blocked |
+| Login | `/login.html` | Magic link only; accounts created by admin; inactive accounts blocked |
 
 ### 4.3 Utility
 - **404** — Friendly error page in site style
@@ -108,24 +108,19 @@ retired once new site is live. DNS cutover at that time.
 - Role-based: approved members see /members; others do not
 - No self-registration — all accounts require admin creation
 
-**⚠️ Auth note — magic link removed 2026-03-29:**
-Supabase free tier allows only 2 magic link emails/month to non-domain addresses.
-Since most members use personal email (Gmail, Comcast, etc.), magic link is not viable
-on the free tier. Switched to email + password.
-
-**TODO (Phase 3 polish): Offer both password AND magic link at login**
-Supabase supports both simultaneously. Stubs are already present in `supabase.js`
-and `login.html`. When Google Workspace SMTP is wired into Supabase the email quota
-restriction goes away — at that point restore magic link as an optional path so
-members can choose whichever they prefer.
+**Auth note — updated 2026-04-15:**
+Magic link is the sole login method. Password auth is being retired. Resend (resend.com)
+handles transactional email (magic links) via SMTP wired into Supabase. Sends from
+noreply@pdtsingers.org. Resend domain verified April 2026. `shouldCreateUser: false`
+ensures only admin-created accounts receive magic links — strangers get nothing.
 
 ### 5b. Content Management
 - Public content: hand-edited HTML files, updated by maintainer
 - Member content: stored in Supabase (blog posts, announcements) — rendered via JS fetch
 - **Decap CMS** (optional, Phase 3+): lets non-technical admin post without touching code
-- Sheet music/resources: on Dropbox now; files being migrated to Google Drive (Kevin's
-  personal account, `pdtsingers.music@gmail.com` created as staging account but not used —
-  files live in Kevin's Drive under `.PDT/Music/`)
+- Sheet music/resources: files live in Google Workspace Drive (`president@pdtsingers.org`)
+  under `Music/` (folder ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`). The `pdtsingers.music@gmail.com`
+  staging account is retired. Files still need to be copied from Dropbox into Drive.
 
 ### 5c. Email
 - Group email via **Google Workspace for Nonprofits** (Google Groups)
@@ -211,16 +206,17 @@ mismatch possible.
 - Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
+  (updated to Workspace Drive value `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a` — April 2026)
 - Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` (Music folder
   must be temporarily set to "Anyone with link" for local testing — revert after)
 - Production: page calls `/.netlify/functions/drive-music` which holds all credentials
-- **Future migration path**: when Google Workspace for Nonprofits is active, update the
-  service account's Drive share to point to the Workspace Drive. No website code changes.
+- ✅ **Drive migration complete**: Music folder now in Workspace Drive (`president@pdtsingers.org`).
+  Service account share updated. No code changes were required.
 
 **Drive folder structure:**
 ```
-.PDT/ (Kevin's Google Drive — restricted)
-└── Music/ (shared with service account — Viewer)
+Music/ (president@pdtsingers.org Workspace Drive — shared with service account, Viewer)
+       (folder ID: 1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a)
     ├── Ain't Misbehavin'/        ← performance repertoire
     ├── God Bless America/        ← performance repertoire
     ├── If There's Anybody Here (From Out Of Town)/
@@ -338,8 +334,9 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
 - **Voice placement**: Not an audition — sing Happy Birthday in comfortable range.
   All men who love to sing are welcome.
 - **BHS relationship**: Not affiliated, but warm collegial relationship. State clearly on About page.
-- **Sheet music**: In Kevin's Google Drive (`.PDT/Music/`); served via Netlify Function +
-  service account. Migrate to Google Workspace Drive when Workspace is live — no code changes.
+- **Sheet music**: In Google Workspace Drive (`president@pdtsingers.org`, `Music/` folder,
+  ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`); served via Netlify Function + service account.
+  Drive migration complete as of April 2026 — no code changes were required.
 - **Duane Lundsten memorial**: TBD pending group discussion. Reserve placeholder in design.
   No action needed before Phase 1. Memorial plaque also being procured (Kevin).
 - **Performance fee policy**: $150 for standard 40-minute performance; free for
@@ -405,8 +402,13 @@ assistant director. Formal corporate title: **President**.
 - ✅ Netlify env vars: Supabase + Google Drive credentials
 - ✅ Netlify Function: Drive proxy (`netlify/functions/drive-music.js`)
 - ✅ Edge Function: env var injector updated for Drive credentials
-- [ ] `members/comms.html` — Communications page
-- [ ] Public pages: Home (copy updates), About Us, Join Us
+- ✅ `members/comms.html` — Communications page
+- ✅ Public pages: about.html, performances.html, join.html, music.html, friends.html, contact.html (placeholder content)
+- ✅ Public nav restructured to full 7-link structure with real URLs
+- ✅ Resend SMTP wired into Supabase (noreply@pdtsingers.org, domain verified April 2026)
+- [ ] Magic link login — login.html redesign (in progress)
+- [ ] Magic link email template customization (subject + body, warm and on-brand)
+- [ ] Tech Maintainer's Guide
 
 ### Phase 2 — Public Site Complete
 - [ ] Performances page (+ Netlify Form: booking inquiry)
@@ -426,7 +428,7 @@ assistant director. Formal corporate title: **President**.
 
 ### Phase 4 — Post-Launch
 - [ ] Google Workspace for Nonprofits activation
-- [ ] Migrate Music Library Drive share to Workspace Drive
+- ✅ Migrate Music Library Drive share to Workspace Drive — complete April 2026
 - [ ] Social media accounts live → update Friends page links
 - [ ] Onboard second site maintainer
 - [ ] Document update procedures

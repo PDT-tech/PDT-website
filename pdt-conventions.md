@@ -34,6 +34,24 @@ or the relevant service dashboard.
 
 ---
 
+## Buttons & CTAs
+
+**All buttons and CTA links must have a visible, correctly-styled default/resting state.**
+Never rely on hover to reveal the intended color. The correct resting style for `.btn-primary`
+and `.nav-cta` is a light/sky background (`var(--sky)`) with dark text (`var(--forest)`).
+Hover may deepen to `var(--sky-deep)` with white text.
+
+Exceptions that are intentionally dark or colored in their resting state:
+- `.btn-forest` — dark forest background, used for modal save/confirm actions
+- `.btn-danger` — red background, used for destructive actions
+- `#submit-btn` — gold, login page only
+- `.cal-nav-btn` / `.cal-today-btn` — white-on-dark, live inside the dark calendar header band
+
+**When generating any new page, verify button default state before committing.** Do not
+commit a page where buttons require hover to show their intended color.
+
+---
+
 ## Git & Commits
 
 **Every file delivered for git check-in gets a complete commit message. No exceptions.**

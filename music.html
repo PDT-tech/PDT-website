@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Our Music — Portland DayTime Singers</title>
+  <meta name="description" content="Portland DayTime Singers performs barbershop harmony in the American tradition — four-part a cappella singing at its most joyful.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About Us</a></li>
+    <li><a href="/performances.html">Performances</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+    <li><a href="/music.html" class="active">Our Music</a></li>
+    <li><a href="/friends.html">Friends</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Our Music</p>
+    <h1 class="page-hero-title">Our Music</h1>
+    <p class="page-hero-subhead">Barbershop harmony in the American tradition</p>
+  </div>
+</div>
+
+<!-- ABOUT BARBERSHOP -->
+<section class="page-section">
+  <div class="page-section-inner page-section-cols">
+    <div>
+      <p class="info-label">About barbershop</p>
+      <h2 class="info-title">Four parts. No instruments. Pure harmony.</h2>
+      <p class="info-body">
+        Barbershop harmony is a style of a&nbsp;cappella singing in four parts —
+        tenor, lead, baritone, and bass — where all four voices lock into rich,
+        resonant chords that seem to create overtones beyond what any single voice
+        can produce alone.
+      </p>
+      <p class="info-body">
+        It's a uniquely American art form, rooted in the informal singing that took
+        place in barbershops and town squares in the late 19th century. Today it's
+        practiced by hundreds of thousands of singers worldwide.
+      </p>
+      <p class="info-body">
+        At its best, barbershop produces what singers call "the ring" — a sparkling
+        acoustic phenomenon that happens when four voices are perfectly in tune and
+        in balance. Once you've heard it, you never forget it.
+      </p>
+    </div>
+    <div>
+      <p class="info-label">The voice parts</p>
+      <h2 class="info-title">Tenor · Lead · Baritone · Bass</h2>
+      <div class="rehearsal-card">
+        <div class="detail-label">Tenor</div>
+        <div class="detail-value">The high harmony</div>
+        <div class="detail-sub">Sings above the melody, adding brightness and sparkle to the chord.</div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Lead</div>
+        <div class="detail-value">The melody</div>
+        <div class="detail-sub">Carries the tune — the voice the audience follows.</div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Baritone</div>
+        <div class="detail-value">The harmonic glue</div>
+        <div class="detail-sub">Fills in the chord, sometimes above and sometimes below the lead.</div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Bass</div>
+        <div class="detail-value">The foundation</div>
+        <div class="detail-sub">Anchors the chord from below, giving the harmony its depth and resonance.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR REPERTOIRE -->
+<section class="page-section page-section--alt">
+  <div class="page-section-inner">
+    <p class="info-label">Repertoire</p>
+    <h2 class="info-title" style="margin-bottom: var(--space-md);">What we sing</h2>
+    <div class="page-section-cols">
+      <div>
+        <p class="info-body">
+          Our song list is built for community performance — singable, familiar, joyful,
+          and suited to audiences of all ages. We draw from classic barbershop literature,
+          American standards, popular songs of the 20th century, and seasonal favorites.
+        </p>
+        <p class="info-body">
+          Every song is arranged for four-part close harmony. Our Music Director selects
+          and arranges material that showcases the chorus's strengths while keeping
+          performances fresh and engaging.
+        </p>
+      </div>
+      <div>
+        <div class="placeholder-notice">
+          <p class="placeholder-notice-label">Repertoire list</p>
+          <p class="placeholder-notice-text">
+            Our current song list will be posted here soon.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

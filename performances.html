@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Performances — Portland DayTime Singers</title>
+  <meta name="description" content="Portland DayTime Singers performs free concerts for seniors and at community events throughout greater Portland, Oregon.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About Us</a></li>
+    <li><a href="/performances.html" class="active">Performances</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+    <li><a href="/music.html">Our Music</a></li>
+    <li><a href="/friends.html">Friends</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Performances</p>
+    <h1 class="page-hero-title">Hear Us Sing</h1>
+    <p class="page-hero-subhead">We perform free concerts for seniors and at community events throughout greater Portland</p>
+  </div>
+</div>
+
+<!-- UPCOMING PERFORMANCES -->
+<section class="page-section">
+  <div class="page-section-inner">
+    <p class="info-label">Upcoming</p>
+    <h2 class="info-title" style="margin-bottom: var(--space-md);">Scheduled performances</h2>
+    <div class="placeholder-notice">
+      <p class="placeholder-notice-label">Coming soon</p>
+      <p class="placeholder-notice-text">
+        Our performance schedule will be posted here as dates are confirmed.
+        Check back soon — or <a href="/friends.html" style="color: var(--sky-deep);">join our Friends list</a>
+        to be notified when new concerts are announced.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT OUR CONCERTS -->
+<section class="page-section page-section--alt">
+  <div class="page-section-inner page-section-cols">
+    <div>
+      <p class="info-label">What to expect</p>
+      <h2 class="info-title">A free, joyful hour of live music</h2>
+      <p class="info-body">
+        Our performances are warm, informal, and interactive. We sing a mix of classic
+        barbershop favorites, American standards, and popular songs — all in four-part
+        a&nbsp;cappella harmony.
+      </p>
+      <p class="info-body">
+        We love singing for our audiences as much as they love hearing us. Expect some
+        friendly banter, audience participation, and more than a few smiles.
+      </p>
+      <p class="info-body">
+        All performances are free of charge. We bring the music — you bring the
+        enthusiasm.
+      </p>
+    </div>
+    <div>
+      <p class="info-label">Where we perform</p>
+      <h2 class="info-title">Community venues throughout Portland</h2>
+      <div class="rehearsal-card">
+        <div class="detail-label">Senior Living &amp; Care Facilities</div>
+        <div class="detail-value">Our home turf</div>
+        <div class="detail-sub">
+          We regularly visit assisted living communities, memory care centers,
+          and senior day programs throughout the Portland metro area.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Community Events</div>
+        <div class="detail-value">Festivals, fairs &amp; more</div>
+        <div class="detail-sub">
+          We sing at community celebrations, church events, civic gatherings,
+          and anywhere our music is welcome.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Book Us</div>
+        <div class="detail-value">Invite us to sing</div>
+        <div class="detail-sub">
+          Interested in hosting a performance? We'd love to hear from you.
+          <a href="/contact.html" style="color: var(--sky-deep);">Get in touch &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

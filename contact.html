@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Contact — Portland DayTime Singers</title>
+  <meta name="description" content="Get in touch with Portland DayTime Singers. Questions about joining, booking a performance, or anything else — we'd love to hear from you.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About Us</a></li>
+    <li><a href="/performances.html">Performances</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+    <li><a href="/music.html">Our Music</a></li>
+    <li><a href="/friends.html">Friends</a></li>
+    <li><a href="/contact.html" class="active">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Contact</p>
+    <h1 class="page-hero-title">Get In Touch</h1>
+    <p class="page-hero-subhead">Questions, bookings, or just want to say hello — we'd love to hear from you</p>
+  </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<section class="page-section">
+  <div class="page-section-inner page-section-cols">
+
+    <!-- CONTACT INFO -->
+    <div>
+      <p class="info-label">Contact information</p>
+      <h2 class="info-title">Reach us directly</h2>
+      <p class="info-body">
+        The fastest way to get in touch is by email. We aim to respond within
+        a business day or two.
+      </p>
+
+      <div class="rehearsal-card">
+        <div class="detail-label">General enquiries</div>
+        <div class="detail-value">
+          <script>
+            document.write('<a href="mai' + 'lto:info@pdtsingers.org" style="color:var(--sky-deep)">'
+              + 'info@pdtsingers.org</a>')
+          </script>
+          <noscript>info [at] pdtsingers.org</noscript>
+        </div>
+        <div class="detail-sub">
+          Joining the chorus, booking a performance, or anything else.
+        </div>
+      </div>
+
+      <div class="rehearsal-card">
+        <div class="detail-label">Rehearsals</div>
+        <div class="detail-value">Mondays, 10:30 am – 12:30 pm</div>
+        <div class="detail-sub">
+          Westside Journey United Methodist Church<br>
+          13420 SW Butner Rd, Beaverton OR 97005
+        </div>
+      </div>
+
+      <div class="rehearsal-card">
+        <div class="detail-label">Thinking about joining?</div>
+        <div class="detail-value">No audition required</div>
+        <div class="detail-sub">
+          Come to a Monday rehearsal — or send us a note first if you'd like
+          someone to meet you at the door.
+          <a href="/join.html" style="color: var(--sky-deep);">Learn more about joining &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT FORM -->
+    <div>
+      <p class="info-label">Send a message</p>
+      <h2 class="info-title" style="margin-bottom: var(--space-md);">Write to us</h2>
+
+      <form class="contact-form" name="contact" method="POST" data-netlify="true"
+            netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact">
+        <p style="display:none">
+          <label>Don't fill this out: <input name="bot-field"></label>
+        </p>
+
+        <div>
+          <label for="contact-name">Your name</label>
+          <input type="text" id="contact-name" name="name" required
+                 placeholder="Jane Smith" autocomplete="name">
+        </div>
+
+        <div>
+          <label for="contact-email">Email address</label>
+          <input type="email" id="contact-email" name="email" required
+                 placeholder="jane@example.com" autocomplete="email">
+        </div>
+
+        <div>
+          <label for="contact-subject">Subject</label>
+          <input type="text" id="contact-subject" name="subject"
+                 placeholder="e.g. Interested in joining, Book a performance…">
+        </div>
+
+        <div>
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" name="message" required
+                    placeholder="Tell us a bit about what's on your mind…"></textarea>
+        </div>
+
+        <div>
+          <button type="submit" class="btn-primary" style="border: none; cursor: pointer; width: 100%; text-align: center;">
+            Send message &rarr;
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

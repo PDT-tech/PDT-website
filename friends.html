@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Friends of PDT Singers — Portland DayTime Singers</title>
+  <meta name="description" content="Stay connected with Portland DayTime Singers — announcements, concert notices, and ways to support Portland's daytime barbershop chorus.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About Us</a></li>
+    <li><a href="/performances.html">Performances</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+    <li><a href="/music.html">Our Music</a></li>
+    <li><a href="/friends.html" class="active">Friends</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Friends</p>
+    <h1 class="page-hero-title">Friends of PDT Singers</h1>
+    <p class="page-hero-subhead">Stay connected with Portland's daytime barbershop chorus</p>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<section class="page-section">
+  <div class="page-section-inner">
+    <p class="info-label">Announcements</p>
+    <h2 class="info-title" style="margin-bottom: var(--space-md);">News &amp; updates</h2>
+    <div class="placeholder-notice">
+      <p class="placeholder-notice-label">No announcements yet</p>
+      <p class="placeholder-notice-text">
+        Concert dates, community news, and chorus updates will appear here.
+        Check back soon, or <a href="/contact.html" style="color: var(--sky-deep);">get in touch</a>
+        to be added to our mailing list.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- STAY CONNECTED -->
+<section class="page-section page-section--alt">
+  <div class="page-section-inner page-section-cols">
+    <div>
+      <p class="info-label">Stay in the loop</p>
+      <h2 class="info-title">Follow along, spread the word</h2>
+      <p class="info-body">
+        The best way to stay connected with Portland DayTime Singers is to drop us
+        a note at <a href="/contact.html" style="color: var(--sky-deep);">info@pdtsingers.org</a>
+        and ask to be added to our Friends list. We send occasional emails about
+        upcoming performances and chorus news — no spam, ever.
+      </p>
+      <p class="info-body">
+        If you've seen us perform and would like to support what we do, the best support
+        is simply telling people about us. More ears in the audience, and more voices
+        on the risers, are the greatest gifts you can give a chorus.
+      </p>
+      <a href="/contact.html" class="btn-primary" style="margin-top: var(--space-sm);">
+        Get in touch &rarr;
+      </a>
+    </div>
+    <div>
+      <p class="info-label">How to help</p>
+      <h2 class="info-title">Ways to support the chorus</h2>
+      <div class="rehearsal-card">
+        <div class="detail-label">Come to a concert</div>
+        <div class="detail-value">Your presence matters</div>
+        <div class="detail-sub">
+          A full room makes every performance better — for the audience and the singers.
+          Check our <a href="/performances.html" style="color: var(--sky-deep);">performances page</a>
+          for upcoming dates.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Invite us</div>
+        <div class="detail-value">Book a performance</div>
+        <div class="detail-sub">
+          Know a senior center, community event, or gathering that would love live music?
+          <a href="/contact.html" style="color: var(--sky-deep);">Let us know.</a>
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Sing with us</div>
+        <div class="detail-value">No audition required</div>
+        <div class="detail-sub">
+          Know a man who loves to sing? Send him our way.
+          <a href="/join.html" style="color: var(--sky-deep);">Learn about joining.</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

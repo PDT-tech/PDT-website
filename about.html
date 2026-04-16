@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>About Us — Portland DayTime Singers</title>
+  <meta name="description" content="Portland DayTime Singers is a men's barbershop chorus serving greater Portland, Oregon. Learn about our mission, leadership, and WBQA affiliation.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html" class="active">About Us</a></li>
+    <li><a href="/performances.html">Performances</a></li>
+    <li><a href="/join.html">Join Us</a></li>
+    <li><a href="/music.html">Our Music</a></li>
+    <li><a href="/friends.html">Friends</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">About Us</p>
+    <h1 class="page-hero-title">Who We Are</h1>
+    <p class="page-hero-subhead">A men's barbershop chorus serving Portland since 2025</p>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section class="page-section">
+  <div class="page-section-inner page-section-cols">
+    <div>
+      <p class="info-label">Our Mission</p>
+      <h2 class="info-title">Music, Fellowship &amp; Fun</h2>
+      <p class="info-body">
+        Portland DayTime Singers exists to bring the joy of barbershop harmony to our community.
+        We perform free concerts at senior care facilities, community centers, and public events
+        throughout greater Portland — bringing live music to people who might not otherwise have it.
+      </p>
+      <p class="info-body">
+        We believe that singing together builds connection. Our chorus is a place where men of
+        all ages and backgrounds come together every Monday morning to make music, make friends,
+        and make a difference.
+      </p>
+      <p class="info-body">
+        No musical experience is required to join us — only a love of singing and a willingness
+        to show up. We'll take care of the rest.
+      </p>
+    </div>
+    <div>
+      <p class="info-label">What We Do</p>
+      <h2 class="info-title">Community concerts, Monday mornings</h2>
+      <div class="rehearsal-card">
+        <div class="detail-label">Founded</div>
+        <div class="detail-value">2025</div>
+        <div class="detail-sub">
+          Proudly serving Portland-area seniors and community members.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Repertoire</div>
+        <div class="detail-value">Barbershop &amp; beyond</div>
+        <div class="detail-sub">
+          Classic four-part harmony, American standards, popular favorites,
+          and seasonal music — all in the barbershop tradition.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Membership</div>
+        <div class="detail-value">Open to all men</div>
+        <div class="detail-sub">
+          No audition required. Any voice part welcome.
+          We match you to your section on your first visit.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERSHIP -->
+<section class="page-section page-section--alt">
+  <div class="page-section-inner">
+    <p class="info-label">Leadership</p>
+    <h2 class="info-title" style="margin-bottom: var(--space-md);">The people who make it happen</h2>
+    <div class="page-section-cols">
+      <div class="rehearsal-card">
+        <div class="detail-label">Music Director</div>
+        <div class="detail-value">Chris Gabel</div>
+        <div class="detail-sub">
+          Chris leads our weekly rehearsals and shapes the musical direction of the chorus.
+          He brings deep experience in barbershop arranging and choral conducting.
+        </div>
+      </div>
+      <div class="rehearsal-card">
+        <div class="detail-label">Grand Poohbah &amp; President</div>
+        <div class="detail-value">Kevin Bier</div>
+        <div class="detail-sub">
+          Kevin oversees the chorus's operations, social events, and community partnerships.
+          The Grand Poohbah is our chief of fellowship — the glue that holds us together.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WBQA -->
+<section class="page-section">
+  <div class="page-section-inner page-section-inner--narrow">
+    <p class="info-label">Affiliation</p>
+    <h2 class="info-title">WBQA Lodge #18</h2>
+    <p class="info-body">
+      Portland DayTime Singers is proud to be Lodge&nbsp;#18 of the
+      <a href="https://www.sppbsqsus.org" target="_blank" rel="noopener" style="color: var(--sky-deep);">
+        Worldwide Barbershop Quartet Association</a>.
+      The WBQA supports barbershop choruses and quartets worldwide, fostering the tradition
+      of close-harmony a cappella singing.
+    </p>
+    <p class="info-body">
+      As a WBQA lodge, our members have access to contest opportunities, educational
+      resources, and a global network of fellow barbershoppers.
+    </p>
+    <a href="/join.html" class="btn-primary" style="margin-top: var(--space-sm);">Come sing with us &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

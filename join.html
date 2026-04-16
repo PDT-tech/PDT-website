@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Join Us — Portland DayTime Singers</title>
+  <meta name="description" content="Join Portland DayTime Singers — no audition required. Rehearsals every Monday, 10:30am–12:30pm at Westside Journey UMC in Beaverton, OR.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav">
+  <a href="/" class="nav-brand">Portland <span class="accent">DayTime</span> Singers</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About Us</a></li>
+    <li><a href="/performances.html">Performances</a></li>
+    <li><a href="/join.html" class="active">Join Us</a></li>
+    <li><a href="/music.html">Our Music</a></li>
+    <li><a href="/friends.html">Friends</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+    <li><a href="/login.html" id="nav-members-link" class="nav-cta">Members</a></li>
+  </ul>
+</nav>
+<script type="module">
+  import { getSession } from '/js/supabase.js'
+  getSession().then(s => { if (s) document.getElementById('nav-members-link').href = '/members/' })
+</script>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Join Us</p>
+    <h1 class="page-hero-title">Come Sing With Us</h1>
+    <p class="page-hero-subhead">No audition required — just a love of singing</p>
+  </div>
+</div>
+
+<!-- WHAT TO EXPECT -->
+<section class="page-section">
+  <div class="page-section-inner page-section-cols">
+    <div>
+      <p class="info-label">What to expect</p>
+      <h2 class="info-title">Show up. Sing. Belong.</h2>
+      <p class="info-body">
+        Your first visit is easy. Walk in, introduce yourself, and we'll find you a spot
+        in the section that suits your voice. You don't need to read music — most of our
+        members learned their parts by ear.
+      </p>
+      <p class="info-body">
+        We rehearse for two hours each Monday morning, working on our repertoire of
+        barbershop standards and community concert material. There's always time for
+        conversation, coffee, and a bit of camaraderie before and after.
+      </p>
+      <p class="info-body">
+        Membership dues are modest. Come to a rehearsal first — there's no commitment
+        until you're sure it's for you.
+      </p>
+    </div>
+    <div>
+      <p class="info-label">The "audition"</p>
+      <h2 class="info-title">Just sing Happy Birthday</h2>
+      <p class="info-body">
+        Sing Happy Birthday in whatever key feels natural. That one song tells us
+        your range, your pitch sense, and your comfort level — everything we need
+        to find you the right section.
+      </p>
+      <p class="info-body">
+        If you love to sing, you belong here. We're not looking for perfection —
+        we're looking for enthusiasm and commitment to the craft.
+      </p>
+      <a href="/contact.html" class="btn-primary" style="margin-top: var(--space-sm);">
+        Reach out before your first visit &rarr;
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- REHEARSAL DETAILS -->
+<section class="page-section page-section--alt">
+  <div class="page-section-inner">
+    <p class="info-label">Rehearsals</p>
+    <h2 class="info-title" style="margin-bottom: var(--space-md);">Every Monday morning</h2>
+    <div class="page-section-cols">
+      <div>
+        <div class="rehearsal-card">
+          <div class="detail-label">When</div>
+          <div class="detail-value">Mondays, 10:30 am – 12:30 pm</div>
+          <div class="detail-sub">
+            We meet weekly year-round, with occasional breaks around major holidays.
+            The schedule is announced in advance through our member communications.
+          </div>
+        </div>
+        <div class="rehearsal-card">
+          <div class="detail-label">What to bring</div>
+          <div class="detail-value">Just yourself</div>
+          <div class="detail-sub">
+            We'll provide a name tag, sheet music, and a warm welcome.
+            Wear comfortable clothes — we don't stand on ceremony at rehearsal.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="rehearsal-card">
+          <div class="detail-label">Where</div>
+          <div class="detail-value">Westside Journey UMC</div>
+          <div class="detail-sub">
+            13420 SW Butner Rd<br>
+            Beaverton, OR 97005<br><br>
+            Free parking on site. Accessible entrance available.
+            The chorus meets in the main fellowship hall.
+          </div>
+        </div>
+        <div class="rehearsal-card">
+          <div class="detail-label">First visit?</div>
+          <div class="detail-value">Let us know you're coming</div>
+          <div class="detail-sub">
+            Dropping a quick note to
+            <a href="/contact.html" style="color: var(--sky-deep);">info@pdtsingers.org</a>
+            before your first rehearsal helps us make sure someone is there to greet you.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="page-section">
+  <div class="page-section-inner page-section-inner--narrow" style="text-align: center;">
+    <p class="info-label">Ready?</p>
+    <h2 class="info-title">The door is open</h2>
+    <p class="info-body" style="margin-bottom: var(--space-md);">
+      Whether you're a seasoned singer or someone who's always wanted to try —
+      come find out what barbershop harmony is all about.
+      We'll see you Monday morning.
+    </p>
+    <a href="/contact.html" class="btn-primary">Get in touch &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Portland DayTime Singers</div>
+      <div class="footer-tagline">Music, Fellowship &amp; Fun</div>
+      <p class="footer-desc">
+        A men's barbershop chorus<br>
+        serving greater Portland, Oregon<br>
+        WBQA Lodge #18
+      </p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Navigate</div>
+      <ul>
+        <li><a href="/about.html">About Us</a></li>
+        <li><a href="/performances.html">Performances</a></li>
+        <li><a href="/join.html">Join Us</a></li>
+        <li><a href="/music.html">Our Music</a></li>
+        <li><a href="/friends.html">Friends</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Affiliation</div>
+      <ul>
+        <li><a href="https://www.sppbsqsus.org" target="_blank" rel="noopener">
+          Worldwide Barbershop Quartet Association
+        </a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-rule">
+  <div class="footer-bottom">
+    <div>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; pdtsingers.org</div>
+  </div>
+</footer>
+
+</body>
+</html>

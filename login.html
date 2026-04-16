@@ -43,7 +43,7 @@
     <hr class="login-rule">
 
     <!-- STATE: Default — email input -->
-    <div id="state-form">
+    <div id="state-form" hidden>
       <p class="login-instructions">
         Enter your email and we'll send you a secure login link — no password needed.
       </p>
@@ -109,18 +109,16 @@
 
   const params = new URLSearchParams(window.location.search)
 
-  // Check URL params for special states
-  if (params.get('reason') === 'inactive') {
+  // Check for an existing session before showing anything.
+  // state-form starts hidden in HTML so there's no flash while this resolves.
+  const session = await getSession()
+  if (session) {
+    window.location.href = params.get('next') || '/members/'
+  } else if (params.get('reason') === 'inactive') {
     showState('inactive')
+  } else {
+    showState('form')
   }
-
-  // If already logged in, redirect to members area
-  getSession().then(session => {
-    if (session) {
-      const next = params.get('next') || '/members/'
-      window.location.href = next
-    }
-  })
 
   // Handle magic link callback: when Supabase processes the token in the URL
   // hash, it fires SIGNED_IN — this is the reliable redirect path for magic links.

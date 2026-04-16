@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-15  
+**Last updated:** 2026-04-15 (Session 5)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -44,7 +44,7 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 1 active — member portal complete, comms.html live, six public placeholder pages deployed, magic link login in progress.
+**Current phase:** Phase 1 active — member portal complete, comms.html live, six public placeholder pages deployed, magic link login complete. Maintainer's guide written.
 
 ---
 
@@ -95,6 +95,10 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [x] Fix nav logo oversized on music.html — added `.nav-logo img` height constraint to main.css ✅
 - [ ] Fix env.local.js console error in production (nosniff header blocking onerror suppression)
 - [x] Build Communications page (members/comms.html) ✅
+- [x] Redesign login.html — magic link only, remove password auth ✅ (Session 5)
+- [ ] Test magic link end-to-end with a real member email
+- [ ] Disable password auth in Supabase dashboard (once magic link confirmed)
+- [ ] Cap OTP expiry at 15 minutes (Supabase → Authentication → Settings → OTP Expiry; currently 24h)
 - [ ] Build Home page (copy updates pending from group)
 - [x] Build About Us page (placeholder) ✅
 - [x] Build Join Us page (placeholder) ✅
@@ -129,6 +133,10 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [ ] **members/whats-new.html** — simple static changelog page for members; hand-maintained; lists website functionality changes (not content)
 - [ ] **About Us highlight for Moss Egli** — add SMM bio/blurb to About Us page
 - [ ] Notify deceased member's son to deactivate old site
+- [ ] Cap OTP expiry at 15 minutes (Supabase → Authentication → Settings → OTP Expiry)
+- [ ] Disable password auth in Supabase dashboard
+- [ ] Test magic link end-to-end with a real member email
+- [ ] Add HTML doc style convention: keep both .md and .html versions of major doc files
 
 ---
 
@@ -297,12 +305,34 @@ pdtsingers/                  ← repo root
 - **env.local.js**: gitignored local file that sets window.__PDT_ENV with all 4 credentials. Must be present in repo root for local dev. Never commit.
 - **Role visibility pattern**: use `applyRoleVisibility()` checking `window.__PDT_USER` directly, falling back to `pdt:profile-loaded` event — direct event listener alone has a timing race condition
 - **Supabase posts RLS policies**: insert/update/delete are role+blog_type scoped; select has two policies — `posts_select_authenticated` (published only, all members) + `posts_select_admin` (all posts, admin only) + `posts_select_author` (own posts, any role)
-- **TODO (Phase 3)**: restore magic link alongside password when Google Workspace SMTP wired into Supabase — stubs in supabase.js and login.html
+- **Auth is magic-link-only** (Session 5) — Resend SMTP wired in, login.html redesigned. Password auth still exists in Supabase but is unused; disable once magic link confirmed in production.
 - **pdtsingers.music@gmail.com**: created as staging account but not used — Music files live in Kevin's personal Drive. May dispose of this account.
 
 ---
 
 ## Session History
+
+### Session 5 — 2026-04-15
+
+- ✅ **Magic link login complete** — login.html redesigned to magic-link-only flow:
+  - Single email field, "Send me a login link" button; no password field
+  - `supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } })`
+  - `emailRedirectTo: 'https://pdtsingers.org/login.html'` added to OTP options
+  - Loading state: button disabled + "Sending…" while in flight
+  - Confirmation state: form hidden, email address shown, "Resend link" + "Try a different address" links
+  - Error handling: inline below button (no full-card error state)
+  - `onAuthStateChange(SIGNED_IN)` wired for magic link callback redirect to `/members/`
+  - Session check at page init: `state-form` starts hidden; `await getSession()` before revealing any UI — eliminates form flash on load
+  - `signInWithPassword` left in supabase.js with `// TODO: remove once magic link confirmed`
+- ✅ **Login button styled gold** — `#c4a24a` background, `#1a1a1a` dark text; inline style + `#submit-btn` override in main.css
+- ✅ **Tech Maintainer's Guide written** — `pdt-tech-maintainers-guide.md` + `.html` in repo root; covers accounts, deploy workflow, member management, Music Library, email, forms, common tasks, architecture, backlog
+- ✅ **HTML doc style adopted** — major doc files now kept in both `.md` and `.html` format
+- ✅ Netlify auto-publish confirmed locked — manual deploy only
+- ▶️ TODO: Test magic link end-to-end with a real member email
+- ▶️ TODO: Disable password auth in Supabase dashboard
+- ▶️ TODO: Cap OTP expiry at 15 minutes (Supabase → Authentication → Settings → OTP Expiry; currently 24h)
+- ▶️ TODO: Customize magic link email template (subject + body) to be warm and on-brand
+- ▶️ TODO: Check is_active default in profiles table
 
 ### Session 4 — 2026-04-15
 

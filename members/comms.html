@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex, nofollow">
-  <title>Director's Notes — Portland DayTime Singers</title>
+  <title>Communications — Portland DayTime Singers</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +17,107 @@
   <link rel="stylesheet" href="../css/members.css">
   <link rel="stylesheet" href="../css/blog.css">
   <script src="/env.local.js" onerror="void 0"></script>
+
+  <style>
+    /* ── Comms two-column layout ───────────────────────────── */
+    .comms-layout {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    /* ── Sidebar ───────────────────────────────────────────── */
+    .comms-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .sidebar-card {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.07);
+      border-radius: 5px;
+      padding: var(--space-md) var(--space-lg);
+    }
+
+    .sidebar-card-label {
+      font-family: var(--font-ui);
+      font-size: var(--text-xs);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #c4a24a;
+      margin-bottom: var(--space-sm);
+    }
+
+    .sidebar-contact-line {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: #2a2a2a;
+      margin-bottom: 0.35rem;
+      line-height: 1.5;
+    }
+
+    .sidebar-contact-line a {
+      color: #6a9ab8;
+      text-decoration: underline;
+    }
+
+    .sidebar-contact-line a:hover { color: #1a1a1a; }
+
+    .sidebar-contact-label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+
+    .sidebar-location {
+      font-size: var(--text-sm);
+      color: #5a5a5a;
+      line-height: 1.65;
+    }
+
+    .sidebar-nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .sidebar-nav-list li a {
+      display: block;
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: #2a2a2a;
+      padding: 0.35rem 0.5rem;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-nav-list li a:hover { background: #f7f3ee; color: #1a1a1a; }
+
+    .sidebar-nav-list li a.current {
+      color: #c4a24a;
+      font-weight: 600;
+      background: #fdf8ee;
+    }
+
+    /* ── Responsive: stack below 800px ────────────────────── */
+    @media (max-width: 800px) {
+      .comms-layout {
+        grid-template-columns: 1fr;
+      }
+      .comms-sidebar {
+        order: -1;
+      }
+    }
+  </style>
 </head>
 <body class="members-page">
 
@@ -28,10 +129,10 @@
   </a>
   <ul class="member-nav-links">
     <li><a href="/members/">Home</a></li>
-    <li><a href="/members/directors-notes.html" class="active">Director's Notes</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
     <li><a href="/members/poohbah.html">Grand Poohbah</a></li>
     <li><a href="/members/events.html">Events</a></li>
-    <li><a href="/members/comms.html">Comms</a></li>
+    <li><a href="/members/comms.html" class="active">Comms</a></li>
     <li><a href="/members/calendar.html">Calendar</a></li>
     <li><a href="/members/music.html">Music</a></li>
   </ul>
@@ -44,46 +145,90 @@
 <!-- MAIN -->
 <main class="members-main">
 
-  <div class="blog-header" style="--blog-color: #6a9ab8;">
+  <div class="blog-header" style="--blog-color: #c4a24a;">
     <div class="blog-header-inner">
       <p class="blog-eyebrow">Member Portal</p>
-      <h1 class="blog-title">Director's Notes</h1>
-      <p class="blog-byline">From Chris Gabel, Music Director</p>
+      <h1 class="blog-title">Communications</h1>
+      <p class="blog-byline">Announcements &amp; notes from the board</p>
     </div>
-    <!-- New Post button — shown only to musical_director and admin -->
-    <button class="btn-primary pdt-director-only" id="new-post-btn">
-      + New Post
+    <!-- Shown to admin only -->
+    <button class="btn-primary pdt-admin-only" id="new-post-btn">
+      + New Announcement
     </button>
   </div>
 
-  <div class="blog-layout">
+  <div class="comms-layout">
 
-    <!-- POST LIST -->
-    <div class="post-list" id="post-list">
-      <div class="post-list-loading">Loading posts…</div>
-    </div>
+    <!-- FEED COLUMN -->
+    <div class="comms-feed">
 
-    <!-- POST DETAIL (shown when a post is selected) -->
-    <div class="post-detail" id="post-detail" hidden>
-      <button class="post-back-btn" id="back-btn">&larr; All posts</button>
-      <article class="post-article">
-        <div class="post-article-meta" id="detail-meta"></div>
-        <h2 class="post-article-title" id="detail-title"></h2>
-        <div class="post-article-body" id="detail-body"></div>
-      </article>
-      <div class="post-article-actions pdt-director-only">
-        <button class="btn-secondary btn-sm" id="edit-btn">Edit</button>
-        <button class="btn-danger btn-sm" id="delete-btn">Delete</button>
+      <!-- POST LIST -->
+      <div id="post-list">
+        <div class="post-list-loading">Loading announcements&hellip;</div>
       </div>
-    </div>
 
-  </div>
+      <!-- POST DETAIL (shown when a post is selected) -->
+      <div id="post-detail" hidden>
+        <button class="post-back-btn" id="back-btn">&larr; All announcements</button>
+        <article class="post-article">
+          <div class="post-article-meta" id="detail-meta"></div>
+          <h2 class="post-article-title" id="detail-title"></h2>
+          <div class="post-article-body" id="detail-body"></div>
+        </article>
+        <div class="post-article-actions pdt-admin-only">
+          <button class="btn-secondary btn-sm" id="edit-btn">Edit</button>
+          <button class="btn-danger btn-sm" id="delete-btn">Delete</button>
+        </div>
+      </div>
 
-  <!-- NEW / EDIT POST MODAL -->
+    </div><!-- /comms-feed -->
+
+    <!-- SIDEBAR -->
+    <aside class="comms-sidebar">
+
+      <!-- CONTACT -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-label">Contact</div>
+        <div class="sidebar-contact-line">
+          <span class="sidebar-contact-label">General enquiries</span>
+          <a href="mailto:info@pdtsingers.org">info@pdtsingers.org</a>
+        </div>
+      </div>
+
+      <!-- REHEARSAL INFO -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-label">Weekly Rehearsal</div>
+        <div class="sidebar-location">
+          <strong>Mondays</strong> &nbsp;10:30 am – 12:30 pm<br><br>
+          Westside Journey United Methodist Church<br>
+          13420 SW Butner Rd<br>
+          Beaverton, OR 97005
+        </div>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-label">Member Pages</div>
+        <ul class="sidebar-nav-list">
+          <li><a href="/members/">Home</a></li>
+          <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+          <li><a href="/members/poohbah.html">Grand Poohbah's Prattlings</a></li>
+          <li><a href="/members/events.html">Events</a></li>
+          <li><a href="/members/comms.html" class="current">Communications</a></li>
+          <li><a href="/members/calendar.html">Calendar</a></li>
+          <li><a href="/members/music.html">Music Library</a></li>
+        </ul>
+      </div>
+
+    </aside><!-- /comms-sidebar -->
+
+  </div><!-- /comms-layout -->
+
+  <!-- NEW / EDIT ANNOUNCEMENT MODAL -->
   <div class="post-modal-overlay modal-hidden" id="modal-overlay">
     <div class="post-modal">
       <div class="post-modal-header">
-        <h2 class="post-modal-title" id="modal-title">New Post</h2>
+        <h2 class="post-modal-title" id="modal-title">New Announcement</h2>
         <button class="post-modal-close" id="modal-close">&times;</button>
       </div>
       <form id="post-form">
@@ -91,7 +236,7 @@
         <div class="form-group">
           <label class="form-label" for="post-title">Title</label>
           <input type="text" id="post-title" class="form-input" required
-                 placeholder="e.g. Rehearsal Focus — Blend and Balance">
+                 placeholder="e.g. Rehearsal change — May 5">
         </div>
         <div class="form-group">
           <label class="form-label" for="post-excerpt">
@@ -101,9 +246,9 @@
                  placeholder="One sentence summary">
         </div>
         <div class="form-group">
-          <label class="form-label" for="post-body">Post</label>
+          <label class="form-label" for="post-body">Announcement</label>
           <textarea id="post-body" class="form-input form-textarea" required
-                    placeholder="Write your post here…"></textarea>
+                    placeholder="Write your announcement here&hellip;"></textarea>
         </div>
         <div class="form-group form-check">
           <label class="form-check-label">
@@ -113,7 +258,7 @@
         </div>
         <div class="post-modal-actions">
           <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
-          <button type="submit" class="btn-primary" id="modal-save">Save Post</button>
+          <button type="submit" class="btn-primary" id="modal-save">Save Announcement</button>
         </div>
       </form>
     </div>
@@ -132,24 +277,12 @@
   import '../js/auth-guard.js'
   import { supabase } from '../js/supabase.js'
 
-  const BLOG_TYPE = 'directors_notes'
+  const BLOG_TYPE = 'comms'
   let currentPostId = null
+  let cachedPosts = []
 
-  // ── Show director-only elements ────────────────────────────
-  // auth-guard handles admin; we add musical_director here
-  function applyRoleVisibility () {
-    const profile = window.__PDT_USER
-    if (!profile) {
-      document.addEventListener('pdt:profile-loaded', () => applyRoleVisibility())
-      return
-    }
-    if (profile.role === 'musical_director' || profile.role === 'admin') {
-      document.querySelectorAll('.pdt-director-only').forEach(el => {
-        el.style.display = 'block'
-      })
-    }
-  }
-  applyRoleVisibility()
+  // ── Role visibility (admin only for comms) ─────────────────
+  // auth-guard.js already handles .pdt-admin-only — no extra work needed
 
   // ── Load posts ─────────────────────────────────────────────
   async function loadPosts () {
@@ -162,15 +295,21 @@
     const list = document.getElementById('post-list')
 
     if (error || !data || data.length === 0) {
-      list.innerHTML = '<div class="post-list-empty">No posts yet. Check back soon!</div>'
+      list.innerHTML = `
+        <div class="post-list-empty">
+          No announcements yet — check back soon.
+        </div>`
       return
     }
+
+    cachedPosts = data
 
     list.innerHTML = data.map(post => `
       <div class="post-list-item ${!post.published ? 'post-unpublished' : ''}"
            data-id="${post.id}">
         <div class="post-list-meta">
           ${formatDate(post.created_at)}
+          ${post.profiles?.full_name ? `&nbsp;&middot;&nbsp; ${post.profiles.full_name}` : ''}
           ${!post.published ? '<span class="post-draft-badge">Draft</span>' : ''}
         </div>
         <div class="post-list-title">${post.title}</div>
@@ -179,33 +318,37 @@
     `).join('')
 
     list.querySelectorAll('.post-list-item').forEach(item => {
-      item.addEventListener('click', () => openPost(item.dataset.id, data))
+      item.addEventListener('click', () => openPost(item.dataset.id))
     })
   }
 
   // ── Open post detail ───────────────────────────────────────
-  async function openPost (id, cachedPosts) {
+  async function openPost (id) {
     currentPostId = id
+
     const { data } = await supabase
       .from('posts')
       .select('*, profiles(full_name)')
       .eq('id', id)
       .single()
+
     if (data) renderDetail(data)
   }
 
   function renderDetail (post) {
-    document.getElementById('detail-meta').textContent =
-      formatDate(post.created_at) + (post.profiles?.full_name ? ` · ${post.profiles.full_name}` : '')
+    const meta = [formatDate(post.created_at)]
+    if (post.profiles?.full_name) meta.push(post.profiles.full_name)
+    document.getElementById('detail-meta').textContent = meta.join(' · ')
     document.getElementById('detail-title').textContent = post.title
     document.getElementById('detail-body').innerHTML =
       '<p>' + post.body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>'
     document.getElementById('edit-btn').dataset.post = JSON.stringify(post)
+
     document.getElementById('post-list').hidden = true
     document.getElementById('post-detail').hidden = false
   }
 
-  // ── Back button ────────────────────────────────────────────
+  // ── Back ───────────────────────────────────────────────────
   document.getElementById('back-btn').addEventListener('click', () => {
     document.getElementById('post-detail').hidden = true
     document.getElementById('post-list').hidden = false
@@ -217,13 +360,12 @@
 
   // ── Edit ───────────────────────────────────────────────────
   document.getElementById('edit-btn').addEventListener('click', (e) => {
-    const post = JSON.parse(e.target.dataset.post || '{}')
-    openModal(post)
+    openModal(JSON.parse(e.target.dataset.post || '{}'))
   })
 
   // ── Delete ─────────────────────────────────────────────────
   document.getElementById('delete-btn').addEventListener('click', async () => {
-    if (!confirm('Delete this post? This cannot be undone.')) return
+    if (!confirm('Delete this announcement? This cannot be undone.')) return
     const { error } = await supabase.from('posts').delete().eq('id', currentPostId)
     if (!error) {
       document.getElementById('post-detail').hidden = true
@@ -235,11 +377,12 @@
 
   // ── Modal ──────────────────────────────────────────────────
   function openModal (post = null) {
-    document.getElementById('modal-title').textContent = post?.id ? 'Edit Post' : 'New Post'
-    document.getElementById('post-id').value = post?.id || ''
+    document.getElementById('modal-title').textContent =
+      post?.id ? 'Edit Announcement' : 'New Announcement'
+    document.getElementById('post-id').value    = post?.id || ''
     document.getElementById('post-title').value = post?.title || ''
     document.getElementById('post-excerpt').value = post?.excerpt || ''
-    document.getElementById('post-body').value = post?.body || ''
+    document.getElementById('post-body').value  = post?.body || ''
     document.getElementById('post-published').checked = post ? post.published : true
     document.getElementById('modal-overlay').classList.remove('modal-hidden')
   }
@@ -255,21 +398,23 @@
     if (e.target === document.getElementById('modal-overlay')) closeModal()
   })
 
-  // ── Save post ──────────────────────────────────────────────
+  // ── Save ───────────────────────────────────────────────────
   document.getElementById('post-form').addEventListener('submit', async (e) => {
     e.preventDefault()
     const saveBtn = document.getElementById('modal-save')
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true
 
-    const id        = document.getElementById('post-id').value
-    const title     = document.getElementById('post-title').value.trim()
-    const excerpt   = document.getElementById('post-excerpt').value.trim() || null
-    const body      = document.getElementById('post-body').value.trim()
+    const id      = document.getElementById('post-id').value
+    const title   = document.getElementById('post-title').value.trim()
+    const excerpt = document.getElementById('post-excerpt').value.trim() || null
+    const body    = document.getElementById('post-body').value.trim()
     const published = document.getElementById('post-published').checked
 
-    const payload = { blog_type: BLOG_TYPE, title, excerpt, body, published,
-                      author_id: window.__PDT_USER?.id }
+    const payload = {
+      blog_type: BLOG_TYPE, title, excerpt, body, published,
+      author_id: window.__PDT_USER?.id
+    }
 
     let error
     if (id) {
@@ -278,10 +423,10 @@
       ;({ error } = await supabase.from('posts').insert(payload))
     }
 
-    saveBtn.textContent = 'Save Post'
+    saveBtn.textContent = 'Save Announcement'
     saveBtn.disabled = false
 
-    if (error) { alert('Error saving post: ' + error.message); return }
+    if (error) { alert('Error saving: ' + error.message); return }
 
     closeModal()
     await loadPosts()

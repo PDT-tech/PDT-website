@@ -1,6 +1,6 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-03-30  
+**Last updated:** 2026-03-31  
 **Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
@@ -137,10 +137,16 @@ members can choose whichever they prefer.
 ### 5d. Social Media
 | Platform | Plan | Notes |
 |----------|------|-------|
-| Facebook | Launch | Primary platform |
+| Facebook | Launch | Primary platform — Moss Egli setting up group |
 | Instagram | Launch | Secondary |
 | YouTube | Phase 2 | Deferred until regular performances established |
 | WBQA Facebook | Link only | `facebook.com/WBQA.Sings` — link from Friends page |
+
+**Social Media Manager: Moss Egli** (Kevin's granddaughter, age 19) — prior SMM experience
+at a flower store in Camas, WA. First task: set up PDT Singers Facebook group. Will drive
+content creation in coordination with website updates. Needs Supabase member account;
+role TBD (events_editor to start, or dedicated social_media_manager role if needed).
+Add bio/highlight to About Us page post-launch.
 
 ### 5e. Forms (all via Netlify Forms — free tier)
 - **Join Us interest form**: name, email, voice part (optional), message → triggers admin
@@ -236,9 +242,14 @@ variants). The page sorts the member's own voice part tracks to the top and offe
 No Supabase `songs` table — Drive folder list is the source of truth. Adding a song
 requires only creating a new folder in Drive and dropping files in.
 
----
+### 5h. Cross-Posting (backlog — requirements TBD)
+Post PDT events and announcements from the website to Facebook Events and member
+newsletters. Moss Egli to drive requirements. Likely Phase 3+.
 
-## 6. Brand & Visual Identity
+### 5i. Member Changelog Page (post-launch)
+`members/whats-new.html` — simple static page listing website functionality changes
+(not content updates). Hand-maintained by Kevin. Gives members a place to learn what's
+new without asking. No DB involvement.
 
 ### Voice & Tone
 - First person plural: "we sing," "come sing with us"
@@ -337,8 +348,7 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
 - **Christmas repertoire**: 10–12 songs planned; Chris starting with songs members know
 - **Lodge phone**: Kevin has iPhone 11 ready; Mint Mobile ~$180/yr. Decoupled from website
   dependencies — can proceed independently.
-- **Social media**: Website prioritized first; Facebook deferred. May hire young
-  freelancer for social media management.
+- **Social media**: **Moss Egli** (Kevin's granddaughter, age 19, prior SMM experience) confirmed as PDT SMM. First task: set up Facebook group. Website content and social media to be coordinated going forward.
 
 ---
 
@@ -362,6 +372,7 @@ assistant director. Formal corporate title: **President**.
 | Sam Vigil | Poohbah-at-Large | Board Member at Large — Marketing |
 | Ray Heller | Poohbah-at-Large | Board Member at Large — Chorus contact / outreach |
 | Duane Lundsten † | Poohbah of Complex Stuff | In memoriam — our tech guy, passed March 2026 |
+| Moss Egli | Social Media Manager | Kevin's granddaughter, age 19; prior SMM experience; driving Facebook + social content |
 
 ---
 
@@ -438,6 +449,10 @@ assistant director. Formal corporate title: **President**.
 - [x] IRS 501(c)(3) letter: **in hand** — Google Workspace application now unblocked
 - [x] Music Library architecture: Netlify Function + service account (see §5g)
 - [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile path, proceed independently
+- [x] Nav logo oversized on music.html — fixed in main.css
+- [x] Social media manager: **Moss Egli** (Kevin's granddaughter) — confirmed
+- [ ] **Moss Egli onboarding** — Supabase account + role TBD; first task: PDT Facebook group
+- [ ] **Cross-posting** — Facebook Events + newsletters; requirements TBD with Moss (§5h)
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Who is the second site maintainer (post-launch)?
 - [ ] Should member Blog allow comments, or read-only initially?

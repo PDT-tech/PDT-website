@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-03-30  
+**Last updated:** 2026-03-31  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -44,8 +44,8 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 1 active — member portal functional, Music Library built,
-comms.html and public pages (About, Join) next.
+**Current phase:** Phase 1 active — member portal functional, Music Library live,
+comms.html and public pages (About, Join) next. Nav logo fix deployed.
 
 ---
 
@@ -93,6 +93,8 @@ comms.html and public pages (About, Join) next.
 - [x] Build Drive proxy Netlify Function (netlify/functions/drive-music.js) ✅
 - [x] Update inject-env.js with Google Drive env vars ✅
 - [x] Set up Google Drive + service account for Music Library ✅
+- [x] Fix nav logo oversized on music.html — added `.nav-logo img` height constraint to main.css ✅
+- [ ] Fix env.local.js console error in production (nosniff header blocking onerror suppression)
 - [ ] Build Communications page (members/comms.html)
 - [ ] Build Home page (copy updates pending from group)
 - [ ] Build About Us page
@@ -123,6 +125,11 @@ comms.html and public pages (About, Join) next.
 - [ ] Onboard second site maintainer
 - [ ] Document update procedures (blog post, add member, update schedule)
 - [ ] Update TechSoup account email to @pdtsingers.org once Google Workspace is live
+- [ ] **Onboard Moss Egli as Social Media Manager** — create Supabase account, determine role (events_editor to start, may need dedicated social_media_manager role — TBD)
+- [ ] **Cross-posting feature**: post PDT events/announcements to Facebook Events and newsletters from website — requirements TBD with Moss
+- [ ] **members/whats-new.html** — simple static changelog page for members; hand-maintained; lists website functionality changes (not content)
+- [ ] **About Us highlight for Moss Egli** — add SMM bio/blurb to About Us page
+- [ ] Notify deceased member's son to deactivate old site
 
 ---
 
@@ -168,6 +175,10 @@ comms.html and public pages (About, Join) next.
 - [x] IRS 501(c)(3) letter: **in hand** — Google Workspace now unblocked
 - [x] Music Library architecture: Netlify Function + service account (see requirements §5g)
 - [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile, proceed independently
+- [ ] **Moss Egli onboarding** — Supabase account + role TBD; first task: set up PDT Facebook group
+- [ ] **Cross-posting requirements** — Moss to drive; Facebook Events + newsletter integration
+- [ ] **members/whats-new.html** — post-launch changelog page for members
+- [ ] **Moss highlight on About Us** — SMM bio TBD
 - [ ] Desired email addresses?
 - [ ] Second site maintainer?
 - [ ] Member Blog: comments or read-only?
@@ -244,7 +255,7 @@ pdtsingers/                  ← repo root
 **pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete  
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
-**Music folder ID:** stored in Netlify env vars as `GOOGLE_DRIVE_MUSIC_FOLDER_ID`
+**Music folder ID:** `1qTgo3DKtQFtQ-CDwiJozxsBAEpQiQBpA`  
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
@@ -292,7 +303,15 @@ pdtsingers/                  ← repo root
 
 ## Session History
 
-### Session 3 — 2026-03-30
+### Session 3 addendum — 2026-03-31 (Tuesday morning)
+- ✅ Nav logo oversized on music.html — fixed by adding `.nav-logo img { height: 48px; width: auto; }` to main.css; deployed
+- ⚠️ env.local.js console error in production still present — benign but tracked for Wednesday fix
+- 📋 **Backlog additions:**
+  - Cross-posting to Facebook Events and newsletters — requirements TBD with Moss
+  - members/whats-new.html — post-launch member-facing changelog page
+  - Onboard Moss Egli (granddaughter, age 19) as Social Media Manager — prior SMM experience at flower store in Camas WA; create Supabase account, role TBD (events_editor to start or new social_media_manager role); first task: set up PDT Facebook group
+  - About Us highlight for Moss — bio/blurb TBD
+- ▶️ Wednesday: fix env.local.js console error → comms.html → public pages
 - ✅ Reviewed project status and confirmed 2–3 week timeline to full launch
 - ✅ Lodge phone decoupled from website dependencies — Kevin has iPhone 11 + Mint Mobile path
 - ✅ Music Library architecture decision: Netlify Function proxy + Google Drive service account

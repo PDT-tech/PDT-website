@@ -395,18 +395,28 @@ body {
 /* ── Buttons ───────────────────────────────────────────────── */
 .btn-primary {
   display: inline-block;
-  background: var(--forest);
-  color: var(--white);
+  background: var(--sky);
+  color: var(--forest);
   padding: 0.75rem 2rem;
   border-radius: var(--border-radius);
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   letter-spacing: 0.03em;
-  transition: background var(--transition);
+  transition: background var(--transition), color var(--transition);
 }
 
 .btn-primary:hover {
   background: var(--sky-deep);
+  color: var(--white);
+}
+
+/* Dark-forest variant — used for modal save/confirm actions in members area */
+.btn-primary.btn-forest {
+  background: var(--forest);
+  color: var(--white);
+}
+.btn-primary.btn-forest:hover {
+  background: var(--forest-mid);
 }
 
 /* Login page submit button uses gold rather than the default dark forest */

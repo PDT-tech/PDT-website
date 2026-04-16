@@ -80,8 +80,9 @@
         Click the link in that email to sign in — it's good for a few minutes.
       </p>
       <p class="login-confirm-help">
-        Didn't get it? Check your spam folder, or
-        <a href="#" id="try-different-email">try a different email address</a>.
+        Didn't get it? Check your spam folder,
+        <a href="#" id="resend-link">resend the link</a>, or
+        <a href="#" id="try-different-email">try a different address</a>.
       </p>
     </div>
 
@@ -182,6 +183,29 @@
     // show the same confirmation either way to avoid user enumeration.
     document.getElementById('confirm-email').textContent = email
     showState('confirmation')
+  })
+
+  // ── Resend link ────────────────────────────────────────────
+  document.getElementById('resend-link').addEventListener('click', async (e) => {
+    e.preventDefault()
+    const resendEl = e.target
+    resendEl.textContent = 'Sending…'
+    resendEl.style.pointerEvents = 'none'
+
+    const email = document.getElementById('confirm-email').textContent
+    await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: 'https://pdtsingers.org/login.html'
+      }
+    })
+
+    resendEl.textContent = 'Sent!'
+    setTimeout(() => {
+      resendEl.textContent = 'resend the link'
+      resendEl.style.pointerEvents = ''
+    }, 3000)
   })
 
   // ── Try a different email ──────────────────────────────────

@@ -154,7 +154,7 @@ function (`netlify/functions/drive-music.js`). Members never interact with Googl
 directly.
 
 **Drive location:** `Music/` folder in president@pdtsingers.org Workspace Drive  
-**Folder ID:** `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`  
+**Folder ID:** set in Netlify — project `pdtsingers.org` → Project configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
 
 **To add a new song:**

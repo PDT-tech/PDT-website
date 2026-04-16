@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDT Singers — Tech Maintainer's Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+:root {
+  --navy:  #1E2761;
+  --sky:   #4A90D9;
+  --teal:  #1D9E75;
+  --amber: #BA7517;
+  --coral: #C04828;
+  --slate: #3d3d3a;
+  --muted: #73726c;
+  --rule:  #d4d2ca;
+  --bg:    #f7f6f2;
+  --mono:  'IBM Plex Mono', monospace;
+  --sans:  'IBM Plex Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--slate);
+  background: var(--bg);
+}
+
+.page { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+header {
+  border-left: 4px solid var(--navy);
+  padding-left: 1.25rem;
+  margin-bottom: 3rem;
+}
+header .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sky);
+}
+header h1 {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.2;
+  margin: 0.25rem 0 0.4rem;
+}
+header .meta {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 3rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--rule);
+}
+
+h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--slate);
+  margin: 2rem 0 0.5rem;
+}
+
+p { margin-bottom: 0.85rem; }
+
+strong { color: var(--navy); font-weight: 600; }
+
+a { color: var(--sky); }
+
+code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: #e8e6de;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  color: var(--slate);
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: #eeecea;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0 1.25rem;
+  overflow-x: auto;
+  line-height: 1.6;
+  color: var(--slate);
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+.maintainer-section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+  background: #fdf3e2;
+  border: 1px solid #e8c97a;
+  border-radius: 3px;
+  padding: 0.2em 0.6em;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.callout {
+  border-left: 3px solid var(--teal);
+  background: #eaf8f3;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0 5px 5px 0;
+  margin: 1.25rem 0;
+}
+.callout.amber { border-color: var(--amber); background: #fdf3e2; }
+.callout.coral { border-color: var(--coral); background: #fdf0ed; }
+.callout .callout-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.3rem;
+}
+.callout.amber .callout-label { color: var(--amber); }
+.callout.coral .callout-label { color: var(--coral); }
+.callout p { font-size: 13.5px; color: var(--slate); margin-bottom: 0; }
+
+.progress-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 1rem 0; }
+.progress-table th {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1.5px solid var(--rule);
+}
+.progress-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.progress-table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15em 0.6em;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.badge.done     { background: #d4f0e5; color: #0d5e38; }
+.badge.open     { background: #dce6f8; color: #1a3580; }
+.badge.deferred { background: #ede9e1; color: #5a5850; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="label">Portland DayTime Singers · Lodge #18, WBQA</div>
+    <h1>Tech Maintainer's Guide</h1>
+    <div class="meta">Last updated: April 2026 · Owner: Kevin Bier (president@pdtsingers.org)</div>
+  </header>
+
+  <!-- 1. Overview -->
+  <h2>1. Overview</h2>
+  <div class="maintainer-section-label">Start here</div>
+  <p>The PDT Singers website is a hand-coded HTML5/CSS3/vanilla JS site hosted on Netlify,
+  with Supabase handling authentication and member content storage. There is no build step,
+  no framework, no CMS. Updating the site means editing files and pushing to GitHub.</p>
+  <p><strong>Repo:</strong> <a href="https://github.com/kevin36v/PDT-website">github.com/kevin36v/PDT-website</a><br>
+  <strong>Live site:</strong> <a href="https://pdtsingers.org">pdtsingers.org</a><br>
+  <strong>Monthly cost:</strong> ~$0 (domain renewal ~$12/yr is the only recurring expense)</p>
+
+  <!-- 2. Accounts & Access -->
+  <h2>2. Accounts &amp; Access</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+
+  <div class="callout coral">
+    <div class="callout-label">Critical</div>
+    <p>All accounts are currently single-owner. If Kevin is unavailable, no one else can make changes.
+    Add a backup owner to each service when a second maintainer is onboarded.</p>
+  </div>
+
+  <table class="progress-table">
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>URL</th>
+        <th>Login</th>
+        <th>What it controls</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Netlify</td><td>netlify.com</td><td>GitHub (kevin36v)</td><td>Hosting, deploys, env vars, forms</td></tr>
+      <tr><td>Supabase</td><td>supabase.com</td><td>GitHub (kevin36v)</td><td>Auth, database, member accounts</td></tr>
+      <tr><td>GitHub</td><td>github.com/kevin36v</td><td>kevin36v</td><td>Source control, CI/CD</td></tr>
+      <tr><td>Google Cloud</td><td>console.cloud.google.com</td><td>president@pdtsingers.org</td><td>Music Library service account</td></tr>
+      <tr><td>Google Workspace</td><td>admin.google.com</td><td>president@pdtsingers.org</td><td>Email, Drive, Meet</td></tr>
+      <tr><td>Resend</td><td>resend.com</td><td>—</td><td>Transactional email (magic links)</td></tr>
+      <tr><td>Helping Hosting</td><td>—</td><td>—</td><td>Domain registrar (pdtsingers.org)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 3. Local Development -->
+  <h2>3. Local Development</h2>
+  <div class="maintainer-section-label">Dev workflow</div>
+  <pre>cd ~/PDT-website
+python3 -m http.server 8080</pre>
+  <p>Open: <code>http://localhost:8080</code></p>
+
+  <div class="callout amber">
+    <div class="callout-label">Warning</div>
+    <p><code>env.local.js</code> must be present in the repo root. This file is gitignored and sets
+    <code>window.__PDT_ENV</code> with Supabase and Google Drive credentials. Never commit it.</p>
+  </div>
+
+  <p>For Music Library local testing: temporarily set the Music folder in Google Drive to
+  "Anyone with link" (Viewer), test, then revert to Restricted. Don't forget to revert.</p>
+
+  <!-- 4. Deploy Workflow -->
+  <h2>4. Deploy Workflow</h2>
+  <div class="maintainer-section-label">Ops</div>
+
+  <div class="callout">
+    <div class="callout-label">Key principle</div>
+    <p>Netlify auto-publishing is <strong>locked</strong> — pushes to GitHub do not auto-deploy.
+    All deploys are triggered manually from the Netlify dashboard.</p>
+  </div>
+
+  <h3>Standard deploy</h3>
+  <ul>
+    <li>Make changes locally, test at <code>localhost:8080</code></li>
+    <li>Have CC commit and push to <code>origin/main</code></li>
+    <li>Netlify dashboard → Deploys → <strong>Trigger deploy → Deploy site</strong></li>
+    <li>Wait for "Published" (usually under 30 seconds)</li>
+    <li>Verify live at pdtsingers.org</li>
+  </ul>
+
+  <p>Do not unlock auto-publishing unless you want every push to deploy immediately.
+  The manual deploy step preserves Netlify's 300 build credits/month and prevents
+  accidental deploys of work-in-progress commits.</p>
+
+  <!-- 5. Environment Variables -->
+  <h2>5. Environment Variables</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>All credentials are injected at runtime by the Netlify edge function <code>inject-env.js</code>.
+  Never hardcode credentials in committed files.</p>
+
+  <table class="progress-table">
+    <thead>
+      <tr><th>Variable</th><th>What it is</th><th>Where set</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>SUPABASE_URL</code></td><td>Supabase project URL</td><td>Netlify env vars</td></tr>
+      <tr><td><code>SUPABASE_ANON_KEY</code></td><td>Supabase publishable anon key</td><td>Netlify env vars</td></tr>
+      <tr><td><code>GOOGLE_DRIVE_API_KEY</code></td><td>Drive API key (local dev only)</td><td>Netlify env vars</td></tr>
+      <tr><td><code>GOOGLE_DRIVE_MUSIC_FOLDER_ID</code></td><td>Music folder ID in Drive</td><td>Netlify env vars</td></tr>
+      <tr><td><code>GOOGLE_SERVICE_ACCOUNT_JSON</code></td><td>Service account JSON (secret)</td><td>Netlify env vars</td></tr>
+    </tbody>
+  </table>
+
+  <p>To update: Netlify dashboard → Site configuration → Environment variables. Changes take effect on next deploy.</p>
+
+  <!-- 6. Member Account Management -->
+  <h2>6. Member Account Management</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>All accounts are admin-created. Members cannot self-register.</p>
+
+  <h3>Adding a new member</h3>
+  <ul>
+    <li>Supabase dashboard → Authentication → Users → Add user → Create new user</li>
+    <li>Enter their email address and a temporary password (won't be used — magic link only)</li>
+    <li>Table Editor → profiles → find their row</li>
+    <li>Set <code>is_active = true</code> and <code>role</code> to appropriate value (usually <code>member</code>)</li>
+    <li>Set <code>voice_part</code> (tenor / lead / baritone / bass)</li>
+    <li>Notify the member — they log in at <code>pdtsingers.org/login.html</code> via magic link</li>
+  </ul>
+
+  <h3>Roles</h3>
+  <table class="progress-table">
+    <thead>
+      <tr><th>Role</th><th>Who</th><th>What they can do</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>admin</code></td><td>Kevin</td><td>Everything</td></tr>
+      <tr><td><code>musical_director</code></td><td>Chris Gabel</td><td>Post to Director's Notes blog</td></tr>
+      <tr><td><code>events_editor</code></td><td>Social media manager, etc.</td><td>Post to Events blog only</td></tr>
+      <tr><td><code>calendar_manager</code></td><td>Future hire</td><td>Create/edit/delete events</td></tr>
+      <tr><td><code>member</code></td><td>All active members</td><td>Mark absences, read all member content</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Deactivating a member</h3>
+  <p>Table Editor → profiles → set <code>is_active = false</code>. Their login will be blocked immediately.
+  No need to delete the auth user.</p>
+
+  <!-- 7. Member Content -->
+  <h2>7. Member Content (Blogs &amp; Posts)</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>Blog posts are stored in the Supabase <code>posts</code> table. Members with appropriate roles
+  can post via the member portal UI. There is no external CMS.</p>
+
+  <table class="progress-table">
+    <thead>
+      <tr><th>Blog</th><th>Role required to post</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Director's Notes</td><td><code>musical_director</code> or <code>admin</code></td></tr>
+      <tr><td>Grand Poohbah's Prattlings</td><td><code>admin</code> only</td></tr>
+      <tr><td>Events Blog</td><td><code>events_editor</code> or <code>admin</code></td></tr>
+    </tbody>
+  </table>
+
+  <p>Posts have a <code>published</code> boolean. Unpublished posts are only visible to the author
+  and admin. Published posts are visible to all authenticated members.</p>
+
+  <!-- 8. Chorus Calendar -->
+  <h2>8. Chorus Calendar</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>Rehearsal events are auto-generated by a Supabase Edge Function (<code>generate-rehearsals</code>)
+  that runs weekly and creates Monday rehearsal events 12 weeks out. Default: 10:30am–12:30pm
+  at Westside Journey UMC.</p>
+
+  <h3>Common calendar tasks</h3>
+  <ul>
+    <li><strong>Cancel a rehearsal:</strong> find the event in the calendar UI (admin view) and mark it Cancelled — it shows struck-through on the calendar</li>
+    <li><strong>Temporary location change:</strong> edit the individual event in the calendar UI</li>
+    <li><strong>Permanent location change:</strong> update the Edge Function in Supabase dashboard → Edge Functions → generate-rehearsals</li>
+  </ul>
+
+  <!-- 9. Music Library -->
+  <h2>9. Music Library</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>Sheet music and learning tracks are served from Google Drive via a Netlify serverless
+  function (<code>netlify/functions/drive-music.js</code>). Members never interact with Google directly.</p>
+
+  <table class="progress-table">
+    <thead>
+      <tr><th>Item</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Drive location</td><td><code>Music/</code> folder in president@pdtsingers.org Workspace Drive</td></tr>
+      <tr><td>Folder ID</td><td><code>1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a</code></td></tr>
+      <tr><td>Service account</td><td><code>pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Adding a new song</h3>
+  <ul>
+    <li>Create a new folder inside <code>Music/</code> named exactly as you want it to appear</li>
+    <li>Drop in the PDF (sheet music) and MP3 learning tracks</li>
+    <li>The Music Library page picks it up automatically on next load</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">File naming tip</div>
+    <p>Include the voice part in learning track filenames (Tenor, Lead, Bari/Baritone, Bass)
+    so the page can sort the member's own part to the top.</p>
+  </div>
+
+  <!-- 10. Email -->
+  <h2>10. Email (Magic Link Login)</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>Magic links are sent via Resend (resend.com), wired into Supabase SMTP.
+  From address: <code>noreply@pdtsingers.org</code>. Template: Supabase dashboard →
+  Authentication → Email Templates → Magic Link.</p>
+
+  <div class="callout amber">
+    <div class="callout-label">Backlog item</div>
+    <p>Link expiry is currently 24 hours. Reduce to 15 minutes: Supabase →
+    Authentication → Settings → OTP Expiry.</p>
+  </div>
+
+  <h3>If members report not receiving login emails</h3>
+  <ul>
+    <li>Check Resend dashboard for delivery status</li>
+    <li>Ask member to check spam folder</li>
+    <li>Verify their email address in Supabase matches exactly what they're entering</li>
+  </ul>
+
+  <!-- 11. Forms -->
+  <h2>11. Forms</h2>
+  <div class="maintainer-section-label">Admin reference</div>
+  <p>Public forms (Join Us, Contact, Performances booking inquiry) are handled by Netlify Forms.
+  Submissions appear in: Netlify dashboard → Forms. Free tier limit: 100 submissions/month —
+  more than sufficient.</p>
+  <p>Email notifications for form submissions can be configured in:
+  Netlify → Forms → [form name] → Form notifications.</p>
+
+  <!-- 12. Quick Reference -->
+  <h2>12. Common Tasks Quick Reference</h2>
+  <div class="maintainer-section-label">Ops</div>
+
+  <table class="progress-table">
+    <thead>
+      <tr><th>Task</th><th>Where</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Add a member</td><td>Supabase → Authentication → Users</td></tr>
+      <tr><td>Deactivate a member</td><td>Supabase → Table Editor → profiles → <code>is_active = false</code></td></tr>
+      <tr><td>Change a member's role</td><td>Supabase → Table Editor → profiles → <code>role</code></td></tr>
+      <tr><td>Add a song to Music Library</td><td>Drop folder + files in Google Drive <code>Music/</code> folder</td></tr>
+      <tr><td>Cancel a rehearsal</td><td>Calendar page (admin view) → mark Cancelled</td></tr>
+      <tr><td>View form submissions</td><td>Netlify → Forms</td></tr>
+      <tr><td>Update env variables</td><td>Netlify → Site configuration → Environment variables</td></tr>
+      <tr><td>Edit magic link email template</td><td>Supabase → Authentication → Email Templates</td></tr>
+      <tr><td>Trigger a deploy</td><td>Netlify → Deploys → Trigger deploy</td></tr>
+      <tr><td>View error logs</td><td>Netlify → Functions → drive-music → logs</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 13. Architecture -->
+  <h2>13. Architecture Summary</h2>
+  <div class="maintainer-section-label">Maintainer reference</div>
+  <pre>Browser
+  └── pdtsingers.org (Netlify CDN)
+        ├── Static HTML/CSS/JS files (GitHub repo)
+        ├── inject-env.js (Netlify Edge Function)
+        │     └── Injects SUPABASE_URL, SUPABASE_ANON_KEY, DRIVE credentials
+        ├── drive-music.js (Netlify Function)
+        │     └── Authenticates to Google Drive via service account
+        │     └── Returns song/file listings to Music Library page
+        └── Netlify Forms (public form submissions)
+
+Authentication: Supabase (email → magic link via Resend SMTP)
+Database:       Supabase (profiles, events, absences, posts tables)
+Music files:    Google Workspace Drive (president@pdtsingers.org)
+Domain:         pdtsingers.org at Helping Hosting → Netlify DNS</pre>
+
+  <!-- 14. Backlog -->
+  <h2>14. Known Issues &amp; Backlog</h2>
+  <div class="maintainer-section-label">Tracking</div>
+
+  <table class="progress-table">
+    <thead>
+      <tr><th>Item</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Cap OTP expiry at 15 minutes (Supabase → Auth → Settings)</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Disable password auth in Supabase (magic link confirmed working)</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Add second account owner to all services</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Onboard Moss Egli — Supabase account, events_editor role</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Populate Music Library Drive folders from Dropbox</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Build public pages (About, Join, Performances, etc.)</td><td><span class="badge open">Open</span></td></tr>
+      <tr><td>Build members/whats-new.html (member-facing changelog)</td><td><span class="badge deferred">Deferred</span></td></tr>
+      <tr><td>env.local.js console error in production (nosniff header) — benign</td><td><span class="badge deferred">Deferred</span></td></tr>
+      <tr><td>Magic link login — end-to-end working</td><td><span class="badge done">Done</span></td></tr>
+      <tr><td>Resend link button on confirmation state</td><td><span class="badge done">Done</span></td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 3rem; font-family: var(--mono); font-size: 12px; color: var(--muted);">
+    PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship &amp; Fun
+  </p>
+
+</div>
+</body>
+</html>

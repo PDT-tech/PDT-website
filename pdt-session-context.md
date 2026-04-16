@@ -256,7 +256,7 @@ pdtsingers/                  ← repo root
 **pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete  
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
-**Music folder ID:** `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a` (Workspace Drive, president@pdtsingers.org — updated Session 4)  
+**Music folder ID:** see `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var (Workspace Drive, president@pdtsingers.org — updated Session 4)  
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
@@ -307,7 +307,7 @@ pdtsingers/                  ← repo root
 ### Session 4 — 2026-04-15
 
 - ✅ members/comms.html built and deployed
-- ✅ Google Drive Music Library migrated to Workspace Drive (president@pdtsingers.org), folder ID: 1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a
+- ✅ Google Drive Music Library migrated to Workspace Drive (president@pdtsingers.org), folder ID stored in `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var
 - ✅ GOOGLE_DRIVE_MUSIC_FOLDER_ID updated in Netlify env vars
 - ✅ Member portal consistency pass: directors-notes rebuilt, music.html nav fixed, "Home" link fixed across all member pages, Resources dead link removed, Cloudflare email obfuscation fixed via Cache-Control: no-transform in netlify.toml
 - ✅ Six public placeholder pages built: about.html, performances.html, join.html, music.html, friends.html, contact.html

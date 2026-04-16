@@ -119,7 +119,7 @@ ensures only admin-created accounts receive magic links — strangers get nothin
 - Member content: stored in Supabase (blog posts, announcements) — rendered via JS fetch
 - **Decap CMS** (optional, Phase 3+): lets non-technical admin post without touching code
 - Sheet music/resources: files live in Google Workspace Drive (`president@pdtsingers.org`)
-  under `Music/` (folder ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`). The `pdtsingers.music@gmail.com`
+  under `Music/` (folder ID in `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var). The `pdtsingers.music@gmail.com`
   staging account is retired. Files still need to be copied from Dropbox into Drive.
 
 ### 5c. Email
@@ -206,7 +206,7 @@ mismatch possible.
 - Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
-  (updated to Workspace Drive value `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a` — April 2026)
+  (updated to Workspace Drive value — April 2026; see `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var)
 - Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` (Music folder
   must be temporarily set to "Anyone with link" for local testing — revert after)
 - Production: page calls `/.netlify/functions/drive-music` which holds all credentials
@@ -216,7 +216,7 @@ mismatch possible.
 **Drive folder structure:**
 ```
 Music/ (president@pdtsingers.org Workspace Drive — shared with service account, Viewer)
-       (folder ID: 1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a)
+       (folder ID: see GOOGLE_DRIVE_MUSIC_FOLDER_ID Netlify env var)
     ├── Ain't Misbehavin'/        ← performance repertoire
     ├── God Bless America/        ← performance repertoire
     ├── If There's Anybody Here (From Out Of Town)/
@@ -335,7 +335,7 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
   All men who love to sing are welcome.
 - **BHS relationship**: Not affiliated, but warm collegial relationship. State clearly on About page.
 - **Sheet music**: In Google Workspace Drive (`president@pdtsingers.org`, `Music/` folder,
-  ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`); served via Netlify Function + service account.
+  folder ID in `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var); served via Netlify Function + service account.
   Drive migration complete as of April 2026 — no code changes were required.
 - **Duane Lundsten memorial**: TBD pending group discussion. Reserve placeholder in design.
   No action needed before Phase 1. Memorial plaque also being procured (Kevin).

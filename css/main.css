@@ -412,7 +412,7 @@ body {
 /* Login page submit button uses gold rather than the default dark forest */
 #submit-btn {
   background-color: #c4a24a;
-  color: #ffffff;
+  color: #1a1a1a;
 }
 #submit-btn:hover {
   background-color: #b08d3a;

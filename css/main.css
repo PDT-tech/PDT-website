@@ -638,6 +638,7 @@ body {
   .info-section { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
   .hero-words { max-width: 320px; }
+  .br-desktop { display: none; }
 
 }
 

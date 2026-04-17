@@ -15,7 +15,7 @@ async function initAuthGuard () {
 
   // Not logged in — redirect to login
   if (!session) {
-    window.location.href = `${LOGIN_URL}?next=${encodeURIComponent(window.location.pathname)}`
+    window.location.href = `${LOGIN_URL}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`
     return
   }
 

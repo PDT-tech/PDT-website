@@ -112,6 +112,10 @@
   import { supabase, getSession } from './js/supabase.js'
 
   const params = new URLSearchParams(window.location.search)
+  const nextParam = params.get('next')
+  const callbackUrl = nextParam
+    ? `https://pdtsingers.org/login.html?next=${encodeURIComponent(nextParam)}`
+    : 'https://pdtsingers.org/login.html'
 
   // Check for an existing session before showing anything.
   // state-form starts hidden in HTML so there's no flash while this resolves.
@@ -169,7 +173,7 @@
       email,
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: 'https://pdtsingers.org/login.html'
+        emailRedirectTo: callbackUrl
       }
     })
 
@@ -200,7 +204,7 @@
       email,
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: 'https://pdtsingers.org/login.html'
+        emailRedirectTo: callbackUrl
       }
     })
 

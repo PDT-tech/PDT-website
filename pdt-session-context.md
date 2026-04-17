@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-15 (Session 5)  
+**Last updated:** 2026-04-16 (Session 6)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -44,7 +44,7 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 1 active — member portal complete, comms.html live, six public placeholder pages deployed, magic link login complete. Maintainer's guide written.
+**Current phase:** Phase 2 active — all public pages live with real content. Member accounts seeded. Password auth setup pending.
 
 ---
 
@@ -99,7 +99,7 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [ ] Test magic link end-to-end with a real member email
 - [ ] Disable password auth in Supabase dashboard (once magic link confirmed)
 - [ ] Cap OTP expiry at 15 minutes (Supabase → Authentication → Settings → OTP Expiry; currently 24h)
-- [ ] Build Home page (copy updates pending from group)
+- [x] Build Home page (copy updates pending from group)
 - [x] Build About Us page (placeholder) ✅
 - [x] Build Join Us page (placeholder) ✅
 
@@ -109,7 +109,7 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [x] Build Friends of PDT page — placeholder live ✅
 - [x] Build Contact page — placeholder live ✅
 - [ ] Upload group photos
-- [ ] Finalize all public copy
+- [x] Finalize all public copy — All public pages have real content ✅
 - [ ] SEO: meta tags, XML sitemap, Google Search Console
 
 ### Phase 3 — Polish & Launch
@@ -307,10 +307,55 @@ pdtsingers/                  ← repo root
 - **Supabase posts RLS policies**: insert/update/delete are role+blog_type scoped; select has two policies — `posts_select_authenticated` (published only, all members) + `posts_select_admin` (all posts, admin only) + `posts_select_author` (own posts, any role)
 - **Auth is magic-link-only** (Session 5) — Resend SMTP wired in, login.html redesigned. Password auth still exists in Supabase but is unused; disable once magic link confirmed in production.
 - **pdtsingers.music@gmail.com**: created as staging account but not used — Music files live in Kevin's personal Drive. May dispose of this account.
+- PDT performs **sing-outs** — not concerts. Use "sing-outs" consistently throughout the site.
+- **Voice parts are capitalized** when referenced by name: Tenor, Lead, Baritone, Bass.
+- Avoid "care facilities" — use "senior centers, independent and assisted living communities" instead.
+- **Supabase Project URL:** https://odwkyofizkqfzxprpmbg.supabase.co
+- **Member accounts seeded April 16, 2026.** Passwords not yet set — needed before login announcement sent.
+- **seed-members.mjs** in repo root — one-time script, not a site file. node_modules/ is gitignored.
 
 ---
 
 ## Session History
+
+### Session 6 — 2026-04-16
+
+- ✅ Netlify deploy confirmed clean after secret fix (GOOGLE_DRIVE_MUSIC_FOLDER_ID removed from docs)
+- ✅ Added synthetic placeholder rule to pdt-conventions.md (Secrets section)
+- ✅ Added commit-and-push reminder rule to pdt-conventions.md (root cause of repeated build failures)
+- ✅ Seeded all 15 member accounts via Node.js script (seed-members.mjs) — roles and voice parts set
+- ✅ node_modules/ added to .gitignore
+- ✅ OTP expiry set to 900 seconds (Supabase → Sign In / Providers → Email)
+- ✅ Password auth effectively disabled (not wired to any UI)
+- ✅ Button default state bug fixed globally — dark-mode --sky override was root cause
+- ✅ Buttons & CTAs convention added to pdt-conventions.md with documented exceptions
+- ✅ About Us page built and deployed with real content
+- ✅ Join Us page built, then substantially revised — rebalanced from "no barriers" to "welcoming but serious"
+- ✅ Performances page built with three upcoming sing-outs
+- ✅ Our Music page built with video embed placeholder
+- ✅ Friends of PDT page built with newsletter placeholder
+- ✅ Home page (index.html) updated — hero subhead, terminology fixes, performances teaser, Join CTA added
+- ✅ "care facilities" and "concerts" terminology purged from all public pages
+- ✅ Voice parts capitalized (Tenor, Lead, Baritone, Bass) throughout
+- ✅ "How it started" subhead fix on About Us Our Story section
+- ✅ Hero heading updated to "Men who love to sing — and bring that joy to their community"
+- ✅ Supabase Project URL identified: https://odwkyofizkqfzxprpmbg.supabase.co
+- ▶️ TODO: Set passwords for all member accounts — needed before member announcement email can be sent
+- ▶️ TODO: Send member announcement email (draft ready, password instructions placeholder)
+- ▶️ TODO: Onboard Moss Egli — Supabase account + events_editor role
+- ▶️ TODO: Add new member onboarding procedure to pdt-tech-maintainers-guide.md
+- ▶️ TODO: Mobile layout audit
+- ▶️ TODO: SEO pass (after mobile audit and content settled)
+- ▶️ TODO: Style guide — defer to Phase 2 wrap-up
+- ▶️ TODO: Duane Lundsten remembrance on About Us — pending group discussion
+- ▶️ TODO: Photo archive section on Performances page
+- ▶️ TODO: Hero heading alternatives — poll HC via email (3 options documented in session)
+- ▶️ TODO: Google Workspace — waiting on Goodstack/TechSoup
+
+**Hero heading alternatives under HC review:**
+1. "Men who love to sing — and share it with their community" (current)
+2. "Men who love to sing — and bring that joy to others"
+3. "Men who love to sing — for the love of harmony and the good of the community"
 
 ### Session 5 — 2026-04-15
 

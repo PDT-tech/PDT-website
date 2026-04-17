@@ -25,6 +25,9 @@ Thumbs.db
 # Local env override (never commit)
 env.local.js
 
+# npm
+node_modules/
+
 # Supabase CLI temp files
 supabase/.temp/
 *.kate-swp

@@ -179,6 +179,30 @@ calendar UI.
 **To change the default location permanently:** update the Edge Function in
 Supabase dashboard → Edge Functions → generate-rehearsals.
 
+### Year-End Rehearsal Population
+
+`scripts/populate-rehearsals.js` is a standalone Node script run once each December
+to bulk-load all Monday rehearsals for the coming year. It is **not** part of the site —
+run it manually from the terminal.
+
+**What it does:** deletes any existing Monday rehearsal events for the target year,
+then inserts one event per Monday through December 31. Safe to re-run — the delete
+step ensures no duplicates.
+
+**Run command:**
+```bash
+SUPABASE_URL=https://your-project-ref.supabase.co \
+SUPABASE_SERVICE_KEY=your-service-role-key \
+node scripts/populate-rehearsals.js 2027
+```
+
+- `SUPABASE_URL` — find in Supabase dashboard → Project Settings → API → Project URL
+- `SUPABASE_SERVICE_KEY` — find in Supabase dashboard → Project Settings → API → Service Role secret key (not the anon key)
+- Year argument is optional; omit it to populate the current calendar year
+
+**When to run:** each December, pass the coming year as the argument (e.g. `2027`).
+The script skips past Mondays and only inserts from today forward when run mid-year.
+
 ---
 
 ## 9. Music Library

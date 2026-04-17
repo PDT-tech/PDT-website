@@ -393,6 +393,50 @@ body .pdt-events-editor-only {
 
 .nav-logout:hover { color: #ffffff; }
 
+/* Hamburger spans are white on the dark member nav */
+.member-nav .nav-hamburger span {
+  background: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .member-nav {
+    flex-wrap: wrap;
+  }
+
+  .member-nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding: var(--space-sm) 0 var(--space-md);
+    gap: 0;
+  }
+
+  .member-nav-links.is-open {
+    display: flex;
+  }
+
+  .member-nav-links li a {
+    display: block;
+    padding: 0.6rem var(--space-md);
+    font-size: var(--text-sm);
+  }
+
+  .member-nav-right {
+    display: none;
+  }
+
+  .member-nav-right.is-open {
+    display: flex;
+    width: 100%;
+    padding: 0 var(--space-md) var(--space-sm);
+    gap: var(--space-sm);
+  }
+}
+
 /* ── Welcome Band ──────────────────────────────────────────── */
 .welcome-band {
   background: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 100%);

@@ -83,6 +83,67 @@ body {
   color: var(--white) !important;
 }
 
+/* ── Hamburger button ──────────────────────────────────────── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+}
+
+.nav-hamburger span {
+  display: block;
+  height: 2px;
+  background: var(--forest);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* Open state — morph to X */
+.nav-hamburger.is-open span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+.nav-hamburger.is-open span:nth-child(2) {
+  opacity: 0;
+}
+.nav-hamburger.is-open span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .nav-hamburger {
+    display: flex;
+  }
+
+  .site-nav {
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding: var(--space-sm) 0 var(--space-md);
+    gap: 0;
+  }
+
+  .nav-links.is-open {
+    display: flex;
+  }
+
+  .nav-links li a {
+    display: block;
+    padding: 0.6rem var(--space-md);
+    font-size: var(--text-sm);
+  }
+}
+
 /* ── Footer ────────────────────────────────────────────────── */
 .site-footer {
   background: var(--forest);

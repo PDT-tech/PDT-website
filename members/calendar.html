@@ -49,9 +49,6 @@
     <div class="cal-page-hero-inner">
       <h1 class="cal-page-title">Chorus Calendar</h1>
       <p class="cal-page-blurb">Click any event to see details and mark your attendance. Rehearsals are added automatically each week.</p>
-      <div class="cal-page-actions pdt-cal-manager-only">
-        <button class="btn-primary" id="new-event-btn">+ New Event</button>
-      </div>
     </div>
   </div>
 
@@ -65,7 +62,6 @@
       </div>
       <div class="cal-header-actions">
         <button class="cal-today-btn" id="today-btn">Today</button>
-
       </div>
     </div>
     <!-- Legend -->
@@ -78,7 +74,7 @@
   </div>
 
   <!-- CALENDAR BODY -->
-  <div class="cal-body">
+  <div class="cal-body cal-body--full">
 
     <!-- GRID -->
     <div class="cal-grid-wrap">
@@ -95,62 +91,14 @@
       </div>
     </div>
 
-    <!-- EVENT DETAIL PANEL -->
-    <div class="cal-detail" id="cal-detail" hidden>
-      <button class="cal-detail-close" id="detail-close" aria-label="Close">&times;</button>
-
-      <div class="cal-detail-type-badge" id="detail-type-badge"></div>
-      <h2 class="cal-detail-title" id="detail-title"></h2>
-      <div class="cal-detail-cancelled-banner" id="detail-cancelled" hidden>
-        ⚠️ This event is cancelled
-      </div>
-
-      <div class="cal-detail-meta">
-        <div class="cal-detail-row" id="detail-date-row">
-          <span class="cal-detail-label">Date</span>
-          <span class="cal-detail-value" id="detail-date"></span>
-        </div>
-        <div class="cal-detail-row" id="detail-time-row">
-          <span class="cal-detail-label">Time</span>
-          <span class="cal-detail-value" id="detail-time"></span>
-        </div>
-        <div class="cal-detail-row" id="detail-location-row">
-          <span class="cal-detail-label">Location</span>
-          <span class="cal-detail-value" id="detail-location"></span>
-        </div>
-      </div>
-
-      <div class="cal-detail-notes" id="detail-notes" hidden>
-        <div class="cal-detail-label">Notes</div>
-        <div class="cal-detail-notes-body" id="detail-notes-body"></div>
-      </div>
-
-      <!-- Absence section -->
-      <div class="cal-detail-absences">
-        <div class="cal-detail-label">Who's out</div>
-        <div id="detail-absences-list" class="cal-absences-list">
-          <em>Loading…</em>
-        </div>
-      </div>
-
-      <!-- Absence CTA — state-aware -->
-      <div class="cal-detail-absence-cta" id="absence-cta" hidden>
-        <button class="btn-primary cal-absent-btn" id="mark-absent-btn">
-          I won't be there
-        </button>
-        <button class="btn-secondary cal-present-btn" id="mark-present-btn" hidden>
-          I'll be there after all
-        </button>
-      </div>
-
-      <!-- Admin actions -->
-      <div class="cal-detail-admin-actions pdt-cal-manager-only">
-        <button class="btn-secondary btn-sm" id="edit-event-btn">Edit</button>
-        <button class="btn-danger btn-sm" id="delete-event-btn">Delete</button>
-      </div>
-    </div>
-
   </div><!-- /cal-body -->
+
+  <!-- CALENDAR TOOLBAR -->
+  <div class="cal-toolbar">
+    <div class="cal-toolbar-inner">
+      <button class="btn-primary pdt-cal-manager-only" id="new-event-btn">+ New Event</button>
+    </div>
+  </div>
 
   <!-- EVENT FORM MODAL -->
   <div class="post-modal-overlay modal-hidden" id="event-modal">
@@ -239,6 +187,63 @@
     </div>
   </div>
 
+  <!-- EVENT DETAIL MODAL -->
+  <div class="cal-detail-overlay modal-hidden" id="event-detail-modal">
+    <div class="cal-detail-card" id="event-detail-card">
+      <button class="cal-detail-card-close" id="detail-modal-close" aria-label="Close">&times;</button>
+
+      <div class="cal-detail-type-badge" id="dm-type-badge"></div>
+      <h2 class="cal-detail-title" id="dm-title"></h2>
+      <div class="cal-detail-cancelled-banner modal-hidden" id="dm-cancelled">
+        ⚠️ This event is cancelled
+      </div>
+
+      <div class="cal-detail-meta">
+        <div class="cal-detail-row" id="dm-date-row">
+          <span class="cal-detail-label">Date</span>
+          <span class="cal-detail-value" id="dm-date"></span>
+        </div>
+        <div class="cal-detail-row modal-hidden" id="dm-time-row">
+          <span class="cal-detail-label">Time</span>
+          <span class="cal-detail-value" id="dm-time"></span>
+        </div>
+        <div class="cal-detail-row modal-hidden" id="dm-location-row">
+          <span class="cal-detail-label">Location</span>
+          <span class="cal-detail-value" id="dm-location"></span>
+        </div>
+      </div>
+
+      <div class="cal-detail-notes modal-hidden" id="dm-notes">
+        <div class="cal-detail-label">Notes</div>
+        <div class="cal-detail-notes-body" id="dm-notes-body"></div>
+      </div>
+
+      <div class="cal-detail-absences">
+        <div class="cal-detail-label">Who's out</div>
+        <div id="dm-absences-list" class="cal-absences-list">
+          <em>Loading…</em>
+        </div>
+      </div>
+
+      <div class="cal-detail-absence-cta modal-hidden" id="dm-absence-cta">
+        <button class="btn-primary cal-absent-btn" id="dm-mark-absent-btn">I won't be there</button>
+        <button class="btn-secondary cal-present-btn modal-hidden" id="dm-mark-present-btn">I'll be there after all</button>
+      </div>
+
+      <div class="cal-detail-admin-actions pdt-cal-manager-only" id="dm-admin-actions">
+        <button class="btn-secondary btn-sm" id="dm-edit-btn">Edit</button>
+        <button class="btn-danger btn-sm" id="dm-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHIP HOVER POPOVER -->
+  <div class="cal-popover modal-hidden" id="cal-popover">
+    <div class="cal-popover-type" id="pop-type"></div>
+    <div class="cal-popover-title" id="pop-title"></div>
+    <div class="cal-popover-meta" id="pop-meta"></div>
+  </div>
+
 </main>
 
 <footer class="members-footer">
@@ -253,12 +258,14 @@
   import { supabase } from '../js/supabase.js'
 
   // ── State ──────────────────────────────────────────────────
-  let currentYear  = new Date().getFullYear()
-  let currentMonth = new Date().getMonth() // 0-indexed
-  let monthEvents  = []           // events for displayed month
-  let selectedEvent = null        // currently open event
-  let myAbsences   = new Set()    // event IDs where user is absent
-  let myAbsenceIds = {}           // event_id → absence row id (for delete)
+  let currentYear   = new Date().getFullYear()
+  let currentMonth  = new Date().getMonth()
+  let monthEvents   = []
+  let selectedEvent = null
+  let myAbsences    = new Set()
+  let myAbsenceIds  = {}
+  let hoverTimer    = null
+  const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches
 
   // ── Role visibility ────────────────────────────────────────
   function applyRoleVisibility () {
@@ -269,13 +276,13 @@
     }
     if (profile.role === 'admin' || profile.role === 'calendar_manager') {
       document.querySelectorAll('.pdt-cal-manager-only').forEach(el => {
-        el.style.display = 'block'
+        el.style.display = ''
       })
     }
   }
   applyRoleVisibility()
 
-  // ── Calendar rendering ─────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────
   const MONTHS = ['January','February','March','April','May','June',
                   'July','August','September','October','November','December']
   const TYPE_LABELS = {
@@ -283,26 +290,33 @@
     board_meeting: 'Board Meeting', social: 'Social Event'
   }
 
+  function formatTime (t) {
+    if (!t) return ''
+    const [h, m] = t.split(':')
+    const hour = parseInt(h)
+    const ampm = hour >= 12 ? 'pm' : 'am'
+    const h12 = hour % 12 || 12
+    return `${h12}:${m} ${ampm}`
+  }
+
+  // ── Calendar rendering ─────────────────────────────────────
   function renderCalendar () {
     document.getElementById('month-title').textContent =
       `${MONTHS[currentMonth]} ${currentYear}`
 
     const grid = document.getElementById('cal-grid')
-    // Remove all day cells (keep headers)
     grid.querySelectorAll('.cal-day').forEach(el => el.remove())
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay()
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
     const today = new Date()
 
-    // Blank cells before first day
     for (let i = 0; i < firstDay; i++) {
       const blank = document.createElement('div')
       blank.className = 'cal-day cal-day--blank'
       grid.appendChild(blank)
     }
 
-    // Day cells
     for (let d = 1; d <= daysInMonth; d++) {
       const cell = document.createElement('div')
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
@@ -318,14 +332,31 @@
       dayNum.textContent = d
       cell.appendChild(dayNum)
 
-      // Event chips for this day
       const dayEvents = monthEvents.filter(e => e.event_date === dateStr)
       dayEvents.forEach(ev => {
         const chip = document.createElement('div')
         chip.className = `cal-chip cal-chip--${ev.event_type}${ev.is_cancelled ? ' cal-chip--cancelled' : ''}`
-        chip.textContent = ev.is_cancelled ? `~~${ev.title}~~` : ev.title
+        chip.textContent = ev.title
         chip.style.textDecoration = ev.is_cancelled ? 'line-through' : ''
-        chip.addEventListener('click', (e) => { e.stopPropagation(); openDetail(ev) })
+        chip.dataset.eventId = ev.id
+
+        // Click → detail modal
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation()
+          clearHoverPopover()
+          openDetailModal(ev, chip)
+        })
+
+        // Hover → popover (desktop only)
+        if (!isTouchDevice()) {
+          chip.addEventListener('mouseenter', () => {
+            hoverTimer = setTimeout(() => showPopover(ev, chip), 1500)
+          })
+          chip.addEventListener('mouseleave', () => {
+            clearHoverPopover()
+          })
+        }
+
         cell.appendChild(chip)
       })
 
@@ -333,89 +364,105 @@
     }
   }
 
-  // ── Fetch events for month ─────────────────────────────────
+  // ── Fetch ──────────────────────────────────────────────────
   async function loadMonth () {
     const start = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`
     const end   = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${new Date(currentYear, currentMonth+1, 0).getDate()}`
-
     const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .gte('event_date', start)
-      .lte('event_date', end)
+      .from('events').select('*')
+      .gte('event_date', start).lte('event_date', end)
       .order('event_date', { ascending: true })
-
     if (!error && data) monthEvents = data
     renderCalendar()
   }
 
-  // ── Fetch my absences ──────────────────────────────────────
   async function loadMyAbsences () {
     const profile = window.__PDT_USER
     if (!profile) return
-
     const { data } = await supabase
-      .from('absences')
-      .select('id, event_id')
+      .from('absences').select('id, event_id')
       .eq('member_id', profile.id)
-
     if (data) {
       myAbsences = new Set(data.map(a => a.event_id))
       data.forEach(a => { myAbsenceIds[a.event_id] = a.id })
     }
   }
 
-  // ── Event detail panel ─────────────────────────────────────
-  async function openDetail (ev) {
+  // ── Hover Popover ──────────────────────────────────────────
+  function showPopover (ev, chip) {
+    const pop = document.getElementById('cal-popover')
+    document.getElementById('pop-type').textContent = TYPE_LABELS[ev.event_type] || ev.event_type
+    document.getElementById('pop-title').textContent = ev.title
+    const meta = []
+    if (ev.start_time) meta.push(formatTime(ev.start_time) + (ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''))
+    if (ev.location) meta.push(ev.location)
+    document.getElementById('pop-meta').textContent = meta.join(' · ')
+
+    // Position near chip
+    const rect = chip.getBoundingClientRect()
+    const popW = 220
+    let left = rect.left + window.scrollX
+    let top  = rect.bottom + window.scrollY + 6
+    if (left + popW > window.innerWidth - 16) left = window.innerWidth - popW - 16
+    pop.style.left = left + 'px'
+    pop.style.top  = top + 'px'
+    pop.classList.remove('modal-hidden')
+  }
+
+  function clearHoverPopover () {
+    clearTimeout(hoverTimer)
+    hoverTimer = null
+    document.getElementById('cal-popover').classList.add('modal-hidden')
+  }
+
+  // ── Detail Modal ───────────────────────────────────────────
+  async function openDetailModal (ev, chip) {
     selectedEvent = ev
-    closeEventModal()
 
-    document.getElementById('detail-type-badge').textContent = TYPE_LABELS[ev.event_type] || ev.event_type
-    document.getElementById('detail-type-badge').className = `cal-detail-type-badge cal-badge--${ev.event_type}`
-    document.getElementById('detail-title').textContent = ev.title
-    document.getElementById('detail-cancelled').hidden = !ev.is_cancelled
+    document.getElementById('dm-type-badge').textContent = TYPE_LABELS[ev.event_type] || ev.event_type
+    document.getElementById('dm-type-badge').className = `cal-detail-type-badge cal-badge--${ev.event_type}`
+    document.getElementById('dm-title').textContent = ev.title
 
-    // Date
+    const cancelled = document.getElementById('dm-cancelled')
+    ev.is_cancelled ? cancelled.classList.remove('modal-hidden') : cancelled.classList.add('modal-hidden')
+
     const date = new Date(ev.event_date + 'T12:00:00')
-    document.getElementById('detail-date').textContent = date.toLocaleDateString('en-US', {
+    document.getElementById('dm-date').textContent = date.toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     })
 
-    // Time
-    const timeRow = document.getElementById('detail-time-row')
+    const timeRow = document.getElementById('dm-time-row')
     if (ev.start_time) {
-      document.getElementById('detail-time').textContent =
+      document.getElementById('dm-time').textContent =
         formatTime(ev.start_time) + (ev.end_time ? ` – ${formatTime(ev.end_time)}` : '')
-      timeRow.hidden = false
+      timeRow.classList.remove('modal-hidden')
     } else {
-      timeRow.hidden = true
+      timeRow.classList.add('modal-hidden')
     }
 
-    // Location
-    const locRow = document.getElementById('detail-location-row')
+    const locRow = document.getElementById('dm-location-row')
     if (ev.location) {
-      document.getElementById('detail-location').textContent = ev.location
-      locRow.hidden = false
+      document.getElementById('dm-location').textContent = ev.location
+      locRow.classList.remove('modal-hidden')
     } else {
-      locRow.hidden = true
+      locRow.classList.add('modal-hidden')
     }
 
-    // Notes
-    const notesEl = document.getElementById('detail-notes')
+    const notesEl = document.getElementById('dm-notes')
     if (ev.notes) {
-      document.getElementById('detail-notes-body').textContent = ev.notes
-      notesEl.hidden = false
+      document.getElementById('dm-notes-body').textContent = ev.notes
+      notesEl.classList.remove('modal-hidden')
     } else {
-      notesEl.hidden = true
+      notesEl.classList.add('modal-hidden')
     }
 
-    // Load absences for this event
+    // Absences
+    const abList = document.getElementById('dm-absences-list')
+    abList.innerHTML = '<em>Loading…</em>'
     const { data: absences } = await supabase
       .from('absences')
       .select('note, profiles(full_name)')
       .eq('event_id', ev.id)
-
-    const abList = document.getElementById('detail-absences-list')
     if (!absences || absences.length === 0) {
       abList.innerHTML = '<em style="color:#5a5a5a;font-size:0.875rem;">Nobody marked absent yet.</em>'
     } else {
@@ -427,38 +474,57 @@
       ).join('')
     }
 
-    // Absence CTA — only show for future events
+    // Absence CTA
+    const ctaEl = document.getElementById('dm-absence-cta')
+    const absentBtn = document.getElementById('dm-mark-absent-btn')
+    const presentBtn = document.getElementById('dm-mark-present-btn')
     const eventDate = new Date(ev.event_date + 'T23:59:59')
-    const ctaEl = document.getElementById('absence-cta')
-    const absentBtn = document.getElementById('mark-absent-btn')
-    const presentBtn = document.getElementById('mark-present-btn')
-
     if (eventDate >= new Date() && !ev.is_cancelled) {
-      ctaEl.hidden = false
+      ctaEl.classList.remove('modal-hidden')
       if (myAbsences.has(ev.id)) {
-        absentBtn.hidden = true
-        presentBtn.hidden = false
+        absentBtn.classList.add('modal-hidden')
+        presentBtn.classList.remove('modal-hidden')
       } else {
-        absentBtn.hidden = false
-        presentBtn.hidden = true
+        absentBtn.classList.remove('modal-hidden')
+        presentBtn.classList.add('modal-hidden')
       }
     } else {
-      ctaEl.hidden = true
+      ctaEl.classList.add('modal-hidden')
     }
 
-    // Store event data for edit button
-    document.getElementById('edit-event-btn').dataset.event = JSON.stringify(ev)
+    // Admin actions
+    document.getElementById('dm-edit-btn').dataset.event = JSON.stringify(ev)
 
-    document.getElementById('cal-detail').hidden = false
+    // Position modal near chip, avoiding overlap
+    const card = document.getElementById('event-detail-card')
+    const overlay = document.getElementById('event-detail-modal')
+    overlay.classList.remove('modal-hidden')
+    // Let browser paint first, then position
+    requestAnimationFrame(() => {
+      const chipRect = chip.getBoundingClientRect()
+      const cardW = card.offsetWidth
+      const cardH = card.offsetHeight
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      let left = chipRect.right + 12
+      if (left + cardW > vw - 16) left = chipRect.left - cardW - 12
+      if (left < 16) left = Math.max(16, (vw - cardW) / 2)
+      let top = chipRect.top + window.scrollY
+      if (top + cardH > window.scrollY + vh - 16) top = window.scrollY + vh - cardH - 16
+      if (top < window.scrollY + 16) top = window.scrollY + 16
+      card.style.position = 'absolute'
+      card.style.left = left + 'px'
+      card.style.top  = top + 'px'
+    })
   }
 
-  function closeDetail () {
-    document.getElementById('cal-detail').hidden = true
+  function closeDetailModal () {
+    document.getElementById('event-detail-modal').classList.add('modal-hidden')
     selectedEvent = null
   }
 
   // ── Absence mark/unmark ────────────────────────────────────
-  document.getElementById('mark-absent-btn').addEventListener('click', () => {
+  document.getElementById('dm-mark-absent-btn').addEventListener('click', () => {
     document.getElementById('absence-note').value = ''
     document.getElementById('absence-modal').classList.remove('modal-hidden')
   })
@@ -467,36 +533,28 @@
     e.preventDefault()
     const note = document.getElementById('absence-note').value.trim() || null
     const profile = window.__PDT_USER
-
     const { data, error } = await supabase
       .from('absences')
       .insert({ event_id: selectedEvent.id, member_id: profile.id, note })
-      .select()
-      .single()
-
+      .select().single()
     if (!error && data) {
       myAbsences.add(selectedEvent.id)
       myAbsenceIds[selectedEvent.id] = data.id
       closeAbsenceModal()
-      await openDetail(selectedEvent)
+      await openDetailModal(selectedEvent, document.querySelector(`[data-event-id="${selectedEvent.id}"]`))
     } else {
       alert('Error marking absence: ' + (error?.message || 'Unknown error'))
     }
   })
 
-  document.getElementById('mark-present-btn').addEventListener('click', async () => {
+  document.getElementById('dm-mark-present-btn').addEventListener('click', async () => {
     const absenceId = myAbsenceIds[selectedEvent.id]
     if (!absenceId) return
-
-    const { error } = await supabase
-      .from('absences')
-      .delete()
-      .eq('id', absenceId)
-
+    const { error } = await supabase.from('absences').delete().eq('id', absenceId)
     if (!error) {
       myAbsences.delete(selectedEvent.id)
       delete myAbsenceIds[selectedEvent.id]
-      await openDetail(selectedEvent)
+      await openDetailModal(selectedEvent, document.querySelector(`[data-event-id="${selectedEvent.id}"]`))
     } else {
       alert('Error removing absence: ' + error.message)
     }
@@ -505,8 +563,9 @@
   // ── Event create/edit ──────────────────────────────────────
   document.getElementById('new-event-btn')?.addEventListener('click', () => openEventModal())
 
-  document.getElementById('edit-event-btn').addEventListener('click', (e) => {
+  document.getElementById('dm-edit-btn').addEventListener('click', (e) => {
     const ev = JSON.parse(e.target.dataset.event || '{}')
+    closeDetailModal()
     openEventModal(ev)
   })
 
@@ -534,7 +593,6 @@
     const saveBtn = document.getElementById('event-modal-save')
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true
-
     const id = document.getElementById('event-id').value
     const payload = {
       title:        document.getElementById('event-title').value.trim(),
@@ -547,35 +605,27 @@
       is_cancelled: document.getElementById('event-cancelled').checked,
       created_by:   window.__PDT_USER?.id
     }
-
     let error
     if (id) {
       ;({ error } = await supabase.from('events').update(payload).eq('id', id))
     } else {
       ;({ error } = await supabase.from('events').insert(payload))
     }
-
     saveBtn.textContent = 'Save Event'
     saveBtn.disabled = false
-
     if (error) { alert('Error saving event: ' + error.message); return }
     closeEventModal()
-    closeDetail()
+    closeDetailModal()
     await loadMonth()
   })
 
   // ── Delete event ───────────────────────────────────────────
-  document.getElementById('delete-event-btn').addEventListener('click', async () => {
+  document.getElementById('dm-delete-btn').addEventListener('click', async () => {
     if (!selectedEvent) return
     if (!confirm(`Delete "${selectedEvent.title}"? This cannot be undone.`)) return
-
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', selectedEvent.id)
-
+    const { error } = await supabase.from('events').delete().eq('id', selectedEvent.id)
     if (!error) {
-      closeDetail()
+      closeDetailModal()
       await loadMonth()
     } else {
       alert('Error deleting event: ' + error.message)
@@ -583,7 +633,10 @@
   })
 
   // ── Modal close handlers ───────────────────────────────────
-  document.getElementById('detail-close').addEventListener('click', closeDetail)
+  document.getElementById('detail-modal-close').addEventListener('click', closeDetailModal)
+  document.getElementById('event-detail-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('event-detail-modal')) closeDetailModal()
+  })
 
   document.getElementById('event-modal-close').addEventListener('click', closeEventModal)
   document.getElementById('event-modal-cancel').addEventListener('click', closeEventModal)
@@ -604,14 +657,14 @@
   document.getElementById('prev-month').addEventListener('click', () => {
     currentMonth--
     if (currentMonth < 0) { currentMonth = 11; currentYear-- }
-    closeDetail()
+    closeDetailModal()
     loadMonth()
   })
 
   document.getElementById('next-month').addEventListener('click', () => {
     currentMonth++
     if (currentMonth > 11) { currentMonth = 0; currentYear++ }
-    closeDetail()
+    closeDetailModal()
     loadMonth()
   })
 
@@ -619,19 +672,9 @@
     const now = new Date()
     currentYear = now.getFullYear()
     currentMonth = now.getMonth()
-    closeDetail()
+    closeDetailModal()
     loadMonth()
   })
-
-  // ── Helpers ────────────────────────────────────────────────
-  function formatTime (t) {
-    if (!t) return ''
-    const [h, m] = t.split(':')
-    const hour = parseInt(h)
-    const ampm = hour >= 12 ? 'pm' : 'am'
-    const h12 = hour % 12 || 12
-    return `${h12}:${m} ${ampm}`
-  }
 
   // ── Init ───────────────────────────────────────────────────
   document.addEventListener('pdt:profile-loaded', async () => {

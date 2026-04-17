@@ -263,6 +263,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: #ffffff;
+  text-decoration-line: none !important;
 }
 
 .member-nav-brand .accent { color: #6a9ab8; }
@@ -332,7 +333,7 @@ body .pdt-events-editor-only {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-decoration: none;
+  text-decoration-line: none !important;
 }
 
 .member-nav-brand .accent { color: #6a9ab8; }

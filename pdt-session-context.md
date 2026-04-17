@@ -310,7 +310,7 @@ pdtsingers/                  ← repo root
 - PDT performs **sing-outs** — not concerts. Use "sing-outs" consistently throughout the site.
 - **Voice parts are capitalized** when referenced by name: Tenor, Lead, Baritone, Bass.
 - Avoid "care facilities" — use "senior centers, independent and assisted living communities" instead.
-- **Supabase Project URL:** https://odwkyofizkqfzxprpmbg.supabase.co
+- **Supabase Project URL:** see SUPABASE_URL Netlify env var
 - **Member accounts seeded April 16, 2026.** Passwords not yet set — needed before login announcement sent.
 - **seed-members.mjs** in repo root — one-time script, not a site file. node_modules/ is gitignored.
 
@@ -339,7 +339,7 @@ pdtsingers/                  ← repo root
 - ✅ Voice parts capitalized (Tenor, Lead, Baritone, Bass) throughout
 - ✅ "How it started" subhead fix on About Us Our Story section
 - ✅ Hero heading updated to "Men who love to sing — and bring that joy to their community"
-- ✅ Supabase Project URL identified: https://odwkyofizkqfzxprpmbg.supabase.co
+- ✅ Supabase Project URL identified: see SUPABASE_URL Netlify env var
 - ▶️ TODO: Set passwords for all member accounts — needed before member announcement email can be sent
 - ▶️ TODO: Send member announcement email (draft ready, password instructions placeholder)
 - ▶️ TODO: Onboard Moss Egli — Supabase account + events_editor role

@@ -92,24 +92,57 @@ Changes take effect on next deploy.
 
 All accounts are admin-created. Members cannot self-register.
 
-**To add a new member:**
-1. Supabase dashboard → Authentication → Users → Add user → Create new user
-2. Enter their email address and a temporary password (won't be used — magic link only)
-3. Go to Table Editor → profiles → find their row
-4. Set `is_active = true` and `role` to appropriate value (usually `member`)
-5. Set `voice_part` (tenor / lead / baritone / bass)
-6. Notify the member — they log in at pdtsingers.org/login.html via magic link
+### Adding a new member
 
-**Roles:**
-| Role | Who | What they can do |
-|------|-----|-----------------|
-| `admin` | Kevin | Everything |
-| `musical_director` | Chris Gabel | Post to Director's Notes blog |
-| `events_editor` | Social media manager, etc. | Post to Events blog only |
-| `calendar_manager` | Future hire | Create/edit/delete events |
-| `member` | All active members | Mark absences, read all member content |
+**Step 1 — Create the Supabase account**
 
-**To deactivate a member** (e.g. they leave the chorus):
+1. Supabase dashboard → Authentication → Users
+2. Click **Invite user**
+3. Enter the member's email address and click **Send invitation**
+
+Supabase sends a magic link invitation email. The member clicks it, lands on the
+member portal, and is authenticated. No password required.
+
+**Step 2 — Set role and profile fields**
+
+After the account appears in Authentication → Users, open Table Editor → profiles
+and find the new row (auto-created by trigger). Set:
+
+| Field | Value |
+|-------|-------|
+| `role` | `member` (singers), `events_editor` (SMM/Events), `musical_director` (Chris), `admin` (Kevin) |
+| `voice_part` | `Tenor`, `Lead`, `Baritone`, `Bass`, or `null` for non-singers |
+| `display_name` | Member's preferred name |
+| `is_active` | `true` |
+
+Or use the SQL editor:
+
+```sql
+UPDATE profiles
+SET role = 'member',        -- adjust as needed
+    voice_part = 'Tenor',   -- adjust or omit for non-singers
+    display_name = 'First Last',
+    is_active = true
+WHERE email = 'member@example.com';
+```
+
+**Step 3 — Verify**
+
+Log in as the member (or ask them to confirm) that they can reach `/members/`
+and see the correct content for their role.
+
+### Roles reference
+
+| Role | Access |
+|------|--------|
+| `admin` | Everything — all blogs, all member content, site management |
+| `musical_director` | Director's Notes blog + all member content |
+| `events_editor` | Events blog + all member content |
+| `calendar_manager` | Calendar management + all member content |
+| `member` | All member content, read-only |
+
+### Deactivating a member
+
 - Table Editor → profiles → set `is_active = false`
 - Their login will be blocked. No need to delete the auth user.
 

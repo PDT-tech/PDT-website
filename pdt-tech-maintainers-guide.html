@@ -292,26 +292,55 @@ python3 -m http.server 8080</pre>
   <p>All accounts are admin-created. Members cannot self-register.</p>
 
   <h3>Adding a new member</h3>
-  <ul>
-    <li>Supabase dashboard → Authentication → Users → Add user → Create new user</li>
-    <li>Enter their email address and a temporary password (won't be used — magic link only)</li>
-    <li>Table Editor → profiles → find their row</li>
-    <li>Set <code>is_active = true</code> and <code>role</code> to appropriate value (usually <code>member</code>)</li>
-    <li>Set <code>voice_part</code> (tenor / lead / baritone / bass)</li>
-    <li>Notify the member — they log in at <code>pdtsingers.org/login.html</code> via magic link</li>
-  </ul>
 
-  <h3>Roles</h3>
+  <p><strong>Step 1 — Create the Supabase account</strong></p>
+  <ul>
+    <li>Supabase dashboard → Authentication → Users</li>
+    <li>Click <strong>Invite user</strong></li>
+    <li>Enter the member's email address and click <strong>Send invitation</strong></li>
+  </ul>
+  <p>Supabase sends a magic link invitation email. The member clicks it, lands on the
+  member portal, and is authenticated. No password required.</p>
+
+  <p><strong>Step 2 — Set role and profile fields</strong></p>
+  <p>After the account appears in Authentication → Users, open Table Editor → profiles
+  and find the new row (auto-created by trigger). Set:</p>
+
   <table class="progress-table">
     <thead>
-      <tr><th>Role</th><th>Who</th><th>What they can do</th></tr>
+      <tr><th>Field</th><th>Value</th></tr>
     </thead>
     <tbody>
-      <tr><td><code>admin</code></td><td>Kevin</td><td>Everything</td></tr>
-      <tr><td><code>musical_director</code></td><td>Chris Gabel</td><td>Post to Director's Notes blog</td></tr>
-      <tr><td><code>events_editor</code></td><td>Social media manager, etc.</td><td>Post to Events blog only</td></tr>
-      <tr><td><code>calendar_manager</code></td><td>Future hire</td><td>Create/edit/delete events</td></tr>
-      <tr><td><code>member</code></td><td>All active members</td><td>Mark absences, read all member content</td></tr>
+      <tr><td><code>role</code></td><td><code>member</code> (singers), <code>events_editor</code> (SMM/Events), <code>musical_director</code> (Chris), <code>admin</code> (Kevin)</td></tr>
+      <tr><td><code>voice_part</code></td><td><code>Tenor</code>, <code>Lead</code>, <code>Baritone</code>, <code>Bass</code>, or <code>null</code> for non-singers</td></tr>
+      <tr><td><code>display_name</code></td><td>Member's preferred name</td></tr>
+      <tr><td><code>is_active</code></td><td><code>true</code></td></tr>
+    </tbody>
+  </table>
+
+  <p>Or use the SQL editor:</p>
+  <pre>UPDATE profiles
+SET role = 'member',        -- adjust as needed
+    voice_part = 'Tenor',   -- adjust or omit for non-singers
+    display_name = 'First Last',
+    is_active = true
+WHERE email = 'member@example.com';</pre>
+
+  <p><strong>Step 3 — Verify</strong></p>
+  <p>Log in as the member (or ask them to confirm) that they can reach <code>/members/</code>
+  and see the correct content for their role.</p>
+
+  <h3>Roles reference</h3>
+  <table class="progress-table">
+    <thead>
+      <tr><th>Role</th><th>Access</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>admin</code></td><td>Everything — all blogs, all member content, site management</td></tr>
+      <tr><td><code>musical_director</code></td><td>Director's Notes blog + all member content</td></tr>
+      <tr><td><code>events_editor</code></td><td>Events blog + all member content</td></tr>
+      <tr><td><code>calendar_manager</code></td><td>Calendar management + all member content</td></tr>
+      <tr><td><code>member</code></td><td>All member content, read-only</td></tr>
     </tbody>
   </table>
 

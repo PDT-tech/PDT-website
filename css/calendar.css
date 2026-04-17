@@ -6,6 +6,42 @@
 
 .modal-hidden { display: none !important; }
 
+/* ── Page Hero ─────────────────────────────────────────────── */
+.cal-page-hero {
+  background: var(--cream);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+}
+
+.cal-page-hero-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.cal-page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--forest);
+  margin: 0;
+}
+
+.cal-page-blurb {
+  font-size: var(--text-sm);
+  color: #5a5a5a;
+  margin: 0.35rem 0 0;
+  flex-basis: 100%;
+}
+
+.cal-page-actions {
+  flex-shrink: 0;
+}
+
 /* ── Calendar Header ───────────────────────────────────────── */
 .cal-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 100%);

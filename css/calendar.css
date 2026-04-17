@@ -4,6 +4,8 @@
    Load after members.css.
    ============================================================ */
 
+.modal-hidden { display: none !important; }
+
 /* ── Calendar Header ───────────────────────────────────────── */
 .cal-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 100%);

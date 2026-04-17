@@ -732,3 +732,8 @@ Rehearsal details: Mondays 10:30am–12:30pm, Westside Journey UMC, 13420 SW But
 **Affects:** `index.html`, possibly a new Netlify Function for photo Drive access, CSS lightbox overlay.
 
 ---
+
+### 13-15 — Photo upload, gallery, and animated carousel
+See `pdt-photo-feature.md` for full architecture, UX options, and open questions. Carousel (13-14) is likely the Phase 1 expression of this feature — reconcile the two specs before implementation. Carousel placement: between the "Men who love to sing" block and the "Come sing with us" CTA on `index.html`. Photo source: Google Workspace Drive image cache via service account (same architecture as Music Library, §5g).
+
+---

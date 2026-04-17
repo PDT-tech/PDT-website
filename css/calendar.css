@@ -423,12 +423,11 @@
   max-width: var(--max-width);
   margin: var(--space-md) auto 0;
   padding: 0 var(--space-lg);
-  display: flex;
-  justify-content: flex-end;
 }
 
 .cal-toolbar-inner {
   display: flex;
+  justify-content: space-between;
   gap: var(--space-sm);
 }
 
@@ -510,5 +509,16 @@
     width: calc(100vw - 32px);
     left: 16px !important;
     top: 80px !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .cal-today-btn {
+    color: #ffffff;
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.55);
+  }
+  .cal-today-btn:hover {
+    background: rgba(255,255,255,0.35);
   }
 }

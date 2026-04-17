@@ -45,10 +45,11 @@
 <main class="members-main">
 
   <!-- PAGE HERO -->
-  <div class="cal-page-hero">
-    <div class="cal-page-hero-inner">
-      <h1 class="cal-page-title">Chorus Calendar</h1>
-      <p class="cal-page-blurb">Click any event to see details and mark your attendance. Rehearsals are added automatically each week.</p>
+  <div class="blog-header" style="--blog-color: #6a9ab8;">
+    <div class="blog-header-inner">
+      <p class="blog-eyebrow">Member Portal</p>
+      <h1 class="blog-title">Chorus Calendar</h1>
+      <p class="blog-byline">Rehearsals, performances &amp; events</p>
     </div>
   </div>
 
@@ -59,9 +60,6 @@
         <button class="cal-nav-btn" id="prev-month" aria-label="Previous month">&#8249;</button>
         <h1 class="cal-month-title" id="month-title">Loading…</h1>
         <button class="cal-nav-btn" id="next-month" aria-label="Next month">&#8250;</button>
-      </div>
-      <div class="cal-header-today">
-        <button class="cal-today-btn" id="today-btn">Today</button>
       </div>
     </div>
   </div>
@@ -89,7 +87,8 @@
   <!-- CALENDAR TOOLBAR -->
   <div class="cal-toolbar">
     <div class="cal-toolbar-inner">
-      <button class="btn-primary pdt-cal-manager-only" id="new-event-btn">+ New Event</button>
+      <button class="cal-today-btn" id="cal-today-btn">Today</button>
+      <button class="btn-primary pdt-admin-only" id="new-event-btn">+ New Event</button>
     </div>
   </div>
 
@@ -661,7 +660,7 @@
     loadMonth()
   })
 
-  document.getElementById('today-btn').addEventListener('click', () => {
+  document.getElementById('cal-today-btn').addEventListener('click', () => {
     const now = new Date()
     currentYear = now.getFullYear()
     currentMonth = now.getMonth()

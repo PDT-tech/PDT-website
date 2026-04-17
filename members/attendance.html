@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Can You Be There? — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/members.css">
+  <link rel="stylesheet" href="../css/blog.css">
+  <link rel="stylesheet" href="../css/attendance.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body class="members-page">
+
+<!-- MEMBER NAV -->
+<nav class="member-nav">
+  <a href="/members/" class="member-nav-brand">
+    Portland <span class="accent">DayTime</span> Singers
+    <span class="member-badge">Members</span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="member-nav-links">
+    <li><a href="/members/">Home</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+    <li><a href="/members/poohbah.html">Poohbah's Prattlings</a></li>
+    <li><a href="/members/events.html">Events</a></li>
+    <li><a href="/members/comms.html">Comms</a></li>
+    <li><a href="/members/calendar.html">Calendar</a></li>
+    <li><a href="/members/attendance.html" class="active">Can You Be There?</a></li>
+    <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html">Attendance Report</a></li>
+    <li><a href="/members/music.html">Music</a></li>
+  </ul>
+  <div class="member-nav-right">
+    <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
+    <a href="#" class="pdt-logout-btn nav-logout">Sign out</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="members-main">
+
+  <div class="blog-header" style="--blog-color: #6a9ab8;">
+    <div class="blog-header-inner">
+      <p class="blog-eyebrow">Member Portal</p>
+      <h1 class="blog-title">Can You Be There?</h1>
+      <p class="blog-byline">Let us know your availability for upcoming events</p>
+    </div>
+  </div>
+
+  <div class="attendance-layout">
+
+    <div class="attendance-col attendance-rehearsals">
+      <h2 class="attendance-col-header">Rehearsals</h2>
+      <div id="rehearsal-list"><div class="att-loading">Loading…</div></div>
+    </div>
+
+    <div class="attendance-col attendance-events">
+      <h2 class="attendance-col-header">Sing-outs &amp; Events</h2>
+      <div id="event-list"><div class="att-loading">Loading…</div></div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer class="members-footer">
+  <div class="members-footer-inner">
+    <span>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; Members Only</span>
+    <a href="/members/">Portal Home</a>
+    <a href="/">PDT Singers Home</a>
+  </div>
+</footer>
+
+<script type="module" src="./js/attendance.js"></script>
+<script src="/js/nav-member.js"></script>
+</body>
+</html>

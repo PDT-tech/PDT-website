@@ -1,0 +1,366 @@
+/* ============================================================
+   PDT SINGERS — Attendance Page Styles
+   Covers /members/attendance.html and /members/admin-attendance.html
+   ============================================================ */
+
+/* ── Two-column layout ──────────────────────────────────────── */
+.attendance-layout {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: var(--space-xl);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+  align-items: start;
+}
+
+.attendance-col-header {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--forest);
+}
+
+/* ── Loading / empty / error ────────────────────────────────── */
+.att-loading {
+  color: #888;
+  font-style: italic;
+  padding: var(--space-md) 0;
+}
+
+.att-empty {
+  color: #888;
+  font-size: var(--text-sm);
+  padding: var(--space-md) 0;
+}
+
+.att-error {
+  color: #c0392b;
+  font-size: var(--text-sm);
+  padding: var(--space-md) 0;
+}
+
+/* ── Saved confirmation ─────────────────────────────────────── */
+.att-saved {
+  font-size: var(--text-xs);
+  color: #2d7a4a;
+  font-family: var(--font-ui);
+  margin-top: 0.25rem;
+  animation: att-fade-in 0.15s ease;
+}
+
+@keyframes att-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Deep-link highlight ────────────────────────────────────── */
+.att-highlight {
+  outline: 2px solid var(--sky-deep);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* ── Rehearsal rows ─────────────────────────────────────────── */
+.att-rehearsal-row {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.att-rehearsal-row:last-child {
+  border-bottom: none;
+}
+
+.att-rehearsal-date {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.att-toggle-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.att-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #c0c8c0;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+  color: #444;
+  background: #f8f8f8;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.att-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.att-toggle:hover {
+  border-color: var(--forest);
+  color: var(--forest);
+}
+
+.att-toggle-on {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+}
+
+.att-toggle-on:hover {
+  background: var(--forest);
+  color: #fff;
+}
+
+/* ── Reason input ───────────────────────────────────────────── */
+.att-reason-wrap {
+  margin-top: 0.25rem;
+}
+
+.att-reason {
+  font-size: var(--text-sm) !important;
+  padding: 0.35rem 0.6rem !important;
+  max-width: 280px;
+}
+
+/* ── Event cards ────────────────────────────────────────────── */
+.att-event-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.att-event-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.att-event-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--forest);
+  flex: 1;
+}
+
+.att-type-badge {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(106,154,184,0.15);
+  color: var(--sky-deep);
+  border-radius: 3px;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.att-event-details {
+  margin-bottom: var(--space-md);
+  font-size: var(--text-sm);
+  color: #444;
+}
+
+.att-detail-row {
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+.att-detail-indent {
+  padding-left: 1.5rem;
+}
+
+.att-detail-row a {
+  color: var(--sky-deep);
+}
+
+/* ── Radio group ────────────────────────────────────────────── */
+.att-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: var(--space-sm);
+}
+
+.att-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  font-family: var(--font-ui);
+  color: #333;
+  cursor: pointer;
+}
+
+.att-radio-label input[type=radio] {
+  accent-color: var(--forest);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Mobile layout ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .attendance-layout {
+    grid-template-columns: 1fr;
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .attendance-events {
+    order: -1;
+  }
+
+  .att-reason {
+    max-width: 100%;
+  }
+}
+
+/* ── Admin / Census page ────────────────────────────────────── */
+.census-controls {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) 0;
+}
+
+.census-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  background: #f7f3ee;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 6px;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.census-select {
+  max-width: 360px;
+  font-size: var(--text-sm) !important;
+  padding: 0.4rem 0.6rem !important;
+}
+
+.census-days-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.census-report {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+}
+
+.census-section {
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.census-highlight {
+  outline: 2px solid var(--sky-deep);
+  outline-offset: 4px;
+}
+
+.census-section-header {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.census-event-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 0.25rem;
+}
+
+.census-event-meta {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: #666;
+}
+
+.census-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.census-group-label {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.4rem;
+}
+
+.census-names {
+  font-size: var(--text-sm);
+  color: #555;
+  line-height: 1.6;
+}
+
+.census-name {
+  display: inline;
+}
+
+.census-name + .census-name::before {
+  content: ', ';
+}
+
+.census-none {
+  color: #aaa;
+}
+
+.census-divider {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .census-groups {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .census-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .census-select {
+    max-width: 100%;
+    width: 100%;
+  }
+}

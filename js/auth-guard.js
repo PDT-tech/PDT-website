@@ -59,6 +59,13 @@ async function initAuthGuard () {
     })
   }
 
+  // Show attendance census link (admin + musical_director)
+  if (profile.role === 'admin' || profile.role === 'musical_director') {
+    document.querySelectorAll('.pdt-census-link').forEach(el => {
+      el.style.display = 'block'
+    })
+  }
+
   // Wire up any logout buttons
   document.querySelectorAll('.pdt-logout-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {

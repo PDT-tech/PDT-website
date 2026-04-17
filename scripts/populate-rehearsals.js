@@ -13,7 +13,7 @@
 // If year argument is omitted, defaults to current calendar year.
 // Run once per year, typically in December for the coming year.
 
-import { createClient } from '@supabase/supabase-js'
+const { createClient } = require('@supabase/supabase-js')
 
 const SUPABASE_URL         = process.env.SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY

@@ -313,7 +313,7 @@ python3 -m http.server 8080</pre>
     <tbody>
       <tr><td><code>role</code></td><td><code>member</code> (singers), <code>events_editor</code> (SMM/Events), <code>musical_director</code> (Chris), <code>admin</code> (Kevin)</td></tr>
       <tr><td><code>voice_part</code></td><td><code>Tenor</code>, <code>Lead</code>, <code>Baritone</code>, <code>Bass</code>, or <code>null</code> for non-singers</td></tr>
-      <tr><td><code>display_name</code></td><td>Member's preferred name</td></tr>
+      <tr><td><code>full_name</code></td><td>Member's full name</td></tr>
       <tr><td><code>is_active</code></td><td><code>true</code></td></tr>
     </tbody>
   </table>
@@ -321,10 +321,11 @@ python3 -m http.server 8080</pre>
   <p>Or use the SQL editor:</p>
   <pre>UPDATE profiles
 SET role = 'member',        -- adjust as needed
-    voice_part = 'Tenor',   -- adjust or omit for non-singers
-    display_name = 'First Last',
+    full_name = 'First Last',
     is_active = true
-WHERE email = 'member@example.com';</pre>
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'member@example.com'
+);</pre>
 
   <p><strong>Step 3 — Verify</strong></p>
   <p>Log in as the member (or ask them to confirm) that they can reach <code>/members/</code>

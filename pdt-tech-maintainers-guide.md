@@ -112,7 +112,7 @@ and find the new row (auto-created by trigger). Set:
 |-------|-------|
 | `role` | `member` (singers), `events_editor` (SMM/Events), `musical_director` (Chris), `admin` (Kevin) |
 | `voice_part` | `Tenor`, `Lead`, `Baritone`, `Bass`, or `null` for non-singers |
-| `display_name` | Member's preferred name |
+| `full_name` | Member's full name |
 | `is_active` | `true` |
 
 Or use the SQL editor:
@@ -120,10 +120,11 @@ Or use the SQL editor:
 ```sql
 UPDATE profiles
 SET role = 'member',        -- adjust as needed
-    voice_part = 'Tenor',   -- adjust or omit for non-singers
-    display_name = 'First Last',
+    full_name = 'First Last',
     is_active = true
-WHERE email = 'member@example.com';
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'member@example.com'
+);
 ```
 
 **Step 3 — Verify**

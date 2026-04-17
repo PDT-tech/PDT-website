@@ -53,16 +53,17 @@
   max-width: var(--max-width);
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-lg);
-  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
 }
 
 .cal-nav {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  justify-content: center;
 }
 
 .cal-nav-btn {
@@ -92,43 +93,19 @@
   text-align: center;
 }
 
-.cal-header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
 .cal-today-btn {
   font-family: var(--font-ui);
   font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: 3px;
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 1rem;
   cursor: pointer;
   transition: background 0.15s;
 }
-
-.cal-today-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
-.cal-legend {
-  max-width: var(--max-width);
-  margin: var(--space-sm) auto 0;
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-}
-
-.cal-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  color: rgba(255,255,255,0.6);
-}
+.cal-today-btn:hover { background: rgba(255,255,255,0.25); }
 
 /* ── Calendar Body ─────────────────────────────────────────── */
 .cal-body {
@@ -227,15 +204,6 @@
 .cal-chip--social       { background: #ffe4e6; color: #9f1239; }
 .cal-chip--cancelled    { opacity: 0.5; }
 
-/* Legend chips (smaller, no text) */
-.cal-legend-item .cal-chip {
-  width: 12px;
-  height: 12px;
-  padding: 0;
-  margin: 0;
-  border-radius: 2px;
-  cursor: default;
-}
 
 /* ── Event Detail Panel ────────────────────────────────────── */
 .cal-detail {

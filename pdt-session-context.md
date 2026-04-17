@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-16 (Session 6)  
+**Last updated:** 2026-04-17 (Session 7)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -165,6 +165,8 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 | 2026-03-30 | Lodge phone decoupled from website dependencies | Kevin has iPhone 11 + Mint Mobile path; can proceed independently of website timeline |
 | 2026-04-15 | Switched auth back to magic link (Resend SMTP) | Resend provides reliable transactional email; pdtsingers.org domain verified; Supabase SMTP wired in. Simpler UX — members never manage passwords. Password auth to be disabled once magic link confirmed. |
 | 2026-04-15 | Music Library migrated to Workspace Drive | president@pdtsingers.org is now the Drive owner; folder ID updated in Netlify env vars. Service account and proxy unchanged. |
+| 2026-04-17 | Legend removed from calendar header | Calendar not busy enough to justify visual complexity; chip colors remain as subtle cues |
+| 2026-04-17 | Calendar detail panel → modal card | Sidebar was clunky on desktop and worse on mobile; modal with smart positioning works across all sizes |
 
 ---
 
@@ -313,10 +315,41 @@ pdtsingers/                  ← repo root
 - **Supabase Project URL:** see SUPABASE_URL Netlify env var
 - **Member accounts seeded April 16, 2026.** Passwords not yet set — needed before login announcement sent.
 - **seed-members.mjs** in repo root — one-time script, not a site file. node_modules/ is gitignored.
+- profiles table columns: id, full_name, role, voice_part, is_active, created_at, updated_at
+- Grant Gibson role: admin
+- Moss Egli role: events_editor (moss.egli2006@gmail.com)
+- posts_delete_by_role: now scoped per blog_type, consistent with insert/update
 
 ---
 
 ## Session History
+
+### Session 7 — 2026-04-17
+
+- ✅ Confirmed auth is magic-link only — no passwords needed for member accounts
+- ✅ Moss Egli onboarded — Supabase account created, role = events_editor
+- ✅ posts_delete_by_role policy tightened — events_editor and musical_director
+  now scoped to their own blog_type on DELETE, consistent with INSERT/UPDATE
+- ✅ Grant Gibson promoted to admin role
+- ✅ Member announcement email sent
+- ✅ Magic link email template updated: "24 hours" → "15 minutes"; greeting fixed
+- ✅ New member onboarding procedure added to pdt-tech-maintainers-guide.md/.html
+  (fixed display_name → full_name bug in same session)
+- ✅ Poohbah blog renamed: "Grand Poohbah's Prattlings" → "Poohbah's Prattlings"
+  across all 7 member pages + dashboard card
+- ✅ Calendar UX rework:
+  - modal-hidden fix (blog.css rule not loaded on calendar page)
+  - Page hero added: "Chorus Calendar" h1 + usage blurb
+  - Sidebar detail panel removed; replaced with smart-positioned modal card
+  - Hover popover added (desktop only, 1.5s delay)
+  - New Event button moved to toolbar below grid
+  - Legend removed from header
+  - Month nav centered; Today button restyled as legible pill, centered below nav
+  - Header border softened to 1px rgba
+- ✅ Photo upload/gallery feature spec written: pdt-photo-feature.md
+- ▶️ TODO: Deploy calendar changes (pending final commit)
+- ▶️ TODO: Test calendar modal and hover popover in production
+- ▶️ TODO: Photo upload/gallery feature — see pdt-photo-feature.md
 
 ### Session 6 — 2026-04-16
 

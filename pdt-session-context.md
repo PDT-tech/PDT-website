@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-17 (Session 7)  
+**Last updated:** 2026-04-17 (Session 8)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -319,6 +319,30 @@ pdtsingers/                  ← repo root
 - Grant Gibson role: admin
 - Moss Egli role: events_editor (moss.egli2006@gmail.com)
 - posts_delete_by_role: now scoped per blog_type, consistent with insert/update
+
+---
+
+## Current State
+
+*Last updated: Session 8 — 2026-04-17*
+
+- ✅ Hamburger menu added to all 15 pages (8 public, 7 member portal) — resolves 13-07, 13-11
+- ✅ Calendar page: h1 border restored, Today button dark-mode contrast fixed, Today + New Event buttons on same line — resolves 13-04, 13-05, 13-09
+- ✅ Footer home links audited and added across all public and member pages — resolves 13-01, 13-08, 13-10
+- ✅ Header link underline fixed with `!important` override across main.css and members.css — resolves 13-13
+- ✅ WBQA badge moved out of hero absolute positioning into centered `.wbqa-band` below CTA — resolves 13-06
+- ✅ "Men who love to sing" headline forced to three-line break on desktop, reflows naturally on mobile — resolves 13-03
+- ✅ Monday rehearsals auto-populated through December 28, 2026 via `scripts/populate-rehearsals.js` — verified in calendar — resolves 13-12
+- ✅ `pdt-requirements.md` Section 13 backlog added (13-01 through 13-15); duplicate section consolidated
+- ✅ Year-end rehearsal population procedure documented in maintainers guide
+
+---
+
+## On the Horizon
+
+- 13-02 — Vector logo replacement (blocked on Mercedes Gibson delivery)
+- 13-14 / 13-15 — Animated photo carousel and full photo feature (`pdt-photo-feature.md`) — next major work item
+- Open questions in `pdt-photo-feature.md` not yet walked through — do this fresh next session
 
 ---
 

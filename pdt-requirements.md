@@ -119,7 +119,7 @@ ensures only admin-created accounts receive magic links — strangers get nothin
 - Member content: stored in Supabase (blog posts, announcements) — rendered via JS fetch
 - **Decap CMS** (optional, Phase 3+): lets non-technical admin post without touching code
 - Sheet music/resources: files live in Google Workspace Drive (`president@pdtsingers.org`)
-  under `Music/` (folder ID in `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var). The `pdtsingers.music@gmail.com`
+  under `Music/` (folder ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`). The `pdtsingers.music@gmail.com`
   staging account is retired. Files still need to be copied from Dropbox into Drive.
 
 ### 5c. Email
@@ -206,7 +206,7 @@ mismatch possible.
 - Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
-  (updated to Workspace Drive value — April 2026; see `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var)
+  (updated to Workspace Drive value `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a` — April 2026)
 - Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` (Music folder
   must be temporarily set to "Anyone with link" for local testing — revert after)
 - Production: page calls `/.netlify/functions/drive-music` which holds all credentials
@@ -216,7 +216,7 @@ mismatch possible.
 **Drive folder structure:**
 ```
 Music/ (president@pdtsingers.org Workspace Drive — shared with service account, Viewer)
-       (folder ID: see GOOGLE_DRIVE_MUSIC_FOLDER_ID Netlify env var)
+       (folder ID: 1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a)
     ├── Ain't Misbehavin'/        ← performance repertoire
     ├── God Bless America/        ← performance repertoire
     ├── If There's Anybody Here (From Out Of Town)/
@@ -335,7 +335,7 @@ Real group photos available. Authentic performance moments. Warm lighting prefer
   All men who love to sing are welcome.
 - **BHS relationship**: Not affiliated, but warm collegial relationship. State clearly on About page.
 - **Sheet music**: In Google Workspace Drive (`president@pdtsingers.org`, `Music/` folder,
-  folder ID in `GOOGLE_DRIVE_MUSIC_FOLDER_ID` Netlify env var); served via Netlify Function + service account.
+  ID: `1uy1KhF8KUbLXiWsB-YeubduRJX2KiQ2a`); served via Netlify Function + service account.
   Drive migration complete as of April 2026 — no code changes were required.
 - **Duane Lundsten memorial**: TBD pending group discussion. Reserve placeholder in design.
   No action needed before Phase 1. Memorial plaque also being procured (Kevin).
@@ -476,3 +476,259 @@ assistant director. Formal corporate title: **President**.
 - Google Workspace for Nonprofits email active (post IRS letter)
 - At least one member blog post and one announcement visible to logged-in members
 - Music Library functional: members can browse songs, download tracks and sheet music
+
+---
+
+## 13. Backlog / Open Issues
+
+Logged 2026-04-17. These are confirmed to-dos, not yet assigned to a build phase.
+
+---
+
+### 13-01 — Portal exit: return to public site
+**Context:** No visible path from inside the member portal back to the public home page.  
+**Fix:** Add a link from within the portal (distinct from the "Home" link that returns to the portal dashboard). One strong candidate: make "Portland DayTime Singers" in the portal footer a link to `/`. Labels for the two home links must be clearly distinguishable — e.g., "Portal Home" vs. "PDT Singers Home" or similar.  
+**Affects:** All `/members/` pages — footer and/or nav.
+
+---
+
+### 13-02 — Logo: replace raster placeholders with vector art
+**Context:** Vectorized logo files received from Mercedes Gibson. Currently two raster placeholders on the main page.  
+**Fix:** Replace placeholder `<img>` tags with the SVG/vector assets. Validate rendering on both light and dark mode — the logo block art may be low-contrast on dark backgrounds and may require a dark-mode variant (e.g., inverted or alternate SVG, CSS `filter`, or `prefers-color-scheme` conditional).  
+**Affects:** Main page (two placements); potentially nav and footer.
+
+---
+
+### 13-03 — "Men who love to sing" headline: force three-line break
+**Context:** Current line breaks are unsatisfying on desktop.  
+**Desired break:**
+```
+Men who love to sing —
+and bring that joy to
+their community
+```
+**Fix:** Use `<br>` tags or `max-width` + forced line breaks to achieve this layout. Verify it doesn't break on mobile (may need responsive override).  
+**Affects:** `index.html` hero/intro block.
+
+---
+
+### 13-04 — Calendar page: restore h1 colored horizontal border
+**Context:** The heavy colored horizontal border on the `<h1>` was removed from the calendar page, making it inconsistent with all other member pages (events, director's notes, comms all have it).  
+**Fix:** Restore the same `<h1>` border treatment used on `/members/events`, `/members/directors-notes`, and `/members/comms`.  
+**Affects:** `members/calendar.html`
+
+---
+
+### 13-05 — Calendar "Today" button: dark-mode contrast
+**Context:** The "Today" button is too low-contrast on dark-mode displays.  
+**Fix:** Audit the button's background and text colors under `prefers-color-scheme: dark`. Apply sufficient contrast ratio (WCAG AA minimum 4.5:1). May need a dark-mode override in the calendar CSS.  
+**Affects:** `members/calendar.html` — "Today" button styles.
+
+---
+
+### 13-06 — Mobile: WBQA logo too small and right-justified
+**Context:** On mobile, the WBQA logo is unreadably small and right-justified in the hero area.  
+**Fix:** On mobile widths, move the WBQA logo below the CTA line ("We'd love for you to come sing with us — or come hear us sing"), center it horizontally, and size it so it's legible.  
+**Affects:** `index.html` hero section, mobile breakpoint CSS.
+
+---
+
+### 13-07 — Mobile: no path to member portal
+**Context:** On mobile, there is no visible link or navigation to the member login/portal.  
+**Fix:** Add a Member login link accessible from mobile — likely in a hamburger menu, a footer link, or a persistent small link in the mobile header. Coordinate with 13-08 (footer home link) and 13-11 (mobile header quick links decision).  
+**Affects:** Mobile nav and/or footer on public pages.
+
+---
+
+### 13-08 — Footer: add home page link
+**Context:** No link back to the home page in the footer. Most consequential on mobile where nav may be collapsed.  
+**Fix:** Add a home page link (`/`) to the footer on all pages (both public and member portal). On the portal side, this doubles as the portal-exit link described in 13-01 — coordinate the implementation.  
+**Affects:** Footer include / all pages.
+
+---
+
+### 13-09 — Calendar: "Today" and "+ New Event" buttons on same horizontal line
+**Context:** The two calendar action buttons are currently on separate lines.  
+**Fix:** Place both buttons on the same horizontal line. Dynamic horizontal spacing:
+- Both buttons flush to the outer edges of the calendar grid at minimum window width
+- As window widens, buttons float back toward calendar center, maintaining the minimum-width spread as their maximum separation
+- On mobile: outer edges of buttons align with outer edges of calendar  
+**Affects:** `members/calendar.html` — button layout and responsive CSS.
+
+---
+
+### 13-10 — Portal footer: "Portland DayTime Singers" as exit link
+**Context:** See 13-01. The portal footer's "Portland DayTime Singers" wordmark is the natural anchor for a "return to public site" link.  
+**Fix:** Wrap it in an `<a href="/">` tag. Ensure the label is visually distinct from the portal's "Home" navigation link so members understand the difference.  
+**Note:** This may fully satisfy 13-01 — evaluate together.  
+**Affects:** Member portal footer.
+
+---
+
+### 13-11 — Mobile header: quick links disappear at mobile width — decision needed
+**Context:** At mobile window widths, the quick links in the header collapse/disappear. This is intentional behavior, but the right resolution is undecided.  
+**Options:**
+- A) Two-line header at mobile widths to keep quick links visible
+- B) Keep single-line header; require user to navigate Home and use the QUICK LINKS block  
+**Decision needed before implementation.**  
+**Affects:** Header CSS, mobile breakpoints.
+
+---
+
+### 13-12 — Auto-populate Monday rehearsals through end of calendar year
+**Context:** Rehearsals happen every Monday 10:30am–12:30pm. Currently must be added manually.  
+**Fix:** Implement bulk-creation of recurring Monday rehearsal events from today (or a chosen start date) through December 31 of the current year. Two approaches to evaluate:
+- A) Run a one-time script against Supabase to insert all remaining Mondays now
+- B) Extend the Edge Function (already handles auto-generation) to support recurring-rule events  
+Rehearsal details: Mondays 10:30am–12:30pm, Westside Journey UMC, 13420 SW Butner Rd, Beaverton OR 97005.  
+**Affects:** Supabase `events` table; possibly the Edge Function or a new admin utility.
+
+---
+
+### 13-13 — Main page: "Portland DayTime Singers" header link underline full phrase
+**Context:** On the Chorus Calendar page (and potentially others), the "Portland DayTime Singers" text in the header is underlined word-by-word (each word separately underlined) rather than as a single continuous link.  
+**Fix:** Ensure the link underline spans the full phrase as a unit. Likely a CSS `display` or `white-space` fix on the anchor element.  
+**Affects:** Member portal header — link styling.
+
+---
+
+### 13-14 — Main page: animated photo carousel
+**Context:** Add an animated photo carousel between the "Men who love to sing" block and the "Come sing with us" section.  
+**Behavior:**
+- Starts at a random position in the Google Workspace photo cache
+- Advances through images in random order
+- Clicking a photo opens a full-size overlay (lightbox)
+- Overlay is dismissable by clicking the image again, clicking outside it, or pressing Escape (common convention — finalize during implementation)
+- Photo source: Google Workspace Drive image cache (same service account architecture as Music Library — see §5g)  
+**Note:** This overlaps significantly with `pdt-photo-feature.md` (photo upload/gallery planning). Reconcile the two specs before implementation — the carousel may be the Phase 1 expression of the larger photo feature.  
+**Affects:** `index.html`, possibly a new Netlify Function for photo Drive access, CSS lightbox overlay.
+
+---
+
+---
+
+## 13. Backlog / Open Issues
+
+Logged 2026-04-17. These are confirmed to-dos, not yet assigned to a build phase.
+
+---
+
+### 13-01 — Portal exit: return to public site
+**Context:** No visible path from inside the member portal back to the public home page.  
+**Fix:** Add a link from within the portal (distinct from the "Home" link that returns to the portal dashboard). One strong candidate: make "Portland DayTime Singers" in the portal footer a link to `/`. Labels for the two home links must be clearly distinguishable — e.g., "Portal Home" vs. "PDT Singers Home" or similar.  
+**Affects:** All `/members/` pages — footer and/or nav.
+
+---
+
+### 13-02 — Logo: replace raster placeholders with vector art
+**Context:** Vectorized logo files received from Mercedes Gibson. Currently two raster placeholders on the main page.  
+**Fix:** Replace placeholder `<img>` tags with the SVG/vector assets. Validate rendering on both light and dark mode — the logo block art may be low-contrast on dark backgrounds and may require a dark-mode variant (e.g., inverted or alternate SVG, CSS `filter`, or `prefers-color-scheme` conditional).  
+**Affects:** Main page (two placements); potentially nav and footer.
+
+---
+
+### 13-03 — "Men who love to sing" headline: force three-line break
+**Context:** Current line breaks are unsatisfying on desktop.  
+**Desired break:**
+```
+Men who love to sing —
+and bring that joy to
+their community
+```
+**Fix:** Use `<br>` tags or `max-width` + forced line breaks to achieve this layout. Verify it doesn't break on mobile (may need responsive override).  
+**Affects:** `index.html` hero/intro block.
+
+---
+
+### 13-04 — Calendar page: restore h1 colored horizontal border
+**Context:** The heavy colored horizontal border on the `<h1>` was removed from the calendar page, making it inconsistent with all other member pages (events, director's notes, comms all have it).  
+**Fix:** Restore the same `<h1>` border treatment used on `/members/events`, `/members/directors-notes`, and `/members/comms`.  
+**Affects:** `members/calendar.html`
+
+---
+
+### 13-05 — Calendar "Today" button: dark-mode contrast
+**Context:** The "Today" button is too low-contrast on dark-mode displays.  
+**Fix:** Audit the button's background and text colors under `prefers-color-scheme: dark`. Apply sufficient contrast ratio (WCAG AA minimum 4.5:1). May need a dark-mode override in the calendar CSS.  
+**Affects:** `members/calendar.html` — "Today" button styles.
+
+---
+
+### 13-06 — Mobile: WBQA logo too small and right-justified
+**Context:** On mobile, the WBQA logo is unreadably small and right-justified in the hero area.  
+**Fix:** On mobile widths, move the WBQA logo below the CTA line ("We'd love for you to come sing with us — or come hear us sing"), center it horizontally, and size it so it's legible.  
+**Affects:** `index.html` hero section, mobile breakpoint CSS.
+
+---
+
+### 13-07 — Mobile: no path to member portal
+**Context:** On mobile, there is no visible link or navigation to the member login/portal.  
+**Fix:** Add a Member login link accessible from mobile — likely in a hamburger menu, a footer link, or a persistent small link in the mobile header. Coordinate with 13-08 (footer home link) and 13-11 (mobile header quick links decision).  
+**Affects:** Mobile nav and/or footer on public pages.
+
+---
+
+### 13-08 — Footer: add home page link
+**Context:** No link back to the home page in the footer. Most consequential on mobile where nav may be collapsed.  
+**Fix:** Add a home page link (`/`) to the footer on all pages (both public and member portal). On the portal side, this doubles as the portal-exit link described in 13-01 — coordinate the implementation.  
+**Affects:** Footer include / all pages.
+
+---
+
+### 13-09 — Calendar: "Today" and "+ New Event" buttons on same horizontal line
+**Context:** The two calendar action buttons are currently on separate lines.  
+**Fix:** Place both buttons on the same horizontal line. Dynamic horizontal spacing:
+- Both buttons flush to the outer edges of the calendar grid at minimum window width
+- As window widens, buttons float back toward calendar center, maintaining the minimum-width spread as their maximum separation
+- On mobile: outer edges of buttons align with outer edges of calendar  
+**Affects:** `members/calendar.html` — button layout and responsive CSS.
+
+---
+
+### 13-10 — Portal footer: "Portland DayTime Singers" as exit link
+**Context:** See 13-01. The portal footer's "Portland DayTime Singers" wordmark is the natural anchor for a "return to public site" link.  
+**Fix:** Wrap it in an `<a href="/">` tag. Ensure the label is visually distinct from the portal's "Home" navigation link so members understand the difference.  
+**Note:** This may fully satisfy 13-01 — evaluate together.  
+**Affects:** Member portal footer.
+
+---
+
+### 13-11 — Mobile header: quick links disappear at mobile width — decision needed
+**Context:** At mobile window widths, the quick links in the header collapse/disappear. This is intentional behavior, but the right resolution is undecided.  
+**Options:**
+- A) Two-line header at mobile widths to keep quick links visible
+- B) Keep single-line header; require user to navigate Home and use the QUICK LINKS block  
+**Decision needed before implementation.**  
+**Affects:** Header CSS, mobile breakpoints.
+
+---
+
+### 13-12 — Auto-populate Monday rehearsals through end of calendar year
+**Context:** Rehearsals happen every Monday 10:30am–12:30pm. Currently must be added manually.  
+**Fix:** Implement bulk-creation of recurring Monday rehearsal events from today (or a chosen start date) through December 31 of the current year. Two approaches to evaluate:
+- A) Run a one-time script against Supabase to insert all remaining Mondays now
+- B) Extend the Edge Function (already handles auto-generation) to support recurring-rule events  
+Rehearsal details: Mondays 10:30am–12:30pm, Westside Journey UMC, 13420 SW Butner Rd, Beaverton OR 97005.  
+**Affects:** Supabase `events` table; possibly the Edge Function or a new admin utility.
+
+---
+
+### 13-13 — Header link: underline "Portland DayTime Singers" as full phrase
+**Context:** On the Chorus Calendar page (and potentially others in the member portal), the "Portland DayTime Singers" text in the header is underlined word-by-word rather than as a single continuous underline.  
+**Fix:** Ensure the link underline spans the full phrase as a unit. Likely a CSS `display` or `white-space` fix on the anchor element.  
+**Affects:** Member portal header — link styling.
+
+---
+
+### 13-14 — Main page: animated photo carousel
+**Context:** Add an animated photo carousel between the "Men who love to sing" block and the "Come sing with us" section.  
+**Behavior:**
+- Starts at a random position in the Google Workspace photo cache
+- Advances through images in random order
+- Clicking a photo opens a full-size overlay (lightbox)
+- Overlay is dismissable by clicking the image again, clicking outside it, or pressing Escape (common convention — finalize during implementation)
+- Photo source: Google Workspace Drive image cache (same service account architecture as Music Library — see §5g)  
+**Note:** This overlaps significantly with `pdt-photo-feature.md` (photo upload/gallery planning). Reconcile the two specs before implementation — the carousel may be the Phase 1 expression of the larger photo feature.  
+**Affects:** `index.html`, possibly a new Netlify Function for photo Drive access, CSS lightbox overlay.
+
+---

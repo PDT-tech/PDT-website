@@ -137,6 +137,24 @@ Decisions have been migrated to **`pdt-decisions.md`** (repo root, also in Proje
 
 ---
 
+## Document Reconciliation (Sunday evenings)
+
+Living docs (.md files) are updated throughout the week by CC. The .html versions
+are reconciled once per week — Sunday evenings only.
+
+**Workflow for the Sunday reconciliation chat:**
+1. Ask CC to `cat pdt-tech-maintainers-guide.md`
+2. Find all lines matching `<!-- html-synced: ... -->`
+3. Any .md change made AFTER the most recent `html-synced` marker is the delta
+   to carry into the .html
+4. After reconciling, CC adds a new `<!-- html-synced: YYYY-MM-DD -->` marker
+   and commits both files
+
+**Scope:** Currently applies to `pdt-tech-maintainers-guide` only. If other .md/.html
+pairs are added, list them here.
+
+---
+
 ## Open Questions
 
 - [x] Domain: pdtsingers.org at helpinghosting.com; GreenGeeks placeholder to be retired

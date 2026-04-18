@@ -17,3 +17,4 @@
 013 | DONE   | Header link: underline "Portland DayTime Singers" as full phrase. Fixed 2026-04-17.
 014 | OPEN   | Main page: animated photo carousel between hero and CTA. See pdt-photo-feature.md. Reconcile with 015 before implementing.
 015 | OPEN   | Photo upload, gallery, and animated carousel full feature. See pdt-photo-feature.md for architecture and open questions.
+016 | OPEN   | Music Library: 403 error observed in production on 2026-04-17 when downloading from members/music.html. Root cause not yet diagnosed.

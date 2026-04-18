@@ -411,7 +411,7 @@ body .pdt-cal-manager-only { display: none; }
 /* ── Calendar toolbar ──────────────────────────────────────── */
 .cal-toolbar {
   max-width: var(--max-width);
-  margin: var(--space-md) auto 0;
+  margin: var(--space-md) auto var(--space-xl);
   padding: 0 var(--space-lg);
 }
 

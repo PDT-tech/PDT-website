@@ -93,7 +93,7 @@
   <div class="cal-toolbar">
     <div class="cal-toolbar-inner">
       <button class="cal-today-btn btn-primary" id="cal-today-btn">Today</button>
-      <button class="btn-primary pdt-cal-manager-only" id="new-event-btn">+ New Event</button>
+      <button class="btn-primary" id="new-event-btn" hidden>+ New Event</button>
     </div>
   </div>
 
@@ -266,16 +266,20 @@
   const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches
 
   // ── Role visibility ────────────────────────────────────────
-  function applyRoleVisibility () {
-    const profile = window.__PDT_USER
+  function applyRoleVisibility (profile) {
+    profile = profile ?? window.__PDT_USER
     if (!profile) {
-      document.addEventListener('pdt:profile-loaded', () => applyRoleVisibility())
+      document.addEventListener('pdt:profile-loaded', e => applyRoleVisibility(e.detail), { once: true })
       return
     }
-    if (profile.role === 'admin' || profile.role === 'calendar_manager') {
+    const role = profile.role
+    if (role === 'admin' || role === 'calendar_manager') {
       document.querySelectorAll('.pdt-cal-manager-only').forEach(el => {
         el.style.display = 'block'
       })
+    }
+    if (role === 'admin' || role === 'calendar_manager' || role === 'events_editor') {
+      document.getElementById('new-event-btn')?.removeAttribute('hidden')
     }
   }
   applyRoleVisibility()

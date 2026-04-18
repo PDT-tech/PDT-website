@@ -6,7 +6,7 @@
 /* ── Two-column layout ──────────────────────────────────────── */
 .attendance-layout {
   display: grid;
-  grid-template-columns: 5fr 7fr;
+  grid-template-columns: 7fr 5fr;
   gap: var(--space-xl);
   max-width: var(--max-width);
   margin: 0 auto;
@@ -231,10 +231,6 @@
     padding: var(--space-lg) var(--space-md);
   }
 
-  .attendance-events {
-    order: -1;
-  }
-
   .att-reason {
     max-width: 100%;
   }
@@ -242,12 +238,10 @@
 
 /* ── Page-level save bar ────────────────────────────────────── */
 .att-save-bar {
-  max-width: var(--max-width);
-  margin: 0 auto var(--space-xl);
-  padding: 0 var(--space-lg);
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .att-save-bar .btn-primary:disabled {

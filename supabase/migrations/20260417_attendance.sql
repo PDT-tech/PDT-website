@@ -66,15 +66,10 @@ create policy "attendance_update_admin"
 --   $$
 -- );
 
--- ── Database webhook setup ────────────────────────────────────
--- Configure in Supabase Dashboard → Database → Webhooks → Create new webhook:
---   Name:    notify-attendance-change
---   Table:   public.event_attendance
---   Events:  INSERT, UPDATE
---   URL:     https://YOUR_PROJECT_REF.supabase.co/functions/v1/notify-attendance-change
---   Method:  POST
---   Headers: Authorization: Bearer YOUR_SERVICE_ROLE_KEY
---            Content-Type: application/json
+-- ── Database webhook — REMOVE THIS ──────────────────────────
+-- The notify-attendance-change webhook on event_attendance is no longer used.
+-- The attendance page now calls the Edge Function directly after a batch save.
+-- Delete it in Supabase Dashboard → Database → Webhooks → notify-attendance-change → Delete.
 
 -- ── Edge Function secrets needed ─────────────────────────────
 -- Add in Supabase Dashboard → Edge Functions → Manage secrets:

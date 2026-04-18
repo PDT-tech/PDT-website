@@ -240,6 +240,40 @@
   }
 }
 
+/* ── Page-level save bar ────────────────────────────────────── */
+.att-save-bar {
+  max-width: var(--max-width);
+  margin: 0 auto var(--space-xl);
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.att-save-bar .btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.att-save-status {
+  font-size: var(--text-sm);
+  color: #2d7a4a;
+  font-family: var(--font-ui);
+  animation: att-fade-in 0.15s ease;
+}
+
+.att-save-error {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 768px) {
+  .att-save-bar {
+    padding: 0 var(--space-md);
+  }
+}
+
 /* ── Admin / Census page ────────────────────────────────────── */
 .census-controls {
   max-width: var(--max-width);

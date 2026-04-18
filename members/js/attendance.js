@@ -1,11 +1,15 @@
 // PDT Singers — Member Attendance Page
-// Fetches future events and the member's attendance rows, renders two columns,
-// and autosaves on every radio change / reason field blur or 1.5s debounce.
+// Selections are local until the page-level Save button is clicked.
 
 import '../../js/auth-guard.js'
 import { supabase } from '../../js/supabase.js'
 
 const today = new Date().toISOString().split('T')[0]
+
+// Page-level save state (populated in loadData)
+const baseline = {}  // eventId → {status, reason} | null  (last persisted)
+const current  = {}  // eventId → {status, reason} | null  (current UI)
+let memberId
 
 function init () {
   const profile = window.__PDT_USER
@@ -13,10 +17,11 @@ function init () {
     document.addEventListener('pdt:profile-loaded', init, { once: true })
     return
   }
-  loadData(profile.id)
+  memberId = profile.id
+  loadData()
 }
 
-async function loadData (memberId) {
+async function loadData () {
   const [eventsRes, attRes] = await Promise.all([
     supabase
       .from('events')
@@ -39,11 +44,20 @@ async function loadData (memberId) {
   const attMap = {}
   ;(attRes.data ?? []).forEach(a => { attMap[a.event_id] = a })
 
+  events.forEach(e => {
+    const att = attMap[e.id]
+    const val = att ? { status: att.status, reason: att.reason ?? '' } : null
+    baseline[e.id] = val
+    current[e.id]  = val ? { ...val } : null
+  })
+
   const rehearsals = events.filter(e => e.event_type === 'rehearsal')
   const singouts   = events.filter(e => e.event_type !== 'rehearsal')
 
-  renderRehearsals(rehearsals, attMap, memberId)
-  renderSingouts(singouts, attMap, memberId)
+  renderRehearsals(rehearsals, attMap)
+  renderSingouts(singouts, attMap)
+
+  document.getElementById('att-save-btn').addEventListener('click', savePage)
 
   const targetId = new URLSearchParams(window.location.search).get('event')
   if (targetId) {
@@ -59,7 +73,7 @@ async function loadData (memberId) {
 
 // ── Rehearsals column ────────────────────────────────────────
 
-function renderRehearsals (rehearsals, attMap, memberId) {
+function renderRehearsals (rehearsals, attMap) {
   const container = document.getElementById('rehearsal-list')
   if (!rehearsals.length) {
     container.innerHTML = '<p class="att-empty">No upcoming rehearsals.</p>'
@@ -87,35 +101,40 @@ function renderRehearsals (rehearsals, attMap, memberId) {
                  placeholder="Reason (optional)"
                  value="${escHtml(att?.reason ?? '')}">
         </div>
-        <div class="att-saved" hidden>Saved ✓</div>
       </div>`
   }).join('')
 
   rehearsals.forEach(r => {
-    const row        = document.getElementById(`ev-${r.id}`)
-    const radios     = row.querySelectorAll('input[type=radio]')
-    const reasonWrap = row.querySelector('.att-reason-wrap')
+    const row         = document.getElementById(`ev-${r.id}`)
+    const radios      = row.querySelectorAll('input[type=radio]')
+    const reasonWrap  = row.querySelector('.att-reason-wrap')
     const reasonInput = row.querySelector('.att-reason')
 
     radios.forEach(radio => {
-      radio.addEventListener('change', async () => {
+      radio.addEventListener('change', () => {
         const status = radio.value
         reasonWrap.hidden = status !== 'not_attending'
-        if (status !== 'not_attending') reasonInput.value = ''
         row.querySelectorAll('.att-toggle').forEach(l => {
           l.classList.toggle('att-toggle-on', l.querySelector('input').value === status)
         })
-        await save(r.id, memberId, status, reasonInput.value.trim(), row)
+        const reason = status !== 'not_attending' ? '' : (current[r.id]?.reason ?? '')
+        if (status !== 'not_attending') reasonInput.value = ''
+        current[r.id] = { status, reason }
+        updateSaveButton()
       })
     })
 
-    wireReason(r.id, memberId, row, reasonInput)
+    reasonInput.addEventListener('input', () => {
+      if (!current[r.id]) current[r.id] = { status: 'not_attending', reason: '' }
+      current[r.id].reason = reasonInput.value.trim()
+      updateSaveButton()
+    })
   })
 }
 
 // ── Sing-outs & events column ────────────────────────────────
 
-function renderSingouts (events, attMap, memberId) {
+function renderSingouts (events, attMap) {
   const container = document.getElementById('event-list')
   if (!events.length) {
     container.innerHTML = '<p class="att-empty">No upcoming sing-outs or events.</p>'
@@ -170,76 +189,117 @@ function renderSingouts (events, attMap, memberId) {
                  placeholder="Reason (optional)"
                  value="${escHtml(att?.reason ?? '')}">
         </div>
-        <div class="att-saved" hidden>Saved ✓</div>
       </div>`
   }).join('')
 
   events.forEach(evt => {
-    const card       = document.getElementById(`ev-${evt.id}`)
-    const radios     = card.querySelectorAll('input[type=radio]')
-    const reasonWrap = card.querySelector('.att-reason-wrap')
+    const card        = document.getElementById(`ev-${evt.id}`)
+    const radios      = card.querySelectorAll('input[type=radio]')
+    const reasonWrap  = card.querySelector('.att-reason-wrap')
     const reasonInput = card.querySelector('.att-reason')
 
     radios.forEach(radio => {
-      radio.addEventListener('change', async () => {
+      radio.addEventListener('change', () => {
         const status = radio.value
         reasonWrap.hidden = status !== 'not_attending'
         if (status !== 'not_attending') reasonInput.value = ''
-        await save(evt.id, memberId, status, reasonInput.value.trim(), card)
+        const reason = status !== 'not_attending' ? '' : (current[evt.id]?.reason ?? '')
+        current[evt.id] = { status, reason }
+        updateSaveButton()
       })
     })
 
-    wireReason(evt.id, memberId, card, reasonInput)
+    reasonInput.addEventListener('input', () => {
+      if (!current[evt.id]) current[evt.id] = { status: 'not_attending', reason: '' }
+      current[evt.id].reason = reasonInput.value.trim()
+      updateSaveButton()
+    })
   })
 }
 
-// ── Shared helpers ───────────────────────────────────────────
+// ── Page-level save ──────────────────────────────────────────
 
-function wireReason (eventId, memberId, container, input) {
-  let timer
-  input.addEventListener('input', () => {
-    clearTimeout(timer)
-    timer = setTimeout(async () => {
-      const status = container.querySelector('input[type=radio]:checked')?.value ?? 'not_attending'
-      await save(eventId, memberId, status, input.value.trim(), container)
-    }, 1500)
-  })
-  input.addEventListener('blur', async () => {
-    clearTimeout(timer)
-    const status = container.querySelector('input[type=radio]:checked')?.value ?? 'not_attending'
-    await save(eventId, memberId, status, input.value.trim(), container)
-  })
+function getChanges () {
+  return Object.entries(current)
+    .filter(([id, c]) => {
+      const b = baseline[id]
+      if (!b && !c) return false
+      if (!b &&  c) return true
+      if ( b && !c) return false
+      const bReason = (b.reason ?? '').trim()
+      const cReason = (c.reason ?? '').trim()
+      return b.status !== c.status || bReason !== cReason
+    })
+    .map(([id, c]) => ({
+      event_id: id,
+      status:   c.status,
+      reason:   (c.reason ?? '').trim() || null
+    }))
 }
 
-async function save (eventId, memberId, status, reason, container) {
+function updateSaveButton () {
+  document.getElementById('att-save-btn').disabled = getChanges().length === 0
+}
+
+async function savePage () {
+  const changes = getChanges()
+  if (!changes.length) return
+
+  const saveBtn    = document.getElementById('att-save-btn')
+  const saveStatus = document.getElementById('att-save-status')
+  const saveError  = document.getElementById('att-save-error')
+
+  saveBtn.disabled    = true
+  saveBtn.textContent = 'Saving…'
+  saveStatus.hidden   = true
+  saveError.hidden    = true
+
+  const upsertRows = changes.map(c => ({
+    event_id:   c.event_id,
+    member_id:  memberId,
+    status:     c.status,
+    reason:     c.reason,
+    updated_at: new Date().toISOString()
+  }))
+
   const { error } = await supabase
     .from('event_attendance')
-    .upsert({
-      event_id:   eventId,
-      member_id:  memberId,
-      status,
-      reason:     reason || null,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'event_id,member_id' })
+    .upsert(upsertRows, { onConflict: 'event_id,member_id' })
 
-  if (!error) flashSaved(container)
+  if (error) {
+    saveError.textContent = 'Something went wrong. Please try again.'
+    saveError.hidden      = false
+    saveBtn.textContent   = 'Save'
+    saveBtn.disabled      = false
+    return
+  }
+
+  // Fire-and-forget — notification failure must not block the save confirmation
+  supabase.functions.invoke('notify-attendance-change', {
+    body: { changes }
+  }).catch(() => {})
+
+  changes.forEach(c => {
+    baseline[c.event_id] = { status: c.status, reason: c.reason ?? '' }
+    current[c.event_id]  = { status: c.status, reason: c.reason ?? '' }
+  })
+
+  saveBtn.textContent = 'Save'
+  updateSaveButton()
+  saveStatus.hidden = false
+  clearTimeout(saveStatus._t)
+  saveStatus._t = setTimeout(() => { saveStatus.hidden = true }, 3000)
 }
 
-function flashSaved (container) {
-  const el = container.querySelector('.att-saved')
-  if (!el) return
-  el.hidden = false
-  clearTimeout(el._t)
-  el._t = setTimeout(() => { el.hidden = true }, 2000)
-}
+// ── Helpers ──────────────────────────────────────────────────
 
 function showError (id, msg) {
   document.getElementById(id).innerHTML = `<p class="att-error">${msg}</p>`
 }
 
-function radioOpt (eventId, value, label, current) {
+function radioOpt (eventId, value, label, selected) {
   return `<label class="att-radio-label">
-    <input type="radio" name="e-${eventId}" value="${value}" ${current === value ? 'checked' : ''}>
+    <input type="radio" name="e-${eventId}" value="${value}" ${selected === value ? 'checked' : ''}>
     ${label}
   </label>`
 }

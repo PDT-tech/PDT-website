@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(cp /home/k7vi/Downloads/* *)",
+      "Read(/home/k7vi/Downloads/*)",
+      "Glob(/home/k7vi/Downloads/*)",
+      "Read(/var/home/k7vi/PDT-website/*)",
+      "Edit",
+      "Write"
+    ]
+  }
+}

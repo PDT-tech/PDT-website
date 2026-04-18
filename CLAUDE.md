@@ -6,6 +6,8 @@
 
 ## Issue Tracker Ownership
 
+CC reads `pdt-conventions.md` and `pdt-decisions.md` at the start of every session before touching any code.
+
 CC is the sole maintainer of `pdt-issues.md` in the repo root.
 
 **Rules:**

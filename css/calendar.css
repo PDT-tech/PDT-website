@@ -6,6 +6,8 @@
 
 .modal-hidden { display: none !important; }
 
+body .pdt-cal-manager-only { display: none; }
+
 /* ── Page Hero ─────────────────────────────────────────────── */
 .cal-page-hero {
   background: var(--cream);
@@ -93,19 +95,7 @@
   text-align: center;
 }
 
-.cal-today-btn {
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 3px;
-  padding: 0.3rem 1rem;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.cal-today-btn:hover { background: rgba(255,255,255,0.25); }
+/* .cal-today-btn gets btn-primary styling via class in HTML */
 
 /* ── Calendar Body ─────────────────────────────────────────── */
 .cal-body {
@@ -427,7 +417,6 @@
 
 .cal-toolbar-inner {
   display: flex;
-  justify-content: space-between;
   gap: var(--space-sm);
 }
 
@@ -512,13 +501,3 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .cal-today-btn {
-    color: #ffffff;
-    background: rgba(255,255,255,0.22);
-    border-color: rgba(255,255,255,0.55);
-  }
-  .cal-today-btn:hover {
-    background: rgba(255,255,255,0.35);
-  }
-}

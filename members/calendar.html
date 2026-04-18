@@ -92,8 +92,8 @@
   <!-- CALENDAR TOOLBAR -->
   <div class="cal-toolbar">
     <div class="cal-toolbar-inner">
-      <button class="cal-today-btn" id="cal-today-btn">Today</button>
-      <button class="btn-primary pdt-admin-only" id="new-event-btn">+ New Event</button>
+      <button class="cal-today-btn btn-primary" id="cal-today-btn">Today</button>
+      <button class="btn-primary pdt-cal-manager-only" id="new-event-btn">+ New Event</button>
     </div>
   </div>
 
@@ -274,7 +274,7 @@
     }
     if (profile.role === 'admin' || profile.role === 'calendar_manager') {
       document.querySelectorAll('.pdt-cal-manager-only').forEach(el => {
-        el.style.display = ''
+        el.style.display = 'block'
       })
     }
   }

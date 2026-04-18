@@ -320,8 +320,7 @@ pdtsingers/                  ← repo root
 ## On the Horizon
 
 - Photo carousel and gallery feature (`pdt-photo-feature.md`) — next major work item; open questions not yet walked through
-- Music Library 403 diagnosis and fix
-- Dropbox → Drive Music folder migration
+- Dropbox → Drive Music folder migration — ⚠️ Netlify Function 6MB response limit (~4.5MB file ceiling before base64 expansion): monitor when populating from Dropbox; large MP3s at high bitrate may need compression or bitrate reduction
 - Google Workspace activation (TechSoup pending)
 - Vector logo files from Mercedes Gibson
 - Public page content polish (real copy, real photos)

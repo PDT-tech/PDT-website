@@ -131,3 +131,25 @@ Service account is invisible to members, secure, free tier, and requires no Goog
 **Decision:** `pdt-decisions.md` in the repo root, uploaded to Project Memory. Owned by Kevin and claude.ai — written in chat, re-uploaded to Project Memory when updated. CC never modifies it.
 
 **Rationale:** Recurring cost of re-establishing settled decisions (e.g., Word vs. Google Docs agenda) is non-trivial. A searchable log with rationale short-circuits future re-investigation. Project Memory makes it available to claude.ai without manual paste. CC doesn't need write access — decisions are made in chat, not in code.
+
+---
+
+## 2026-04-18 — Music Library: all Drive access proxied through Netlify Function
+
+**Question:** Can file download URLs point directly to Google Drive?
+
+**Decision:** No. All Drive interactions — folder listing, file listing, and file
+download — must go through `netlify/functions/drive-music.js`. Direct
+`drive.google.com` URLs are never used in client code.
+
+**Rationale:** Direct Drive URLs bypass the service account token entirely.
+Google rejects unauthenticated requests with 403. Discovered in production
+2026-04-18 when `dlUrl()` in `music.html` was building direct `drive.google.com`
+download URLs while the listing calls correctly proxied through the function.
+Fix: added `type=download` endpoint to `drive-music.js` that fetches file content
+server-side using the service account token and returns it base64-encoded.
+`validateSession()` added to all three endpoints — unauthenticated requests
+return 401. Client updated to route all downloads through `proxyDownload()` with
+Bearer token auth. Known constraint: Netlify Functions have a 6MB response limit
+(~4.5MB file ceiling before base64 expansion) — monitor when Music Library is
+populated from Dropbox.

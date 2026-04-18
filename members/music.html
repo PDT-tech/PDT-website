@@ -336,6 +336,7 @@
 
   <script type="module">
     import '../js/auth-guard.js'
+    import { supabase } from '../js/supabase.js'
 
     // ── Voice part pill — shown once profile is available ────
     document.addEventListener('pdt:profile-loaded', (e) => {
@@ -350,6 +351,15 @@
     // ── API — local dev uses Drive directly; production uses Netlify function ──
     const IS_LOCAL = ['localhost','127.0.0.1'].includes(window.location.hostname)
 
+    // Cache the session token for the page lifetime
+    let _token = null
+    async function getToken () {
+      if (_token) return _token
+      const { data } = await supabase.auth.getSession()
+      _token = data.session?.access_token ?? ''
+      return _token
+    }
+
     async function fetchFolders () {
       if (IS_LOCAL) {
         const key    = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
@@ -359,7 +369,9 @@
         if (!res.ok) throw new Error(`Drive ${res.status}`)
         return (await res.json()).files || []
       }
-      const res = await fetch('/.netlify/functions/drive-music?type=folders')
+      const res = await fetch('/.netlify/functions/drive-music?type=folders', {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      })
       if (!res.ok) throw new Error(`Function ${res.status}`)
       return res.json()
     }
@@ -372,9 +384,39 @@
         if (!res.ok) throw new Error(`Drive ${res.status}`)
         return (await res.json()).files || []
       }
-      const res = await fetch(`/.netlify/functions/drive-music?type=files&folderId=${folderId}`)
+      const res = await fetch(`/.netlify/functions/drive-music?type=files&folderId=${folderId}`, {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      })
       if (!res.ok) throw new Error(`Function ${res.status}`)
       return res.json()
+    }
+
+    // Fetch a file through the proxy and trigger browser download/open.
+    // Token travels in the Authorization header — never in the URL.
+    async function proxyDownload (fileId, filename) {
+      if (IS_LOCAL) {
+        const a = Object.assign(document.createElement('a'), {
+          href: `https://drive.google.com/uc?export=download&id=${fileId}`,
+          download: filename, target: '_blank'
+        })
+        document.body.appendChild(a); a.click(); document.body.removeChild(a)
+        return
+      }
+      const url = `/.netlify/functions/drive-music?type=download&fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${await getToken()}` } })
+      if (!res.ok) { alert('Download failed — please try again.'); return }
+      const blob    = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      const isPdf   = filename.toLowerCase().endsWith('.pdf')
+      const a       = document.createElement('a')
+      a.href        = blobUrl
+      if (isPdf) { a.target = '_blank'; a.rel = 'noopener' } else { a.download = filename }
+      document.body.appendChild(a); a.click(); document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+    }
+
+    function triggerDownloads (files) {
+      files.forEach((f, i) => setTimeout(() => proxyDownload(f.id, f.name), i * 400))
     }
 
     // ── Helpers ──────────────────────────────────────────────
@@ -389,15 +431,6 @@
       const keywords = { tenor: ['tenor'], lead: ['lead'], baritone: ['baritone','bari'], bass: ['bass'] }
       const f = filename.toLowerCase()
       return (keywords[voicePart] || [voicePart]).some(k => f.includes(k))
-    }
-
-    function dlUrl (id) { return `https://drive.google.com/uc?export=download&id=${id}` }
-
-    function triggerDownloads (files) {
-      files.forEach((f, i) => setTimeout(() => {
-        const a = Object.assign(document.createElement('a'), { href: dlUrl(f.id), download: f.name, target: '_blank' })
-        document.body.appendChild(a); a.click(); document.body.removeChild(a)
-      }, i * 400))
     }
 
     // ── Render file list ─────────────────────────────────────
@@ -439,8 +472,15 @@
         row.innerHTML = `
           <div class="file-icon ${type}">${type.toUpperCase()}</div>
           <span class="file-name" title="${file.name}">${file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,'')}</span>
-          <a class="file-download-link" href="${dlUrl(file.id)}" target="_blank" rel="noopener">${type === 'pdf' ? 'Open' : 'Download'}</a>`
+          <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">${type === 'pdf' ? 'Open' : 'Download'}</a>`
         grid.appendChild(row)
+      })
+
+      grid.addEventListener('click', async (e) => {
+        const link = e.target.closest('.file-download-link')
+        if (!link) return
+        e.preventDefault()
+        await proxyDownload(link.dataset.fileId, link.dataset.filename)
       })
     }
 

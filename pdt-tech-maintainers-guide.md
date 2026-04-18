@@ -88,6 +88,8 @@ The page has two tabs. The keys used for this project (`SUPABASE_ANON_KEY` and t
 role key used in pg_cron jobs) are on the **Legacy** tab — not the default tab. The default
 tab shows newer API key formats that are not what the site expects.
 
+<!-- html-synced: 2026-04-18 — Supabase Legacy tab note added to §5 -->
+
 To update: Netlify dashboard → Site configuration → Environment variables.
 Changes take effect on next deploy.
 

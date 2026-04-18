@@ -284,6 +284,11 @@ python3 -m http.server 8080</pre>
     </tbody>
   </table>
 
+  <p>⚠️ <strong>Finding Supabase API keys:</strong> In the Supabase dashboard, go to Project Settings → API.
+  The page has two tabs. The keys used for this project (<code>SUPABASE_ANON_KEY</code> and the service
+  role key used in pg_cron jobs) are on the <strong>Legacy</strong> tab — not the default tab. The default
+  tab shows newer API key formats that are not what the site expects.</p>
+
   <p>To update: Netlify dashboard → Site configuration → Environment variables. Changes take effect on next deploy.</p>
 
   <!-- 6. Member Account Management -->

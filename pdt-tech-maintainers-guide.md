@@ -83,6 +83,11 @@ Never hardcode credentials in committed files.
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | Music folder ID in Drive | Netlify env vars |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Service account JSON (secret) | Netlify env vars |
 
+⚠️ **Finding Supabase API keys:** In the Supabase dashboard, go to Project Settings → API.
+The page has two tabs. The keys used for this project (`SUPABASE_ANON_KEY` and the service
+role key used in pg_cron jobs) are on the **Legacy** tab — not the default tab. The default
+tab shows newer API key formats that are not what the site expects.
+
 To update: Netlify dashboard → Site configuration → Environment variables.
 Changes take effect on next deploy.
 

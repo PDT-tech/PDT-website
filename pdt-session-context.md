@@ -273,6 +273,13 @@ pdtsingers/                  ← repo root
 
 ---
 
+## Key Learnings & Principles
+
+- **Newsletter / one-pager pipeline:** Create as HTML using PDT design tokens. Kevin opens in Chromium, Cmd+P → Save as PDF, Margins: None, Background graphics checked. No sandbox PDF rendering — wkhtmltopdf and LibreOffice both mangle CSS grid and gradients.
+- **Netlify auto-publish is permanently locked.** Kevin always manually publishes. Never remind him to lock it — it is never unlocked.
+
+---
+
 ## Notes & Gotchas
 
 - PDT Singers is **NOT BHS** — must be stated on About page; some visitors will assume BHS affiliation
@@ -319,6 +326,7 @@ pdtsingers/                  ← repo root
 
 ## On the Horizon
 
+- **The Sunburst** (Ray Heller's newsletter) — draft HTML delivered, awaiting Ray's feedback before finalizing PDF
 - Photo carousel and gallery feature (`pdt-photo-feature.md`) — next major work item; open questions not yet walked through
 - Dropbox → Drive Music folder migration — ⚠️ Netlify Function 6MB response limit (~4.5MB file ceiling before base64 expansion): monitor when populating from Dropbox; large MP3s at high bitrate may need compression or bitrate reduction
 - Google Workspace activation (TechSoup pending)

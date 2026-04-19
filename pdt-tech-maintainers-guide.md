@@ -296,6 +296,9 @@ Browser
         ├── drive-music.js (Netlify Function)
         │     └── Authenticates to Google Drive via service account
         │     └── Returns song/file listings to Music Library page
+        ├── drive-music-download.js (Netlify Edge Function — /api/music-download)
+        │     └── Streams Drive file content directly to browser
+        │     └── No buffering, no size ceiling; token never leaves function
         └── Netlify Forms (public form submissions)
 
 Authentication: Supabase (email → magic link via Resend SMTP)

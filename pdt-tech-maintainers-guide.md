@@ -214,21 +214,29 @@ The script skips past Mondays and only inserts from today forward when run mid-y
 
 ## 9. Music Library
 
-Sheet music and learning tracks are served from Google Drive via a Netlify serverless
-function (`netlify/functions/drive-music.js`). Members never interact with Google
-directly.
+Sheet music and learning tracks are served from Google Workspace Drive
+(`president@pdtsingers.org`). The Music Library is fully populated. Members never
+interact with Google directly.
 
 **Drive location:** `Music/` folder in president@pdtsingers.org Workspace Drive  
-**Folder ID:** set in Netlify — project `pdtsingers.org` → Project configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
+**Folder ID:** set in Netlify — Site configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
 
+**How downloads work:**
+- **Folder and file listings** — `netlify/functions/drive-music.js` (serverless). Returns JSON; no file content passes through.
+- **File downloads** — `netlify/edge-functions/drive-music-download.js` (Deno Edge Function, `/api/music-download`). Streams file content directly from Drive to the browser — no buffering, no size ceiling, service account token never leaves the function.
+
+Do not construct direct `drive.google.com` download URLs in client code — they bypass the service account and will 403.
+
+**File size note:** keep individual files under ~6MB raw (~4.5MB before base64 expansion) as a soft guideline for audio quality and load time. Very large MP3s at high bitrate are worth compressing.
+
 **To add a new song:**
-1. Create a new folder inside `Music/` named exactly as you want it to appear
+1. Create a new folder inside `Music/` named exactly as you want it to appear on the page
 2. Drop in the PDF (sheet music) and MP3 learning tracks
-3. That's it — the Music Library page picks it up automatically on next load
+3. That's it — the Music Library picks it up automatically on next load
 
 **File naming for learning tracks:** include the voice part in the filename
-(Tenor, Lead, Bari/Baritone, Bass) so the page can sort the member's own part to the top.
+(Tenor, Lead, Bari/Baritone, Bass) so the page sorts the member's own part to the top.
 
 ---
 
@@ -273,7 +281,7 @@ Netlify → Forms → [form name] → Form notifications.
 | Update env variables | Netlify → Site configuration → Environment variables |
 | Edit magic link email template | Supabase → Authentication → Email Templates |
 | Trigger a deploy | Netlify → Deploys → Trigger deploy |
-| View error logs | Netlify → Functions → drive-music → logs |
+| View Music Library logs | Netlify → Functions → drive-music (listings) or Edge Functions → drive-music-download (downloads) |
 
 ---
 
@@ -307,7 +315,6 @@ Domain: pdtsingers.org at Helping Hosting → Netlify DNS
 - [ ] Calendar polish: prev/next arrows, detail panel on load, mobile layout
 - [ ] Add second account owner to all services
 - [ ] Onboard Moss Egli — Supabase account, events_editor role, Facebook setup
-- [ ] Populate Music Library Drive folders from Dropbox
 - [ ] Build members/whats-new.html (member-facing changelog)
 - [ ] Finalize public page content (About, Join, Performances, etc.)
 

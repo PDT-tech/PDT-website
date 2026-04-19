@@ -352,6 +352,10 @@
     const IS_LOCAL = ['localhost','127.0.0.1'].includes(window.location.hostname)
 
     // Cache the session token for the page lifetime
+    function escHtml (s) {
+      return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    }
+
     let _token = null
     async function getToken () {
       if (_token) return _token
@@ -391,8 +395,8 @@
       return res.json()
     }
 
-    // Fetch a file through the proxy and trigger browser download/open.
-    // Token travels in the Authorization header — never in the URL.
+    // Get a short-lived authenticated Drive URL from the proxy, then navigate to it.
+    // The file never passes through Netlify — no 6 MB ceiling.
     async function proxyDownload (fileId, filename) {
       if (IS_LOCAL) {
         const a = Object.assign(document.createElement('a'), {
@@ -402,17 +406,17 @@
         document.body.appendChild(a); a.click(); document.body.removeChild(a)
         return
       }
-      const url = `/.netlify/functions/drive-music?type=download&fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${await getToken()}` } })
+      const res = await fetch(
+        `/.netlify/functions/drive-music?type=download&fileId=${encodeURIComponent(fileId)}`,
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      )
       if (!res.ok) { alert('Download failed — please try again.'); return }
-      const blob    = await res.blob()
-      const blobUrl = URL.createObjectURL(blob)
+      const { url } = await res.json()
       const isPdf   = filename.toLowerCase().endsWith('.pdf')
       const a       = document.createElement('a')
-      a.href        = blobUrl
+      a.href        = url
       if (isPdf) { a.target = '_blank'; a.rel = 'noopener' } else { a.download = filename }
       document.body.appendChild(a); a.click(); document.body.removeChild(a)
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
     }
 
     function triggerDownloads (files) {
@@ -540,6 +544,7 @@
           }
           item.dataset.loaded = 'true'
         } catch (err) {
+          item.querySelector('.download-actions').innerHTML = ''
           grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">Could not load files. Please try again.</p>'
           item.dataset.loaded = 'false'
           console.error('fetchFiles:', err)

@@ -11,9 +11,9 @@
        → lists all song folders in the Music folder
      GET /.netlify/functions/drive-music?type=files&folderId=FOLDER_ID
        → lists all files in a song folder
-     GET /.netlify/functions/drive-music?type=download&fileId=FILE_ID&filename=NAME
-       → fetches file content server-side and streams it to the browser;
-         PDFs are served inline, all other files as attachments
+     GET /.netlify/functions/drive-music?type=download&fileId=FILE_ID
+       → returns { url } — a short-lived authenticated Drive URL; browser
+         navigates directly (no file content passes through this function)
 
    Place at: netlify/functions/drive-music.js
    ============================================================ */
@@ -181,30 +181,13 @@ export const handler = async (event) => {
       }
     }
 
-    // type === 'download' — fetch file content server-side, stream to browser
-    const driveRes = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
-    if (!driveRes.ok) {
-      return { statusCode: driveRes.status, body: JSON.stringify({ error: `Drive returned ${driveRes.status}` }) }
-    }
-
-    const contentType = driveRes.headers.get('content-type') || 'application/octet-stream'
-    const isPdf       = filename.toLowerCase().endsWith('.pdf')
-    const safeName    = filename.replace(/"/g, '')
-    const disposition = isPdf ? `inline; filename="${safeName}"` : `attachment; filename="${safeName}"`
-    const buffer      = Buffer.from(await driveRes.arrayBuffer())
-
+    // type === 'download' — return a short-lived authenticated Drive URL.
+    // File never passes through this function, so there is no 6 MB ceiling.
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&access_token=${encodeURIComponent(token)}`
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type':        contentType,
-        'Content-Disposition': disposition,
-        'Cache-Control':       'private, max-age=3600',
-      },
-      body: buffer.toString('base64'),
-      isBase64Encoded: true,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' },
+      body: JSON.stringify({ url: driveUrl })
     }
 
   } catch (err) {

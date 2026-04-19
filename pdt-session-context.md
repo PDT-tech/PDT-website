@@ -318,8 +318,8 @@ pdtsingers/                  ← repo root
 - ✅ Issue tracker migrated to `pdt-issues.md` (CC-owned); §13 removed from requirements
 - ✅ `CLAUDE.md` added — CC standing instructions for issue tracking and conventions
 - ✅ `pdt-decisions.md` added — architecture/design decision log, in Project Memory
-- ⚠️ Music Library 403 error observed in production (2026-04-17) — tracked in pdt-issues.md
-- ⚠️ Drive Music folders empty — Dropbox migration still pending
+- ✅ Music Library fully operational — Workspace Drive (president@pdtsingers.org), Dropbox retired
+- ✅ Google Workspace for Nonprofits approved and active (Goodstack, 2026-04-18)
 - ⚠️ Vector logo files still pending from Mercedes Gibson
 
 ---
@@ -328,8 +328,7 @@ pdtsingers/                  ← repo root
 
 - **The Sunburst** (Ray Heller's newsletter) — draft HTML delivered, awaiting Ray's feedback before finalizing PDF
 - Photo carousel and gallery feature (`pdt-photo-feature.md`) — next major work item; open questions not yet walked through
-- Dropbox → Drive Music folder migration — ⚠️ Netlify Function 6MB response limit (~4.5MB file ceiling before base64 expansion): monitor when populating from Dropbox; large MP3s at high bitrate may need compression or bitrate reduction
-- Google Workspace activation (TechSoup pending)
+- Music Library streaming via Edge Function — monitor for files approaching 6MB after base64 expansion (~4.5MB raw)
 - Vector logo files from Mercedes Gibson
 - Public page content polish (real copy, real photos)
 - SEO: meta tags, XML sitemap, Google Search Console
@@ -337,6 +336,18 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 10 — 2026-04-18
+
+- ✅ Supabase API key navigation clarified — Legacy tab is correct tab; documented in maintainer's guide
+- ✅ Sunday .html reconciliation workflow documented; html-synced marker convention established
+- ✅ Issue 017 (attendance redesign) confirmed already implemented by CC in Session 9
+- ✅ Attendance page: column order swapped (Sing-outs left, Rehearsals right), Save button repositioned
+- ✅ Calendar fixes: + New Event button restored, Today button styled to match, toolbar gap fixed, footer spacing added
+- ✅ Issue 016 (Music Library 403) fully resolved — root cause: downloads bypassed proxy via direct drive.google.com URLs; fixed via streaming Deno Edge Function (drive-music-download.js); no size ceiling, token never leaves function
+- ✅ Google Workspace for Nonprofits approved via Goodstack (2026-04-18)
+- ✅ Music Library fully operational — Workspace Drive populated, Dropbox retired
+- ✅ Goodstack replaces TechSoup as Google Nonprofit vetting partner
 
 ### Session 9 — 2026-04-18
 

@@ -1,6 +1,6 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-04-15  
+**Last updated:** 2026-04-18  
 **Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
@@ -120,14 +120,13 @@ ensures only admin-created accounts receive magic links — strangers get nothin
 - **Decap CMS** (optional, Phase 3+): lets non-technical admin post without touching code
 - Sheet music/resources: files live in Google Workspace Drive (`president@pdtsingers.org`)
   under `Music/` (folder ID: `REDACTED-see-Netlify-env-GOOGLE_DRIVE_MUSIC_FOLDER_ID`). The `pdtsingers.music@gmail.com`
-  staging account is retired. Files still need to be copied from Dropbox into Drive.
+  staging account is retired. ✅ Files migrated from Dropbox into Drive — Dropbox retired April 2026.
 
 ### 5c. Email
 - Group email via **Google Workspace for Nonprofits** (Google Groups)
-- Free for 501(c)(3) orgs — apply via TechSoup
-- ✅ **IRS 501(c)(3) exemption letter now in hand** (confirmed at 3/26/26 BoD meeting)
-- **Action required**: Kevin to share IRS documentation with Google to set up Workspace
-- Groups.io for Friends of PDT email list — tabled until Google Workspace established
+- ✅ **Google Workspace for Nonprofits approved and active** — approved via Goodstack (2026-04-18). Note: TechSoup was the historical nonprofit vetting partner; Goodstack is now the active Google program partner.
+- ✅ **IRS 501(c)(3) exemption letter in hand** (confirmed at 3/26/26 BoD meeting)
+- Groups.io for Friends of PDT email list — tabled; Google Workspace now active, can proceed when ready
 
 ### 5d. Social Media
 | Platform | Plan | Notes |
@@ -386,7 +385,7 @@ assistant director. Formal corporate title: **President**.
 | Music Library | Google Drive + Netlify Function | Service account proxy; see §5g for full rationale |
 | CMS (optional) | Decap CMS | Non-technical blog posting — Phase 3+ |
 | Repo | GitHub | Version control, Netlify CI/CD integration |
-| Email | Google Workspace for Nonprofits | Free via TechSoup; blocked on IRS letter |
+| Email | Google Workspace for Nonprofits | ✅ Approved and active via Goodstack (2026-04-18) |
 | Domain | pdtsingers.org (already owned) | DNS to be pointed to Netlify at cutover |
 
 **Monthly cost target:** Under $10/mo (likely free outside ~$12/yr domain renewal)
@@ -424,10 +423,10 @@ assistant director. Formal corporate title: **President**.
 - [ ] Accessibility audit (WCAG AA)
 - [ ] Cross-browser testing
 - [ ] Final content review
-- [ ] Populate Drive Music folders with files from Dropbox
+- ✅ Populate Drive Music folders — complete April 2026; Dropbox retired
 
 ### Phase 4 — Post-Launch
-- [ ] Google Workspace for Nonprofits activation
+- ✅ Google Workspace for Nonprofits — approved and active via Goodstack (2026-04-18)
 - ✅ Migrate Music Library Drive share to Workspace Drive — complete April 2026
 - [ ] Social media accounts live → update Friends page links
 - [ ] Onboard second site maintainer
@@ -461,7 +460,7 @@ assistant director. Formal corporate title: **President**.
 - [ ] Duane Lundsten memorial — form/placement TBD (pending group discussion)
 - [ ] Grant's prioritized website landing page elements — input pending
 - [ ] Vectorized logo files — pending delivery from Mercedes Gibson via Dropbox
-- [ ] Groups.io for Friends of PDT — tabled until Google Workspace established
+- [ ] Groups.io for Friends of PDT — tabled; Google Workspace now active, can proceed when ready
 - [ ] Music Library local dev testing — Music folder must be temporarily set to
       "Anyone with link" for local API key calls to work; revert after testing
 
@@ -473,6 +472,6 @@ assistant director. Formal corporate title: **President**.
 - All public pages rendering correctly on mobile and desktop
 - Member login working with admin approval flow (at least 2 test accounts)
 - Contact, Join Us, and booking forms submitting via Netlify Forms
-- Google Workspace for Nonprofits email active (post IRS letter)
+- ✅ Google Workspace for Nonprofits email active — approved via Goodstack (2026-04-18)
 - At least one member blog post and one announcement visible to logged-in members
 - Music Library functional: members can browse songs, download tracks and sheet music

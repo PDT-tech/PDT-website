@@ -509,6 +509,50 @@ Domain:         pdtsingers.org at Helping Hosting → Netlify DNS</pre>
     </tbody>
   </table>
 
+  <!-- 15. Tech Account Handoff -->
+  <h2>15. Tech Account Handoff</h2>
+  <div class="maintainer-section-label">Succession</div>
+
+  <p>When a new tech maintainer takes over, all service accounts must be rerouted to
+  their personal email before they can receive magic links or platform notifications.
+  Complete these steps in order.</p>
+
+  <div class="callout amber">
+    <div class="callout-label">Before you start</div>
+    <p>The incoming maintainer must have a Google Workspace account or access to
+    Google Admin Console. All steps below require Admin Console access at
+    <strong>admin.google.com</strong> under the pdtsingers.org workspace.</p>
+  </div>
+
+  <ol style="padding-left: 1.5rem; margin: 1rem 0 1.5rem; line-height: 2;">
+    <li>
+      <strong>Create a forwarding rule for the incoming maintainer.</strong><br>
+      In Google Admin Console → Apps → Google Workspace → Gmail → Routing, add an
+      inbound routing rule that forwards <code>tech@pdtsingers.org</code> to the
+      new maintainer's personal email address. The new maintainer should verify they
+      can receive test messages at their personal address before proceeding.
+    </li>
+    <li>
+      <strong>Remove the outgoing maintainer's forwarding rule.</strong><br>
+      In the same Routing settings, delete the previous maintainer's forwarding rule
+      for <code>tech@pdtsingers.org</code>. Only one active forwarding rule should
+      remain after this step.
+    </li>
+    <li>
+      <strong>Verify end-to-end delivery before closing the handoff.</strong><br>
+      Trigger a magic link login for the <code>tech@pdtsingers.org</code> account on
+      the PDT Singers site. Confirm the magic link email arrives at the new
+      maintainer's personal inbox. Do not consider the handoff complete until this
+      test passes.
+    </li>
+  </ol>
+
+  <div class="callout">
+    <div class="callout-label">After handoff</div>
+    <p>Update the Accounts &amp; Access table in §2 with the new maintainer's name
+    and contact information, and remove the outgoing maintainer's entry.</p>
+  </div>
+
   <p style="margin-top: 3rem; font-family: var(--mono); font-size: 12px; color: var(--muted);">
     PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship &amp; Fun
   </p>

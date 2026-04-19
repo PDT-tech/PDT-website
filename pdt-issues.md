@@ -1,6 +1,6 @@
 # PDT Singers — Issue Tracker
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
-# Last updated: 2026-04-19
+# Last updated: 2026-04-19 (Pass 2)
 
 001 | OPEN   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010.
 002 | OPEN   | Logo: replace raster placeholders with vector art (blocked on Mercedes Gibson delivery). Validate light/dark mode rendering.
@@ -24,6 +24,8 @@
 020 | OPEN   | index.html: nav-brand is a <div> not an <a href="/"> — the home page logo/wordmark is not a clickable link. All other pages correctly use <a href="/" class="nav-brand">. Fix: change <div class="nav-brand"> to <a href="/" class="nav-brand">.
 021 | OPEN   | members/index.html line 79: "Mark myself absent" button has class pdt-admin-only — only admins see it on the dashboard. All active members should be able to mark themselves absent from the next-rehearsal card. Remove pdt-admin-only class.
 022 | OPEN   | members/music.html line 342: voice pill only adds a pdt:profile-loaded event listener; never checks window.__PDT_USER directly first. Convention violation (pdt-conventions.md §Role Visibility Pattern) — voice pill silently absent if profile loaded before listener is attached. Fix: check window.__PDT_USER first, fall back to event.
-023 | OPEN   | members/events.html line 260: post save payload includes event_date field but the posts table has no event_date column — field is silently dropped on every insert/update. Either add event_date to the posts table schema or remove the field from the payload.
+023 | CLOSED | Pass-1 false positive: events.html save payload includes event_date field — confirmed in Pass-2 live test that posts table DOES have an event_date column. No issue.
 024 | DONE   | seed-members.mjs: untracked file contains 15 member names and email addresses (PII). Added to .gitignore 2026-04-19 to prevent accidental commit.
 025 | OPEN   | members/resources.html: listed in requirements §4.2 as a member-only page but the file does not exist and the member nav has no Resources link. Phase 2 item — log for tracking.
+026 | OPEN   | Kevin Bier profile has role='member' and voice_part=null. Should be role='admin', voice_part='bass'. Root cause: seed-members.mjs skipped Kevin's auth user creation (account already existed from March 2026) and never ran the profile update. Fix: manually update in Supabase table editor or via Admin API.
+027 | OPEN   | "Music Fairy" account (id: e94f7959, role=admin, created 2026-03-29) appears to be an early test account with no voice_part. Kevin to decide: rename, demote, or deactivate. Currently active with admin privileges.

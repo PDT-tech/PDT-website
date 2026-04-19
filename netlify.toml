@@ -7,6 +7,12 @@
   publish = "."          # serve from repo root (static site, no build step)
 
 # ── Edge functions ───────────────────────────────────────────
+# drive-music-download is declared first: it is a terminal handler for
+# /api/music-download requests, so inject-env never runs on that path.
+[[edge_functions]]
+  path = "/api/music-download"
+  function = "drive-music-download"
+
 [[edge_functions]]
   path = "/*"
   function = "inject-env"

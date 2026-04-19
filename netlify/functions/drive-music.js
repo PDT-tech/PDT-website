@@ -11,9 +11,10 @@
        → lists all song folders in the Music folder
      GET /.netlify/functions/drive-music?type=files&folderId=FOLDER_ID
        → lists all files in a song folder
-     GET /.netlify/functions/drive-music?type=download&fileId=FILE_ID
-       → returns { url } — a short-lived authenticated Drive URL; browser
-         navigates directly (no file content passes through this function)
+
+   Downloads are handled by the Edge Function at /api/music-download
+   (netlify/edge-functions/drive-music-download.js) which streams the
+   file content directly — no response-size ceiling.
 
    Place at: netlify/functions/drive-music.js
    ============================================================ */
@@ -140,23 +141,17 @@ export const handler = async (event) => {
   const params   = event.queryStringParameters || {}
   const type     = params.type
   const folderId = params.folderId
-  const fileId   = params.fileId
-  const filename = params.filename || 'download'
 
-  if (!type || !['folders', 'files', 'download'].includes(type)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'type must be folders, files, or download' }) }
+  if (!type || !['folders', 'files'].includes(type)) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'type must be folders or files' }) }
   }
 
   if (type === 'files' && !folderId) {
     return { statusCode: 400, body: JSON.stringify({ error: 'folderId required for files' }) }
   }
 
-  if (type === 'download' && !fileId) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'fileId required for download' }) }
-  }
-
   const musicFolderId = process.env.GOOGLE_DRIVE_MUSIC_FOLDER_ID
-  if (type !== 'download' && !musicFolderId) {
+  if (!musicFolderId) {
     return { statusCode: 500, body: JSON.stringify({ error: 'Music folder ID not configured' }) }
   }
 
@@ -172,22 +167,12 @@ export const handler = async (event) => {
       }
     }
 
-    if (type === 'files') {
-      const result = await listFiles(token, folderId)
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, max-age=300' },
-        body: JSON.stringify(result)
-      }
-    }
-
-    // type === 'download' — return a short-lived authenticated Drive URL.
-    // File never passes through this function, so there is no 6 MB ceiling.
-    const driveUrl = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&access_token=${encodeURIComponent(token)}`
+    // type === 'files'
+    const result = await listFiles(token, folderId)
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' },
-      body: JSON.stringify({ url: driveUrl })
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, max-age=300' },
+      body: JSON.stringify(result)
     }
 
   } catch (err) {

@@ -395,8 +395,7 @@
       return res.json()
     }
 
-    // Get a short-lived authenticated Drive URL from the proxy, then navigate to it.
-    // The file never passes through Netlify — no 6 MB ceiling.
+    // Stream the file through the Edge Function proxy — no token in URL, no size ceiling.
     async function proxyDownload (fileId, filename) {
       if (IS_LOCAL) {
         const a = Object.assign(document.createElement('a'), {
@@ -407,16 +406,18 @@
         return
       }
       const res = await fetch(
-        `/.netlify/functions/drive-music?type=download&fileId=${encodeURIComponent(fileId)}`,
+        `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
         { headers: { Authorization: `Bearer ${await getToken()}` } }
       )
       if (!res.ok) { alert('Download failed — please try again.'); return }
-      const { url } = await res.json()
+      const blob    = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
       const isPdf   = filename.toLowerCase().endsWith('.pdf')
       const a       = document.createElement('a')
-      a.href        = url
+      a.href        = blobUrl
       if (isPdf) { a.target = '_blank'; a.rel = 'noopener' } else { a.download = filename }
       document.body.appendChild(a); a.click(); document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
     }
 
     function triggerDownloads (files) {

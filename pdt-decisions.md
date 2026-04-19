@@ -153,3 +153,11 @@ return 401. Client updated to route all downloads through `proxyDownload()` with
 Bearer token auth. Known constraint: Netlify Functions have a 6MB response limit
 (~4.5MB file ceiling before base64 expansion) — monitor when Music Library is
 populated from Dropbox.
+
+**Superseded 2026-04-18:** The base64 approach hit the 6MB ceiling immediately
+in practice (6.5MB MP3 confirmed 413 in Netlify logs). Download handling moved
+to a Netlify Edge Function (`netlify/edge-functions/drive-music-download.js`)
+that streams `driveRes.body` directly to the browser — no buffering, no size
+ceiling, service account token stays server-side. `drive-music.js` now handles
+folder and file listing only. Edge Function declared before `inject-env` in
+`netlify.toml` so inject-env never runs on `/api/music-download` requests.

@@ -33,3 +33,6 @@ supabase/.temp/
 *.kate-swp
 .*.kate-swp
 pdt-singers-music-library-*.json
+
+# One-time seeding utility — contains member PII, never commit
+seed-members.mjs

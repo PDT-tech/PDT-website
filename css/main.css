@@ -664,7 +664,7 @@ body {
   }
 
   .hero-cityscape {
-    filter: invert(1);
+    filter: invert(1) grayscale(1);
     opacity: 0.9;
   }
 

@@ -256,6 +256,18 @@ body {
   padding: 0;
 }
 
+/* Extends the visual bottom of the hero — matches hero gradient end color.
+   Do not remove: this is the spacing solution between cityscape and band.
+   Do not add margin-top to .coming-soon-band as a substitute. */
+.hero-spacer {
+  background: #f7f3ee;
+  padding: var(--space-xl) 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-spacer { background: #1a1a12; }
+}
+
 /* Inner column — all content except cityscape */
 .hero-inner {
   max-width: var(--max-width);

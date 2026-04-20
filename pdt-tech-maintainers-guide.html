@@ -513,37 +513,44 @@ Domain:         pdtsingers.org at Helping Hosting → Netlify DNS</pre>
   <h2>15. Tech Account Handoff</h2>
   <div class="maintainer-section-label">Succession</div>
 
-  <p>When a new tech maintainer takes over, all service accounts must be rerouted to
-  their personal email before they can receive magic links or platform notifications.
-  Complete these steps in order.</p>
+  <p>When a new tech maintainer takes over, the <code>tech@pdtsingers.org</code>
+  address must be rerouted to their personal email so they can receive magic links
+  and platform notifications. Complete these steps in order.</p>
+
+  <div class="callout coral">
+    <div class="callout-label">Gmail forwarding does not work here</div>
+    <p>Gmail's built-in forwarding (Settings → Forwarding and POP/IMAP) is
+    intercepted by Workspace before it reaches Gmail — it will silently do nothing
+    for <code>@pdtsingers.org</code> addresses. You must use the Admin Console
+    routing table instead.</p>
+  </div>
 
   <div class="callout amber">
     <div class="callout-label">Before you start</div>
-    <p>The incoming maintainer must have a Google Workspace account or access to
-    Google Admin Console. All steps below require Admin Console access at
-    <strong>admin.google.com</strong> under the pdtsingers.org workspace.</p>
+    <p>All steps below require Admin Console access at
+    <strong>admin.google.com</strong> under the pdtsingers.org Workspace. Go to:
+    Apps → Google Workspace → Gmail → Routing → <strong>Email forwarding using
+    recipient address map</strong>.</p>
   </div>
 
   <ol style="padding-left: 1.5rem; margin: 1rem 0 1.5rem; line-height: 2;">
     <li>
-      <strong>Create a forwarding rule for the incoming maintainer.</strong><br>
-      In Google Admin Console → Apps → Google Workspace → Gmail → Routing, add an
-      inbound routing rule that forwards <code>tech@pdtsingers.org</code> to the
-      new maintainer's personal email address. The new maintainer should verify they
-      can receive test messages at their personal address before proceeding.
+      <strong>Add a mapping for the new maintainer.</strong><br>
+      In the recipient address map table, click <strong>Add mapping</strong>.
+      Set the recipient to <code>tech@pdtsingers.org</code> and the destination to
+      the new maintainer's personal email address. Save.
     </li>
     <li>
-      <strong>Remove the outgoing maintainer's forwarding rule.</strong><br>
-      In the same Routing settings, delete the previous maintainer's forwarding rule
-      for <code>tech@pdtsingers.org</code>. Only one active forwarding rule should
-      remain after this step.
+      <strong>Verify delivery before removing the old mapping.</strong><br>
+      Have the new maintainer send a test message to <code>tech@pdtsingers.org</code>
+      and confirm it arrives at their personal inbox. Do not remove the old mapping
+      until this test passes.
     </li>
     <li>
-      <strong>Verify end-to-end delivery before closing the handoff.</strong><br>
-      Trigger a magic link login for the <code>tech@pdtsingers.org</code> account on
-      the PDT Singers site. Confirm the magic link email arrives at the new
-      maintainer's personal inbox. Do not consider the handoff complete until this
-      test passes.
+      <strong>Remove the previous maintainer's mapping.</strong><br>
+      Once delivery is confirmed, delete the outgoing maintainer's entry from the
+      recipient address map. Only one active mapping for
+      <code>tech@pdtsingers.org</code> should remain.
     </li>
   </ol>
 

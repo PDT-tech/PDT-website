@@ -668,6 +668,10 @@ body {
     mix-blend-mode: normal;
   }
 
+  .coming-soon-band {
+    margin-top: 0;
+  }
+
   .hero-eyebrow { color: var(--sky-mid); }
 
   .hero-subhead { color: rgba(255,255,255,0.62); }

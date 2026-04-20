@@ -659,7 +659,7 @@ body {
   /* screen blend drops darks to black; brightness pre-amplifies lighter pixels */
   .hero-words {
     mix-blend-mode: screen;
-    filter: brightness(3);
+    filter: brightness(5);
     opacity: 1;
   }
 

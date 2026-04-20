@@ -84,17 +84,55 @@
   <div class="page-section-inner page-section-inner--narrow">
     <p class="info-label">Bring Us to Your Event</p>
     <h2 class="info-title">We'd love to sing for you</h2>
-    <p class="info-body">
+    <p class="info-body" style="margin-bottom: var(--space-lg);">
       If you think PDT Singers might be just the thing for your next community gathering,
-      company event, care facility visit, or neighborhood celebration — we'd love to hear
-      from you. Drop us a line at
-      <script>
-        document.write('<a href="mai' + 'lto:info@pdtsingers.org" style="color:var(--sky-deep)">'
-          + 'info@pdtsingers.org</a>')
-      </script>
-      <noscript>info [at] pdtsingers.org</noscript>
-      and let's talk.
+      company event, care facility visit, or neighborhood celebration — fill out the form
+      below and we'll be in touch soon.
     </p>
+
+    <form class="contact-form" name="booking-inquiry" method="POST" data-netlify="true"
+          netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="booking-inquiry">
+      <p style="display:none">
+        <label>Don't fill this out: <input name="bot-field"></label>
+      </p>
+
+      <div>
+        <label for="booking-name">Your name</label>
+        <input type="text" id="booking-name" name="name" required
+               placeholder="Jane Smith" autocomplete="name">
+      </div>
+
+      <div>
+        <label for="booking-email">Email address</label>
+        <input type="email" id="booking-email" name="email" required
+               placeholder="jane@example.com" autocomplete="email">
+      </div>
+
+      <div>
+        <label for="booking-org">Organization or venue</label>
+        <input type="text" id="booking-org" name="organization"
+               placeholder="e.g. Sunrise Senior Living, First Fridays Vancouver">
+      </div>
+
+      <div>
+        <label for="booking-date">Preferred date</label>
+        <input type="text" id="booking-date" name="preferred_date"
+               placeholder="e.g. June 15, 2026 — or a range">
+      </div>
+
+      <div>
+        <label for="booking-message">Tell us about your event</label>
+        <textarea id="booking-message" name="message" required
+                  placeholder="A few details about your event, audience, and what you're looking for…"></textarea>
+      </div>
+
+      <div>
+        <button type="submit" class="btn-primary" style="border: none; cursor: pointer; width: 100%; text-align: center;">
+          Send inquiry &rarr;
+        </button>
+      </div>
+    </form>
   </div>
 </section>
 

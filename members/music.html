@@ -287,6 +287,7 @@
     <li><a href="/members/attendance.html">Can You Be There?</a></li>
     <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html">Attendance Report</a></li>
     <li><a href="/members/music.html" class="active">Music</a></li>
+    <li><a href="/members/resources.html">Resources</a></li>
   </ul>
   <div class="member-nav-right">
     <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
@@ -339,14 +340,18 @@
     import { supabase } from '../js/supabase.js'
 
     // ── Voice part pill — shown once profile is available ────
-    document.addEventListener('pdt:profile-loaded', (e) => {
-      const profile = e.detail
-      if (profile.voice_part) {
+    function applyVoicePill (profile) {
+      if (profile?.voice_part) {
         const label = profile.voice_part.charAt(0).toUpperCase() + profile.voice_part.slice(1)
         document.getElementById('voice-pill-text').textContent = `Your part: ${label} — your tracks highlighted`
         document.getElementById('voice-pill').style.display = 'inline-flex'
       }
-    })
+    }
+    if (window.__PDT_USER) {
+      applyVoicePill(window.__PDT_USER)
+    } else {
+      document.addEventListener('pdt:profile-loaded', (e) => applyVoicePill(e.detail))
+    }
 
     // ── API — local dev uses Drive directly; production uses Netlify function ──
     const IS_LOCAL = ['localhost','127.0.0.1'].includes(window.location.hostname)

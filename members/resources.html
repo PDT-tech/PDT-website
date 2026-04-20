@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex, nofollow">
-  <title>Attendance Census — Portland DayTime Singers</title>
+  <title>Resources — Portland DayTime Singers</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,6 @@
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/members.css">
-  <link rel="stylesheet" href="../css/blog.css">
-  <link rel="stylesheet" href="../css/attendance.css">
   <script src="/env.local.js" onerror="void 0"></script>
 </head>
 <body class="members-page">
@@ -38,9 +36,9 @@
     <li><a href="/members/comms.html">Comms</a></li>
     <li><a href="/members/calendar.html">Calendar</a></li>
     <li><a href="/members/attendance.html">Can You Be There?</a></li>
-    <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html" class="active">Attendance Report</a></li>
+    <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html">Attendance Report</a></li>
     <li><a href="/members/music.html">Music</a></li>
-    <li><a href="/members/resources.html">Resources</a></li>
+    <li><a href="/members/resources.html" class="active">Resources</a></li>
   </ul>
   <div class="member-nav-right">
     <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
@@ -48,36 +46,33 @@
   </div>
 </nav>
 
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 <main class="members-main">
 
-  <div class="blog-header" style="--blog-color: #4a5a70;">
-    <div class="blog-header-inner">
-      <p class="blog-eyebrow">Member Portal</p>
-      <h1 class="blog-title">Attendance Census</h1>
-      <p class="blog-byline">Member attendance report for upcoming events</p>
+  <div class="welcome-band">
+    <div class="welcome-inner">
+      <p class="welcome-eyebrow">Portland DayTime Singers — Member Portal</p>
+      <h1 class="welcome-title">Resources</h1>
+      <p class="welcome-subtitle">Documents, links, and reference materials for members</p>
     </div>
   </div>
 
-  <div class="census-controls">
-    <div class="census-filters">
-      <label class="form-label" for="event-filter" style="margin:0">Event</label>
-      <select id="event-filter" class="form-input census-select">
-        <option value="all">All upcoming events</option>
-      </select>
-      <label class="census-days-check">
-        <input type="checkbox" id="thirty-day-filter" checked>
-        Next 30 days only
-      </label>
-    </div>
-  </div>
+  <div style="max-width: var(--max-width); margin: 0 auto; padding: var(--space-xl) var(--space-lg);">
 
-  <div class="census-report" id="census-report">
-    <div class="att-loading">Loading…</div>
+    <div class="dash-card" style="max-width: 680px;">
+      <div class="dash-card-label">Coming Soon</div>
+      <p style="font-family: var(--font-body); font-size: var(--text-base); color: var(--text-muted); margin: 0;">
+        This page will hold member reference materials — documents, guides, links,
+        and other resources. Content will be added here as the chorus grows.
+        Check back after launch.
+      </p>
+    </div>
+
   </div>
 
 </main>
 
+<!-- FOOTER -->
 <footer class="members-footer">
   <div class="members-footer-inner">
     <span>&copy; 2026 Portland DayTime Singers &nbsp;&middot;&nbsp; Members Only</span>
@@ -86,7 +81,9 @@
   </div>
 </footer>
 
-<script type="module" src="./js/admin-attendance.js"></script>
-<script src="/js/nav-member.js"></script>
+<script type="module">
+  import '../js/auth-guard.js'
+</script>
+<script src="/js/nav.js"></script>
 </body>
 </html>

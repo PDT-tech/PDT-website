@@ -293,7 +293,7 @@ body {
   font-style: italic;
   color: var(--muted);
   line-height: 1.5;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 /* Tagline pill */
@@ -307,7 +307,7 @@ body {
   border: 1px solid var(--sage);
   padding: 0.38rem 1.2rem;
   border-radius: 2px;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 /* CTAs */
@@ -377,7 +377,7 @@ body {
 .coming-soon-band {
   background: var(--forest);
   padding: var(--space-lg) var(--space-lg);
-  margin-top: var(--space-2xl);
+  margin-top: var(--space-xl);
   text-align: center;
 }
 
@@ -668,9 +668,7 @@ body {
     mix-blend-mode: normal;
   }
 
-  .coming-soon-band {
-    margin-top: 0;
-  }
+
 
   .hero-eyebrow { color: var(--sky-mid); }
 

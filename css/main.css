@@ -663,11 +663,8 @@ body {
     opacity: 1;
   }
 
-  /* screen glows the watercolor; residual bg pixels add to glow rather than darken */
   .hero-cityscape {
-    mix-blend-mode: screen;
-    filter: brightness(3);
-    opacity: 1;
+    mix-blend-mode: normal;
   }
 
   .hero-eyebrow { color: var(--sky-mid); }

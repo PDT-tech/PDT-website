@@ -1,6 +1,6 @@
 # PDT Singers — Issue Tracker
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
-# Last updated: 2026-04-19
+# Last updated: 2026-04-19 (027 closed)
 
 001 | OPEN   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010.
 002 | OPEN   | Logo: replace raster placeholders with vector art (blocked on Mercedes Gibson delivery). Validate light/dark mode rendering.
@@ -28,6 +28,6 @@
 024 | DONE   | seed-members.mjs: untracked file contains 15 member names and email addresses (PII). Added to .gitignore 2026-04-19 to prevent accidental commit.
 025 | OPEN   | members/resources.html: listed in requirements §4.2 as a member-only page but the file does not exist and the member nav has no Resources link. Phase 2 item — log for tracking.
 026 | OPEN   | Kevin Bier profile has role='member' and voice_part=null. Should be role='admin', voice_part='bass'. Root cause: seed-members.mjs skipped Kevin's auth user creation (account already existed from March 2026) and never ran the profile update. Fix: manually update in Supabase table editor or via Admin API.
-027 | OPEN   | "Music Fairy" account (id: e94f7959, role=admin, created 2026-03-29) appears to be an early test account with no voice_part. Kevin to decide: rename, demote, or deactivate. Currently active with admin privileges.
+027 | DONE   | "Music Fairy" account (id: e94f7959, role=admin, created 2026-03-29) appears to be an early test account with no voice_part. Kevin to decide: rename, demote, or deactivate. Currently active with admin privileges. Resolved 2026-04-19: migrated to tech@pdtsingers.org; profile updated in Supabase (full_name='Tech Support', role='admin', is_active=true). Workspace-level forwarding confirmed: tech@pdtsingers.org → k7vi@pm.me via Admin Console routing map.
 028 | OPEN   | Migrate all website tool accounts to tech@pdtsingers.org. Scope: Netlify, Supabase, GitHub, GCP (project pdt-singers-music-library + service account pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com), Resend, helpinghosting.com. Google Workspace ownership stays with president@ — no action needed there. Do one service at a time; verify login before moving to the next.
 029 | OPEN   | Set up Workspace-level email forwarding for all active pdtsingers.org addresses. Gmail-level forwarding (Settings → Forwarding and POP/IMAP) does not work for Workspace accounts — use admin.google.com → Apps → Google Workspace → Gmail → Routing → "Email forwarding using recipient address map". Scope: president@, director@, any active Poohbah addresses. Each address needs a mapping to the holder's personal email. Document which addresses are active and where they forward in the Tech Maintainer's Guide §2.

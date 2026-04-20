@@ -261,7 +261,7 @@ body {
    Do not add margin-top to .coming-soon-band as a substitute. */
 .hero-spacer {
   background: #f7f3ee;
-  padding: var(--space-xl) 0;
+  padding: var(--space-md) 0;
 }
 
 @media (prefers-color-scheme: dark) {

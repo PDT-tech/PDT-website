@@ -3,7 +3,7 @@
 # Last updated: 2026-04-20
 
 001 | DONE   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010. Fixed 2026-04-20: wrapped "Portland DayTime Singers" in footer span as <a href="/"> across all 10 member pages.
-002 | PARTIAL | Logo: replace raster placeholders with vector art. Cityscape PNG replaced 2026-04-20 with Portland_DayTime_Singers_Cityscape_Transparent.png from Mercedes Gibson. Words file with transparent background still pending from designer. Validate light/dark mode rendering when complete.
+002 | DONE   | Logo: new WebP assets from Mercedes Gibson deployed for both cityscape and words portions of hero. Cityscape has residual light halo in dark mode (watercolor wash pixels not fully transparent) — requires source file fix from designer when words transparent file is also delivered. Good enough to ship. Fixed 2026-04-19.
 003 | DONE   | "Men who love to sing" headline: force three-line break on desktop. Fixed 2026-04-17.
 004 | DONE   | Calendar page: restore h1 colored horizontal border. Fixed 2026-04-17.
 005 | DONE   | Calendar "Today" button: dark-mode contrast fix. Fixed 2026-04-17.

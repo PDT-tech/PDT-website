@@ -2,7 +2,7 @@
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
 # Last updated: 2026-04-20
 
-001 | OPEN   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010.
+001 | DONE   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010. Fixed 2026-04-20: wrapped "Portland DayTime Singers" in footer span as <a href="/"> across all 10 member pages.
 002 | OPEN   | Logo: replace raster placeholders with vector art (blocked on Mercedes Gibson delivery). Validate light/dark mode rendering.
 003 | DONE   | "Men who love to sing" headline: force three-line break on desktop. Fixed 2026-04-17.
 004 | DONE   | Calendar page: restore h1 colored horizontal border. Fixed 2026-04-17.

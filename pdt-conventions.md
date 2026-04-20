@@ -159,3 +159,23 @@ When testing the Music Library locally:
 1. Temporarily set the Google Drive Music folder to "Anyone with link" (Viewer)
 2. Test
 3. **Revert to Restricted immediately** — do not leave it open
+
+---
+
+## Hero Layout (index.html)
+
+The cityscape image (`hero-cityscape`) has a white background by design — this
+preserves the pastel watercolor shading in the original artwork. It cannot be
+made transparent.
+
+The `.site-hero` background ends exactly where its content ends. Adding
+`padding-bottom` to `.hero-inner` or `.site-hero` does not extend the hero
+background — it exposes the page body background instead.
+
+**The spacing solution is `.hero-spacer`** — a separate `<div>` between
+`</section>` and `.coming-soon-band` in `index.html`. Its background matches
+the hero gradient end color (`#f7f3ee` light / `#1a1a12` dark).
+
+**Single tuning lever:** adjust `padding` on `.hero-spacer` only.
+**Never** add `margin-top` to `.coming-soon-band` as an alternative — that
+exposes the body background in the gap.

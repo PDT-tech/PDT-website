@@ -256,9 +256,15 @@ body {
   padding: 0;
 }
 
-/* Extends the visual bottom of the hero — matches hero gradient end color.
-   Do not remove: this is the spacing solution between cityscape and band.
-   Do not add margin-top to .coming-soon-band as a substitute. */
+/* HERO LAYOUT NOTE — do not simplify without reading this.
+   The cityscape image has a white/light background (intentional — preserves
+   Mercedes Gibson's pastel watercolor shading). It cannot be made transparent.
+   The .site-hero background ends exactly where its content ends — padding on
+   .hero-inner or .site-hero does NOT extend the hero background reliably.
+   Solution: .hero-spacer is a separate band that matches the hero gradient
+   end color, creating visual breathing room below the cityscape.
+   Single tuning lever: adjust padding on .hero-spacer only.
+   Do NOT add margin-top to .coming-soon-band as an alternative. */
 .hero-spacer {
   background: #f7f3ee;
   padding: var(--space-md) 0;

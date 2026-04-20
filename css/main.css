@@ -656,16 +656,18 @@ body {
       #0d1a24 0%, #112030 25%, #192630 55%, #1a1a12 100%);
   }
 
-  /* screen blend drops darks to black; brightness pre-amplifies lighter pixels */
+  /* invert: dark text → white, consistent across all browsers */
   .hero-words {
-    mix-blend-mode: screen;
-    filter: brightness(5);
+    mix-blend-mode: normal;
+    filter: invert(1);
     opacity: 1;
   }
 
+  /* screen glows the watercolor; residual bg pixels add to glow rather than darken */
   .hero-cityscape {
-    filter: invert(1) grayscale(1);
-    opacity: 0.9;
+    mix-blend-mode: screen;
+    filter: brightness(3);
+    opacity: 1;
   }
 
   .hero-eyebrow { color: var(--sky-mid); }

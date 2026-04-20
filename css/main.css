@@ -283,7 +283,7 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--sky-deep);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
 /* Subhead */
@@ -376,7 +376,8 @@ body {
 
 .coming-soon-band {
   background: var(--forest);
-  padding: var(--space-xl) var(--space-lg);
+  padding: var(--space-lg) var(--space-lg);
+  margin-top: var(--space-lg);
   text-align: center;
 }
 

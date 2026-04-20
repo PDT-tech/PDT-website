@@ -293,7 +293,7 @@ body {
   font-style: italic;
   color: var(--muted);
   line-height: 1.5;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
 /* Tagline pill */
@@ -377,7 +377,7 @@ body {
 .coming-soon-band {
   background: var(--forest);
   padding: var(--space-lg) var(--space-lg);
-  margin-top: var(--space-lg);
+  margin-top: var(--space-2xl);
   text-align: center;
 }
 
@@ -733,4 +733,9 @@ body {
     background: var(--sky-deep) !important;
     color: var(--white) !important;
   }
+}
+
+/* ── Light Mode overrides ───────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  .hero-eyebrow { color: rgba(26,26,26,0.6); }
 }

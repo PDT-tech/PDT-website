@@ -4,6 +4,35 @@
 
 ---
 
+## Investigate Before You Design
+
+**When claude.ai asks CC to investigate an existing feature before redesigning
+it, CC must report first and touch nothing.**
+
+Whenever a conversation involves redesigning, modifying, or extending an existing
+feature, claude.ai will request a structured investigation before any design
+decisions are made. When that request arrives, CC must:
+
+1. Report the full as-built state — do not fix, improve, or extend anything
+   observed along the way
+2. Cover all of: files involved, database schema and constraints, Edge Functions
+   and their payloads, pg_cron jobs and deployment status, JS segmentation logic,
+   current UI behavior, undeployed placeholders, and relevant RLS policies
+3. Wait for further instructions before writing any code
+
+**CC must also proactively flag** when it receives an implementation prompt for
+a feature that touches existing code and no prior investigation was requested.
+In that case, CC should pause and ask: "Should I report the as-built state of
+[feature] before proceeding?"
+
+The full pattern and rationale are documented in
+`investigate-before-you-design.md` (project root).
+
+**Rule in one sentence:** No code before the as-built report. No implementation
+prompt before decisions are documented.
+
+---
+
 ## Secrets & Credentials
 
 **Never hardcode secret values in committed files. Ever.**

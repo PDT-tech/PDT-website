@@ -1,7 +1,7 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-04-18
+# Last updated: 2026-04-21
 
 ---
 
@@ -182,3 +182,81 @@ which is a security exposure (token in browser history, server logs, referrer
 headers, valid for ~1 hour). Edge Function streaming eliminates both problems.
 GCS migration (Option 4) remains the cleaner long-term architecture if Drive
 becomes a pain point.
+
+---
+
+## 2026-04-21 — Attendance page: two-cluster dropdown UI redesign
+
+**Question:** How should the "Can You Be There?" attendance page present upcoming
+events to members for attendance selection?
+
+**Decision:** Replace the long scrolling per-event list with a two-cluster
+dropdown layout. Sing-outs & Events cluster on the left (visual priority —
+special events). Rehearsals cluster on the right (routine). Each cluster
+contains: a dropdown of upcoming events (today or later, soonest selected by
+default, ordered soonest-first); status radio buttons; an optional Reason text
+field; and a Save button. A light-stroke rounded rectangle visually groups each
+cluster. Dirty-state warning fires on page exit if unsaved changes exist.
+Do not reopen the scrolling-list approach.
+
+**Radio button states:**
+- Sing-outs: three-way — "I'll be there" / "I'm not sure" / "I can't be there"
+- Rehearsals: two-way — "I'll be there" / "I won't be there"
+- "I'm not sure" is sing-out only; it does not appear in the rehearsal cluster
+
+**Reason field behavior:**
+- Shown and active when status is `not_attending` or `not_sure`
+- Hidden (or disabled) when status is `attending`
+- If a reason was previously saved for the selected event, it is pre-populated
+  when that event is chosen from the dropdown
+- Reason is optional — never required
+
+**On event selection from dropdown:**
+- Controls reload immediately with the member's previously saved state for
+  that event (status + reason), or default to `attending` with empty reason
+  if no prior record exists
+
+**Dirty-state warning:**
+- If member changes status or reason without saving and attempts to navigate
+  away or select a different event from the dropdown, a browser confirm dialog
+  warns: "You have unsaved changes — leave anyway?"
+
+**Schema:** No changes required. `event_attendance` table already has
+`status` (check constraint: `attending` | `not_sure` | `not_attending`),
+`reason` (nullable text), and a unique constraint on `(event_id, member_id)`.
+This is a UI rewrite only.
+
+**Backing logic reuse:** The existing `attendance.js` segmentation
+(`event_type = 'rehearsal'` vs. everything else), batch-save pattern, and
+`notify-attendance-change` Edge Function call are retained unchanged.
+Only the rendered DOM and event-handling wiring change.
+
+**Rationale:** The original scrolling list became unwieldy as the rehearsal
+schedule grew (weekly Mondays year-round). The dropdown pattern matches the
+admin event-creation pattern already established in the calendar. Two clusters
+give sing-outs visual prominence appropriate to their importance while keeping
+rehearsal attendance accessible. Audience of 40–75 year olds on phones
+influenced the dirty-state warning over auto-save — explicit Save gives members
+a clear confirmation moment.
+
+---
+
+## 2026-04-21 — Future work item documentation standard
+
+**Question:** How do we capture context for deferred work items so we can restart
+efficiently without token-expensive reconstruction?
+
+**Decision:** When a future work item is identified during design or investigation,
+capture it immediately in `pdt-issues.md` as an OPEN item with full restart
+context — schema state, as-built function names, what exists vs. what is
+greenfield, RLS requirements, and any decisions already made. The goal is that
+a future session can read the issue entry and begin coding without any
+investigation phase. Do not defer documentation to "later in the session" —
+write it before moving to the next topic.
+
+**Rationale:** Reconstructing context in a new session is expensive in tokens,
+time, and introduces risk of conflicting decisions. A single well-written issue
+entry costs less than five minutes of the session that creates it and saves
+30+ minutes (and significant token cost) in the session that implements it.
+This pattern is especially important for items with non-obvious schema
+dependencies or partially-built backing logic.

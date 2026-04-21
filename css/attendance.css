@@ -268,6 +268,56 @@
   }
 }
 
+/* ── Cluster cards (dropdown layout) ───────────────────────── */
+.att-cluster-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.att-field-group {
+  margin-bottom: var(--space-md);
+}
+
+.att-label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.att-select {
+  width: 100%;
+  font-size: var(--text-sm) !important;
+  padding: 0.45rem 0.6rem !important;
+  cursor: pointer;
+}
+
+/* Stacked vertical toggles inside cluster cards */
+.att-cluster-card .att-toggle-row {
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: var(--space-md);
+}
+
+.att-cluster-card .att-toggle {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.55rem 0.9rem;
+  border-radius: 6px;
+}
+
+/* Event details divider in sing-out cluster */
+.att-cluster-card .att-event-details:not(:empty) {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--rule);
+}
+
 /* ── Admin / Census page ────────────────────────────────────── */
 .census-controls {
   max-width: var(--max-width);

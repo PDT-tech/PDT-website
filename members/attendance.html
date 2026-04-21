@@ -61,19 +61,51 @@
 
   <div class="attendance-layout">
 
-    <div class="attendance-col attendance-events">
+    <!-- Sing-outs & Events cluster -->
+    <div class="att-cluster-card">
       <h2 class="attendance-col-header">Sing-outs &amp; Events</h2>
-      <div id="event-list"><div class="att-loading">Loading…</div></div>
-      <div class="att-save-bar">
-        <button class="btn-primary att-save-btn" id="att-save-btn" disabled>Save</button>
-        <span class="att-save-status" id="att-save-status" hidden>Saved ✓</span>
-        <p class="form-error att-save-error" id="att-save-error" hidden></p>
+      <p class="att-loading" id="singout-loading">Loading…</p>
+      <p class="att-empty"   id="singout-empty"   hidden>No upcoming sing-outs or events.</p>
+      <div id="singout-controls" hidden>
+        <div class="att-field-group">
+          <label class="att-label" for="singout-select">Select event</label>
+          <select id="singout-select" class="form-input att-select"></select>
+        </div>
+        <div id="singout-details" class="att-event-details"></div>
+        <div class="att-toggle-row" id="singout-radios"></div>
+        <div class="att-reason-wrap" id="singout-reason-wrap" hidden>
+          <input type="text" id="singout-reason" class="att-reason form-input"
+                 placeholder="Reason (optional)">
+        </div>
+        <div class="att-save-bar">
+          <button class="btn-primary" id="singout-save-btn" disabled>Save</button>
+          <span class="att-save-status" id="singout-save-status" hidden>Saved ✓</span>
+          <p class="form-error att-save-error" id="singout-save-error" hidden></p>
+        </div>
       </div>
     </div>
 
-    <div class="attendance-col attendance-rehearsals">
+    <!-- Rehearsals cluster -->
+    <div class="att-cluster-card">
       <h2 class="attendance-col-header">Rehearsals</h2>
-      <div id="rehearsal-list"><div class="att-loading">Loading…</div></div>
+      <p class="att-loading" id="rehearsal-loading">Loading…</p>
+      <p class="att-empty"   id="rehearsal-empty"   hidden>No upcoming rehearsals.</p>
+      <div id="rehearsal-controls" hidden>
+        <div class="att-field-group">
+          <label class="att-label" for="rehearsal-select">Select rehearsal</label>
+          <select id="rehearsal-select" class="form-input att-select"></select>
+        </div>
+        <div class="att-toggle-row" id="rehearsal-radios"></div>
+        <div class="att-reason-wrap" id="rehearsal-reason-wrap" hidden>
+          <input type="text" id="rehearsal-reason" class="att-reason form-input"
+                 placeholder="Reason (optional)">
+        </div>
+        <div class="att-save-bar">
+          <button class="btn-primary" id="rehearsal-save-btn" disabled>Save</button>
+          <span class="att-save-status" id="rehearsal-save-status" hidden>Saved ✓</span>
+          <p class="form-error att-save-error" id="rehearsal-save-error" hidden></p>
+        </div>
+      </div>
     </div>
 
   </div>

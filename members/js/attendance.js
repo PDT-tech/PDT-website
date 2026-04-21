@@ -1,17 +1,25 @@
 // PDT Singers — Member Attendance Page
-// Selections are local until the page-level Save button is clicked.
+// Dropdown cluster UI: sing-outs (left) and rehearsals (right).
+// Save/notify logic unchanged from batch-save design; only DOM and
+// event handling rewritten per pdt-decisions.md 2026-04-21.
 
 import '../../js/auth-guard.js'
 import { supabase } from '../../js/supabase.js'
 
 const today = new Date().toISOString().split('T')[0]
 
-// Page-level save state (populated in loadData)
-const baseline = {}  // eventId → {status, reason} | null  (last persisted)
-const current  = {}  // eventId → {status, reason} | null  (current UI)
+// DB-persisted state, keyed by eventId
+const attMap = {}  // eventId → { status, reason } | undefined
+
+// Per-cluster mutable state
+const clusters = {
+  singout:   { events: [], selectedId: null, startStatus: 'attending', startReason: '' },
+  rehearsal: { events: [], selectedId: null, startStatus: 'attending', startReason: '' },
+}
+
 let memberId
 
-function init () {
+function init() {
   const profile = window.__PDT_USER
   if (!profile) {
     document.addEventListener('pdt:profile-loaded', init, { once: true })
@@ -21,7 +29,7 @@ function init () {
   loadData()
 }
 
-async function loadData () {
+async function loadData() {
   const [eventsRes, attRes] = await Promise.all([
     supabase
       .from('events')
@@ -30,241 +38,218 @@ async function loadData () {
       .order('event_date'),
     supabase
       .from('event_attendance')
-      .select('id, event_id, status, reason')
+      .select('event_id, status, reason')
       .eq('member_id', memberId)
   ])
 
   if (eventsRes.error) {
-    showError('rehearsal-list', 'Failed to load events.')
-    showError('event-list',     'Failed to load events.')
+    showLoadError('singout')
+    showLoadError('rehearsal')
     return
   }
+
+  ;(attRes.data ?? []).forEach(a => {
+    attMap[a.event_id] = { status: a.status, reason: a.reason ?? '' }
+  })
 
   const events = eventsRes.data ?? []
-  const attMap = {}
-  ;(attRes.data ?? []).forEach(a => { attMap[a.event_id] = a })
+  clusters.singout.events   = events.filter(e => e.event_type !== 'rehearsal')
+  clusters.rehearsal.events = events.filter(e => e.event_type === 'rehearsal')
 
-  events.forEach(e => {
-    const att = attMap[e.id]
-    const val = att ? { status: att.status, reason: att.reason ?? '' } : null
-    baseline[e.id] = val
-    current[e.id]  = val ? { ...val } : null
-  })
+  setupCluster('singout')
+  setupCluster('rehearsal')
 
-  const rehearsals = events.filter(e => e.event_type === 'rehearsal')
-  const singouts   = events.filter(e => e.event_type !== 'rehearsal')
-
-  renderRehearsals(rehearsals, attMap)
-  renderSingouts(singouts, attMap)
-
-  document.getElementById('att-save-btn').addEventListener('click', savePage)
-
-  const targetId = new URLSearchParams(window.location.search).get('event')
-  if (targetId) {
-    setTimeout(() => {
-      const el = document.getElementById(`ev-${targetId}`)
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        el.classList.add('att-highlight')
-      }
-    }, 150)
-  }
-}
-
-// ── Rehearsals column ────────────────────────────────────────
-
-function renderRehearsals (rehearsals, attMap) {
-  const container = document.getElementById('rehearsal-list')
-  if (!rehearsals.length) {
-    container.innerHTML = '<p class="att-empty">No upcoming rehearsals.</p>'
-    return
-  }
-
-  container.innerHTML = rehearsals.map(r => {
-    const att   = attMap[r.id]
-    const isOut = att?.status === 'not_attending'
-    return `
-      <div class="att-rehearsal-row" id="ev-${r.id}" data-id="${r.id}">
-        <div class="att-rehearsal-date">${formatDateShort(r.event_date)}</div>
-        <div class="att-toggle-row">
-          <label class="att-toggle ${!isOut ? 'att-toggle-on' : ''}">
-            <input type="radio" name="r-${r.id}" value="attending" ${!isOut ? 'checked' : ''}>
-            I'll be there
-          </label>
-          <label class="att-toggle ${isOut ? 'att-toggle-on' : ''}">
-            <input type="radio" name="r-${r.id}" value="not_attending" ${isOut ? 'checked' : ''}>
-            I won't be there
-          </label>
-        </div>
-        <div class="att-reason-wrap" ${isOut ? '' : 'hidden'}>
-          <input type="text" class="att-reason form-input"
-                 placeholder="Reason (optional)"
-                 value="${escHtml(att?.reason ?? '')}">
-        </div>
-      </div>`
-  }).join('')
-
-  rehearsals.forEach(r => {
-    const row         = document.getElementById(`ev-${r.id}`)
-    const radios      = row.querySelectorAll('input[type=radio]')
-    const reasonWrap  = row.querySelector('.att-reason-wrap')
-    const reasonInput = row.querySelector('.att-reason')
-
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        const status = radio.value
-        reasonWrap.hidden = status !== 'not_attending'
-        row.querySelectorAll('.att-toggle').forEach(l => {
-          l.classList.toggle('att-toggle-on', l.querySelector('input').value === status)
-        })
-        const reason = status !== 'not_attending' ? '' : (current[r.id]?.reason ?? '')
-        if (status !== 'not_attending') reasonInput.value = ''
-        current[r.id] = { status, reason }
-        updateSaveButton()
-      })
-    })
-
-    reasonInput.addEventListener('input', () => {
-      if (!current[r.id]) current[r.id] = { status: 'not_attending', reason: '' }
-      current[r.id].reason = reasonInput.value.trim()
-      updateSaveButton()
-    })
+  window.addEventListener('beforeunload', e => {
+    if (isDirty('singout') || isDirty('rehearsal')) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
   })
 }
 
-// ── Sing-outs & events column ────────────────────────────────
+function setupCluster(key) {
+  const { events }  = clusters[key]
+  const loadingEl   = document.getElementById(`${key}-loading`)
+  const emptyEl     = document.getElementById(`${key}-empty`)
+  const controlsEl  = document.getElementById(`${key}-controls`)
+  const selectEl    = document.getElementById(`${key}-select`)
+  const reasonInput = document.getElementById(`${key}-reason`)
 
-function renderSingouts (events, attMap) {
-  const container = document.getElementById('event-list')
+  loadingEl.hidden = true
+
   if (!events.length) {
-    container.innerHTML = '<p class="att-empty">No upcoming sing-outs or events.</p>'
+    emptyEl.hidden    = false
+    controlsEl.hidden = true
     return
   }
 
-  container.innerHTML = events.map(evt => {
-    const att    = attMap[evt.id]
-    const status = att?.status ?? ''
-    const mapsUrl = evt.address
-      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.address)}`
-      : null
+  emptyEl.hidden    = true
+  controlsEl.hidden = false
 
-    const details = [
-      `<div class="att-detail-row">📅 ${formatDateLong(evt.event_date)}</div>`,
-      evt.location
-        ? `<div class="att-detail-row">📍 ${mapsUrl
-            ? `<a href="${mapsUrl}" target="_blank" rel="noopener">${escHtml(evt.location)}</a>`
-            : escHtml(evt.location)}</div>`
-        : '',
-      evt.call_time
-        ? `<div class="att-detail-row">🕐 Call time: ${formatTime(evt.call_time)}</div>`
-        : '',
-      evt.start_time
-        ? `<div class="att-detail-row att-detail-indent">Start time: ${formatTime(evt.start_time)}</div>`
-        : '',
-      evt.dress_code
-        ? `<div class="att-detail-row">👔 Dress code: ${escHtml(evt.dress_code)}</div>`
-        : '',
-      evt.parking_notes
-        ? `<div class="att-detail-row">🅿️ Parking: ${escHtml(evt.parking_notes)}</div>`
-        : '',
-      evt.notes
-        ? `<div class="att-detail-row">📝 Notes: ${escHtml(evt.notes)}</div>`
-        : '',
-    ].filter(Boolean).join('')
+  selectEl.innerHTML = events.map(e =>
+    `<option value="${e.id}">${escHtml(e.title)} — ${formatDateShort(e.event_date)}</option>`
+  ).join('')
 
-    return `
-      <div class="att-event-card" id="ev-${evt.id}" data-id="${evt.id}">
-        <div class="att-event-header">
-          <div class="att-event-title">${escHtml(evt.title)}</div>
-          <span class="att-type-badge">${escHtml(formatEventType(evt.event_type))}</span>
-        </div>
-        <div class="att-event-details">${details}</div>
-        <div class="att-radio-group">
-          ${radioOpt(evt.id, 'attending',     "I'll be there",  status)}
-          ${radioOpt(evt.id, 'not_sure',      'Not sure yet',   status)}
-          ${radioOpt(evt.id, 'not_attending', "I can't make it", status)}
-        </div>
-        <div class="att-reason-wrap" ${status === 'not_attending' ? '' : 'hidden'}>
-          <input type="text" class="att-reason form-input"
-                 placeholder="Reason (optional)"
-                 value="${escHtml(att?.reason ?? '')}">
-        </div>
-      </div>`
-  }).join('')
+  selectEl.addEventListener('change', () => {
+    const newId = selectEl.value
+    if (isDirty(key)) {
+      if (!confirm('You have unsaved changes — leave anyway?')) {
+        selectEl.value = clusters[key].selectedId
+        return
+      }
+    }
+    loadEvent(key, newId)
+  })
 
-  events.forEach(evt => {
-    const card        = document.getElementById(`ev-${evt.id}`)
-    const radios      = card.querySelectorAll('input[type=radio]')
-    const reasonWrap  = card.querySelector('.att-reason-wrap')
-    const reasonInput = card.querySelector('.att-reason')
+  reasonInput.addEventListener('input', () => updateSaveBtn(key))
+  document.getElementById(`${key}-save-btn`).addEventListener('click', () => saveCluster(key))
 
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        const status = radio.value
-        reasonWrap.hidden = status !== 'not_attending'
-        if (status !== 'not_attending') reasonInput.value = ''
-        const reason = status !== 'not_attending' ? '' : (current[evt.id]?.reason ?? '')
-        current[evt.id] = { status, reason }
-        updateSaveButton()
-      })
-    })
+  loadEvent(key, events[0].id)
+}
 
-    reasonInput.addEventListener('input', () => {
-      if (!current[evt.id]) current[evt.id] = { status: 'not_attending', reason: '' }
-      current[evt.id].reason = reasonInput.value.trim()
-      updateSaveButton()
-    })
+function loadEvent(key, eventId) {
+  const c      = clusters[key]
+  c.selectedId = eventId
+
+  const saved  = attMap[eventId]
+  const status = saved?.status ?? 'attending'
+  const reason = saved?.reason ?? ''
+
+  c.startStatus = status
+  c.startReason = reason
+
+  if (key === 'singout') {
+    renderDetails(c.events.find(e => e.id === eventId))
+  }
+
+  renderRadios(key, status)
+
+  const reasonInput = document.getElementById(`${key}-reason`)
+  reasonInput.value = reason
+  document.getElementById(`${key}-reason-wrap`).hidden = status === 'attending'
+
+  const saveBtn = document.getElementById(`${key}-save-btn`)
+  saveBtn.disabled    = true
+  saveBtn.textContent = 'Save'
+  document.getElementById(`${key}-save-status`).hidden = true
+  document.getElementById(`${key}-save-error`).hidden  = true
+}
+
+function renderDetails(evt) {
+  const el = document.getElementById('singout-details')
+  if (!evt) { el.innerHTML = ''; return }
+
+  const mapsUrl = evt.address
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.address)}`
+    : null
+
+  el.innerHTML = [
+    `<div class="att-detail-row">📅 ${formatDateLong(evt.event_date)}</div>`,
+    evt.location
+      ? `<div class="att-detail-row">📍 ${mapsUrl
+          ? `<a href="${mapsUrl}" target="_blank" rel="noopener">${escHtml(evt.location)}</a>`
+          : escHtml(evt.location)}</div>`
+      : '',
+    evt.call_time
+      ? `<div class="att-detail-row">🕐 Call time: ${formatTime(evt.call_time)}</div>`
+      : '',
+    evt.start_time
+      ? `<div class="att-detail-row att-detail-indent">Start: ${formatTime(evt.start_time)}</div>`
+      : '',
+    evt.dress_code
+      ? `<div class="att-detail-row">👔 Dress code: ${escHtml(evt.dress_code)}</div>`
+      : '',
+    evt.parking_notes
+      ? `<div class="att-detail-row">🅿️ Parking: ${escHtml(evt.parking_notes)}</div>`
+      : '',
+    evt.notes
+      ? `<div class="att-detail-row">📝 ${escHtml(evt.notes)}</div>`
+      : '',
+  ].filter(Boolean).join('')
+}
+
+const STATUS_OPTIONS = {
+  singout: [
+    { value: 'attending',     label: "I'll be there"    },
+    { value: 'not_sure',      label: "I'm not sure"     },
+    { value: 'not_attending', label: "I can't be there" },
+  ],
+  rehearsal: [
+    { value: 'attending',     label: "I'll be there"    },
+    { value: 'not_attending', label: "I won't be there" },
+  ],
+}
+
+function renderRadios(key, selectedStatus) {
+  const container = document.getElementById(`${key}-radios`)
+  container.innerHTML = STATUS_OPTIONS[key].map(opt =>
+    `<label class="att-toggle${opt.value === selectedStatus ? ' att-toggle-on' : ''}">
+      <input type="radio" name="${key}-status" value="${opt.value}"${opt.value === selectedStatus ? ' checked' : ''}>
+      ${opt.label}
+    </label>`
+  ).join('')
+
+  container.querySelectorAll('input[type=radio]').forEach(radio => {
+    radio.addEventListener('change', () => onRadioChange(key))
   })
 }
 
-// ── Page-level save ──────────────────────────────────────────
+function onRadioChange(key) {
+  const status      = getCurrentStatus(key)
+  const reasonWrap  = document.getElementById(`${key}-reason-wrap`)
+  const reasonInput = document.getElementById(`${key}-reason`)
 
-function getChanges () {
-  return Object.entries(current)
-    .filter(([id, c]) => {
-      const b = baseline[id]
-      if (!b && !c) return false
-      if (!b &&  c) return true
-      if ( b && !c) return false
-      const bReason = (b.reason ?? '').trim()
-      const cReason = (c.reason ?? '').trim()
-      return b.status !== c.status || bReason !== cReason
-    })
-    .map(([id, c]) => ({
-      event_id: id,
-      status:   c.status,
-      reason:   (c.reason ?? '').trim() || null
-    }))
+  reasonWrap.hidden = status === 'attending'
+  if (status === 'attending') reasonInput.value = ''
+
+  document.getElementById(`${key}-radios`).querySelectorAll('.att-toggle').forEach(label => {
+    label.classList.toggle('att-toggle-on', label.querySelector('input').value === status)
+  })
+
+  updateSaveBtn(key)
 }
 
-function updateSaveButton () {
-  document.getElementById('att-save-btn').disabled = getChanges().length === 0
+function getCurrentStatus(key) {
+  return document.querySelector(`input[name="${key}-status"]:checked`)?.value ?? 'attending'
 }
 
-async function savePage () {
-  const changes = getChanges()
-  if (!changes.length) return
+function getCurrentReason(key) {
+  return document.getElementById(`${key}-reason`).value.trim()
+}
 
-  const saveBtn    = document.getElementById('att-save-btn')
-  const saveStatus = document.getElementById('att-save-status')
-  const saveError  = document.getElementById('att-save-error')
+function isDirty(key) {
+  const c = clusters[key]
+  if (!c.selectedId) return false
+  return getCurrentStatus(key) !== c.startStatus ||
+         getCurrentReason(key) !== (c.startReason ?? '').trim()
+}
+
+function updateSaveBtn(key) {
+  document.getElementById(`${key}-save-btn`).disabled = !isDirty(key)
+}
+
+async function saveCluster(key) {
+  const c       = clusters[key]
+  const eventId = c.selectedId
+  if (!eventId) return
+
+  const status     = getCurrentStatus(key)
+  const reason     = getCurrentReason(key) || null
+  const saveBtn    = document.getElementById(`${key}-save-btn`)
+  const saveStatus = document.getElementById(`${key}-save-status`)
+  const saveError  = document.getElementById(`${key}-save-error`)
 
   saveBtn.disabled    = true
   saveBtn.textContent = 'Saving…'
   saveStatus.hidden   = true
   saveError.hidden    = true
 
-  const upsertRows = changes.map(c => ({
-    event_id:   c.event_id,
-    member_id:  memberId,
-    status:     c.status,
-    reason:     c.reason,
-    updated_at: new Date().toISOString()
-  }))
-
   const { error } = await supabase
     .from('event_attendance')
-    .upsert(upsertRows, { onConflict: 'event_id,member_id' })
+    .upsert(
+      { event_id: eventId, member_id: memberId, status, reason, updated_at: new Date().toISOString() },
+      { onConflict: 'event_id,member_id' }
+    )
 
   if (error) {
     saveError.textContent = 'Something went wrong. Please try again.'
@@ -274,18 +259,17 @@ async function savePage () {
     return
   }
 
+  attMap[eventId]   = { status, reason: reason ?? '' }
+  c.startStatus     = status
+  c.startReason     = reason ?? ''
+
   // Fire-and-forget — notification failure must not block the save confirmation
   supabase.functions.invoke('notify-attendance-change', {
-    body: { changes }
+    body: { changes: [{ event_id: eventId, status, reason }] }
   }).catch(() => {})
 
-  changes.forEach(c => {
-    baseline[c.event_id] = { status: c.status, reason: c.reason ?? '' }
-    current[c.event_id]  = { status: c.status, reason: c.reason ?? '' }
-  })
-
   saveBtn.textContent = 'Save'
-  updateSaveButton()
+  updateSaveBtn(key)
   saveStatus.hidden = false
   clearTimeout(saveStatus._t)
   saveStatus._t = setTimeout(() => { saveStatus.hidden = true }, 3000)
@@ -293,32 +277,28 @@ async function savePage () {
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function showError (id, msg) {
-  document.getElementById(id).innerHTML = `<p class="att-error">${msg}</p>`
+function showLoadError(key) {
+  document.getElementById(`${key}-loading`).hidden  = true
+  const emptyEl = document.getElementById(`${key}-empty`)
+  emptyEl.textContent = 'Failed to load events.'
+  emptyEl.hidden      = false
 }
 
-function radioOpt (eventId, value, label, selected) {
-  return `<label class="att-radio-label">
-    <input type="radio" name="e-${eventId}" value="${value}" ${selected === value ? 'checked' : ''}>
-    ${label}
-  </label>`
-}
-
-function formatDateShort (ds) {
+function formatDateShort(ds) {
   const [y, m, d] = ds.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric'
   })
 }
 
-function formatDateLong (ds) {
+function formatDateLong(ds) {
   const [y, m, d] = ds.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
   })
 }
 
-function formatTime (ts) {
+function formatTime(ts) {
   if (!ts) return ''
   const [h, m] = ts.split(':').map(Number)
   return new Date(0, 0, 0, h, m).toLocaleTimeString('en-US', {
@@ -326,12 +306,7 @@ function formatTime (ts) {
   })
 }
 
-function formatEventType (type) {
-  return ({ rehearsal: 'Rehearsal', singout: 'Sing-out', sing_out: 'Sing-out',
-            performance: 'Performance', social: 'Social' })[type] ?? type
-}
-
-function escHtml (str) {
+function escHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;')

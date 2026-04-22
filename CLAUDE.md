@@ -25,8 +25,17 @@ CC is the sole maintainer of `pdt-issues.md` in the repo root.
 
 4. **Never upload `pdt-issues.md` to Project Memory** — CC's copy in the repo is the
    single source of truth. claude.ai reads it via `cat pdt-issues.md` when needed.
+   
+5. **No changes until 95% confident** — Do not make any changes until you're 95%
+   confident that you know what to do. Ask me clarifying questions until you get
+   to 95%.
 
 ---
+
+## Applied Learning
+
+When something fails repeatedly, when Kevin has to re-explain, or when a workaround is found for a platform/tools limitation, add a one-line bullet here. Keep each bullet under 15 words. No explanations. Only add things that will save time in future sessions.
+
 
 ## Commit Discipline
 

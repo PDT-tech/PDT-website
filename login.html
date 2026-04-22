@@ -115,8 +115,8 @@
   const params = new URLSearchParams(window.location.search)
   const nextParam = params.get('next')
   const callbackUrl = nextParam
-    ? `https://pdtsingers.org/login.html?next=${encodeURIComponent(nextParam)}`
-    : 'https://pdtsingers.org/login.html'
+    ? `${window.location.origin}/login.html?next=${encodeURIComponent(nextParam)}`
+    : `${window.location.origin}/login.html`
 
   // Check for a Supabase error in the URL hash (e.g. expired magic link).
   const hashParams = new URLSearchParams(window.location.hash.slice(1))

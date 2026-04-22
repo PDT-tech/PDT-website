@@ -65,8 +65,16 @@ Netlify auto-publishing is **locked** — pushes to GitHub do not auto-deploy.
 6. Auto-publishing stays locked — nothing further needed
 
 **Do not unlock auto-publishing** unless you want every push to deploy immediately.
-The manual deploy step is intentional — it preserves Netlify's 300 build credits/month
-and prevents accidental deploys of work-in-progress commits.
+The manual deploy step is intentional — it prevents accidental deploys of
+work-in-progress commits and conserves build credits.
+
+**Netlify build credits:** The site is on the Personal plan ($9/month), which includes
+1,000 build credits/month. Each production deploy costs approximately 15 credits (~65
+deploys/month before hitting the ceiling). That's generous for normal maintenance but
+easy to burn during active development if you deploy after every small change.
+Mitigation: test all changes on localhost:8080 before deploying. Batch related changes
+into a single deploy. During active feature work, one deploy per working session is a
+reasonable target unless something is genuinely broken in production.
 
 ---
 
@@ -253,6 +261,18 @@ If members report not receiving login emails:
 1. Check Resend dashboard for delivery status
 2. Ask member to check spam folder
 3. Verify their email address in Supabase matches exactly what they're entering
+
+### Local development magic link workaround
+
+Magic links sent by Supabase point to the production domain (pdtsingers.org). When
+testing locally, the link won't redirect to localhost automatically. Workaround:
+
+1. Request the magic link as normal (enter email on the login page)
+2. Open the email and copy the magic link URL
+3. Swap the domain: replace `https://pdtsingers.org` with `http://localhost:8080`
+4. Paste the modified URL in your browser
+
+The token is domain-agnostic — the swap works reliably.
 
 ---
 

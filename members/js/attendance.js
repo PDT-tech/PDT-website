@@ -1,7 +1,5 @@
 // PDT Singers — Member Attendance Page
-// Dropdown cluster UI: sing-outs (left) and rehearsals (right).
-// Save/notify logic unchanged from batch-save design; only DOM and
-// event handling rewritten per pdt-decisions.md 2026-04-21.
+// Status dropdowns replace radio button groups per pdt-decisions.md 2026-04-21.
 
 import '../../js/auth-guard.js'
 import { supabase } from '../../js/supabase.js'
@@ -9,15 +7,19 @@ import { supabase } from '../../js/supabase.js'
 const today = new Date().toISOString().split('T')[0]
 
 // DB-persisted state, keyed by eventId
-const attMap = {}  // eventId → { status, reason } | undefined
+const attMap = {}
 
 // Per-cluster mutable state
 const clusters = {
-  singout:   { events: [], selectedId: null, startStatus: 'attending', startReason: '' },
-  rehearsal: { events: [], selectedId: null, startStatus: 'attending', startReason: '' },
+  singout:   { events: [], selectedId: null, startStatus: '', startReason: '' },
+  rehearsal: { events: [], selectedId: null, startStatus: 'yes', startReason: '' },
 }
 
 let memberId
+
+// Map between DB values and dropdown values
+const DB_TO_DROP = { attending: 'yes', not_sure: 'maybe', not_attending: 'no' }
+const DROP_TO_DB = { yes: 'attending', maybe: 'not_sure', no: 'not_attending' }
 
 function init() {
   const profile = window.__PDT_USER
@@ -73,6 +75,7 @@ function setupCluster(key) {
   const emptyEl     = document.getElementById(`${key}-empty`)
   const controlsEl  = document.getElementById(`${key}-controls`)
   const selectEl    = document.getElementById(`${key}-select`)
+  const statusSel   = document.getElementById(`${key}-status`)
   const reasonInput = document.getElementById(`${key}-reason`)
 
   loadingEl.hidden = true
@@ -101,6 +104,7 @@ function setupCluster(key) {
     loadEvent(key, newId)
   })
 
+  statusSel.addEventListener('change', () => onStatusChange(key))
   reasonInput.addEventListener('input', () => updateSaveBtn(key))
   document.getElementById(`${key}-save-btn`).addEventListener('click', () => saveCluster(key))
 
@@ -111,23 +115,22 @@ function loadEvent(key, eventId) {
   const c      = clusters[key]
   c.selectedId = eventId
 
-  const saved  = attMap[eventId]
-  const status = saved?.status ?? 'attending'
-  const reason = saved?.reason ?? ''
+  const saved   = attMap[eventId]
+  const dropVal = saved ? (DB_TO_DROP[saved.status] ?? 'yes') : (key === 'rehearsal' ? 'yes' : '')
+  const reason  = saved?.reason ?? ''
 
-  // null when no prior record — any selection counts as a change
-  c.startStatus = saved ? saved.status : null
+  c.startStatus = dropVal
   c.startReason = reason
 
   if (key === 'singout') {
     renderDetails(c.events.find(e => e.id === eventId))
   }
 
-  renderRadios(key, status)
+  document.getElementById(`${key}-status`).value = dropVal
 
   const reasonInput = document.getElementById(`${key}-reason`)
   reasonInput.value = reason
-  document.getElementById(`${key}-reason-wrap`).hidden = status === 'attending'
+  document.getElementById(`${key}-reason-wrap`).hidden = !needsReason(key, dropVal)
 
   const saveBtn = document.getElementById(`${key}-save-btn`)
   saveBtn.textContent = 'Save'
@@ -135,6 +138,94 @@ function loadEvent(key, eventId) {
   document.getElementById(`${key}-save-status`).hidden = true
   document.getElementById(`${key}-save-error`).hidden  = true
 }
+
+function needsReason(key, dropVal) {
+  return key === 'rehearsal' ? dropVal === 'no' : (dropVal === 'no' || dropVal === 'maybe')
+}
+
+function onStatusChange(key) {
+  const dropVal     = getCurrentDropVal(key)
+  const reasonWrap  = document.getElementById(`${key}-reason-wrap`)
+  const reasonInput = document.getElementById(`${key}-reason`)
+
+  reasonWrap.hidden = !needsReason(key, dropVal)
+  if (!needsReason(key, dropVal)) reasonInput.value = ''
+
+  updateSaveBtn(key)
+}
+
+function getCurrentDropVal(key) {
+  return document.getElementById(`${key}-status`).value
+}
+
+function getCurrentReason(key) {
+  return document.getElementById(`${key}-reason`).value.trim()
+}
+
+function isDirty(key) {
+  const c = clusters[key]
+  if (!c.selectedId) return false
+  return getCurrentDropVal(key) !== c.startStatus ||
+         getCurrentReason(key) !== (c.startReason ?? '').trim()
+}
+
+function updateSaveBtn(key) {
+  const dirty = isDirty(key)
+  const valid = key === 'rehearsal' || getCurrentDropVal(key) !== ''
+  document.getElementById(`${key}-save-btn`).disabled = !dirty || !valid
+}
+
+async function saveCluster(key) {
+  const c       = clusters[key]
+  const eventId = c.selectedId
+  if (!eventId) return
+
+  const dropVal = getCurrentDropVal(key)
+  if (key === 'singout' && !dropVal) return
+
+  const status     = DROP_TO_DB[dropVal] || 'attending'
+  const reason     = getCurrentReason(key) || null
+  const saveBtn    = document.getElementById(`${key}-save-btn`)
+  const saveStatus = document.getElementById(`${key}-save-status`)
+  const saveError  = document.getElementById(`${key}-save-error`)
+
+  saveBtn.disabled    = true
+  saveBtn.textContent = 'Saving…'
+  saveStatus.hidden   = true
+  saveError.hidden    = true
+
+  const { error } = await supabase
+    .from('event_attendance')
+    .upsert(
+      { event_id: eventId, member_id: memberId, status, reason, updated_at: new Date().toISOString() },
+      { onConflict: 'event_id,member_id' }
+    )
+
+  if (error) {
+    saveError.textContent = 'Something went wrong. Please try again.'
+    saveError.hidden      = false
+    saveBtn.textContent   = 'Save'
+    saveBtn.disabled      = false
+    return
+  }
+
+  attMap[eventId]   = { status, reason: reason ?? '' }
+  c.startStatus     = dropVal
+  c.startReason     = reason ?? ''
+
+  // Fire-and-forget — notification failure must not block the save confirmation
+  supabase.functions.invoke('notify-attendance-change', {
+    body: { changes: [{ event_id: eventId, status, reason }] }
+  }).catch(() => {})
+
+  saveBtn.textContent = 'Save'
+  updateSaveBtn(key)
+  saveStatus.hidden = false
+  clearTimeout(saveStatus._t)
+  saveStatus._t = setTimeout(() => { saveStatus.hidden = true }, 3000)
+}
+
+// ── Helpers ──────────────────────────────────────────────────
 
 function renderDetails(evt) {
   const el = document.getElementById('singout-details')
@@ -168,116 +259,6 @@ function renderDetails(evt) {
       : '',
   ].filter(Boolean).join('')
 }
-
-const STATUS_OPTIONS = {
-  singout: [
-    { value: 'attending',     label: "I'll be there"    },
-    { value: 'not_sure',      label: "I'm not sure"     },
-    { value: 'not_attending', label: "I can't be there" },
-  ],
-  rehearsal: [
-    { value: 'attending',     label: "I'll be there"    },
-    { value: 'not_attending', label: "I won't be there" },
-  ],
-}
-
-function renderRadios(key, selectedStatus) {
-  const container = document.getElementById(`${key}-radios`)
-  container.innerHTML = STATUS_OPTIONS[key].map(opt =>
-    `<label class="att-toggle${opt.value === selectedStatus ? ' att-toggle-on' : ''}">
-      <input type="radio" name="${key}-status" value="${opt.value}"${opt.value === selectedStatus ? ' checked' : ''}>
-      ${opt.label}
-    </label>`
-  ).join('')
-
-  container.querySelectorAll('input[type=radio]').forEach(radio => {
-    radio.addEventListener('change', () => onRadioChange(key))
-  })
-}
-
-function onRadioChange(key) {
-  const status      = getCurrentStatus(key)
-  const reasonWrap  = document.getElementById(`${key}-reason-wrap`)
-  const reasonInput = document.getElementById(`${key}-reason`)
-
-  reasonWrap.hidden = status === 'attending'
-  if (status === 'attending') reasonInput.value = ''
-
-  document.getElementById(`${key}-radios`).querySelectorAll('.att-toggle').forEach(label => {
-    label.classList.toggle('att-toggle-on', label.querySelector('input').value === status)
-  })
-
-  updateSaveBtn(key)
-}
-
-function getCurrentStatus(key) {
-  return document.querySelector(`input[name="${key}-status"]:checked`)?.value ?? 'attending'
-}
-
-function getCurrentReason(key) {
-  return document.getElementById(`${key}-reason`).value.trim()
-}
-
-function isDirty(key) {
-  const c = clusters[key]
-  if (!c.selectedId) return false
-  if (c.startStatus === null) return true  // no prior record — any selection is a change
-  return getCurrentStatus(key) !== c.startStatus ||
-         getCurrentReason(key) !== (c.startReason ?? '').trim()
-}
-
-function updateSaveBtn(key) {
-  document.getElementById(`${key}-save-btn`).disabled = !isDirty(key)
-}
-
-async function saveCluster(key) {
-  const c       = clusters[key]
-  const eventId = c.selectedId
-  if (!eventId) return
-
-  const status     = getCurrentStatus(key)
-  const reason     = getCurrentReason(key) || null
-  const saveBtn    = document.getElementById(`${key}-save-btn`)
-  const saveStatus = document.getElementById(`${key}-save-status`)
-  const saveError  = document.getElementById(`${key}-save-error`)
-
-  saveBtn.disabled    = true
-  saveBtn.textContent = 'Saving…'
-  saveStatus.hidden   = true
-  saveError.hidden    = true
-
-  const { error } = await supabase
-    .from('event_attendance')
-    .upsert(
-      { event_id: eventId, member_id: memberId, status, reason, updated_at: new Date().toISOString() },
-      { onConflict: 'event_id,member_id' }
-    )
-
-  if (error) {
-    saveError.textContent = 'Something went wrong. Please try again.'
-    saveError.hidden      = false
-    saveBtn.textContent   = 'Save'
-    saveBtn.disabled      = false
-    return
-  }
-
-  attMap[eventId]   = { status, reason: reason ?? '' }
-  c.startStatus     = status
-  c.startReason     = reason ?? ''
-
-  // Fire-and-forget — notification failure must not block the save confirmation
-  supabase.functions.invoke('notify-attendance-change', {
-    body: { changes: [{ event_id: eventId, status, reason }] }
-  }).catch(() => {})
-
-  saveBtn.textContent = 'Save'
-  updateSaveBtn(key)
-  saveStatus.hidden = false
-  clearTimeout(saveStatus._t)
-  saveStatus._t = setTimeout(() => { saveStatus.hidden = true }, 3000)
-}
-
-// ── Helpers ──────────────────────────────────────────────────
 
 function showLoadError(key) {
   document.getElementById(`${key}-loading`).hidden  = true

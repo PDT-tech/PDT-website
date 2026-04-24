@@ -73,7 +73,15 @@
           <select id="singout-select" class="form-input att-select"></select>
         </div>
         <div id="singout-details" class="att-event-details"></div>
-        <div class="att-toggle-row" id="singout-radios"></div>
+        <div class="att-field-group">
+          <label class="att-label" for="singout-status">Your response</label>
+          <select id="singout-status" class="form-input att-select">
+            <option value="">Pick one!</option>
+            <option value="yes">I'll be there!</option>
+            <option value="maybe">I'm not sure</option>
+            <option value="no">I can't be there</option>
+          </select>
+        </div>
         <div class="att-reason-wrap" id="singout-reason-wrap" hidden>
           <input type="text" id="singout-reason" class="att-reason form-input"
                  placeholder="Reason (optional)">
@@ -96,7 +104,13 @@
           <label class="att-label" for="rehearsal-select">Select rehearsal</label>
           <select id="rehearsal-select" class="form-input att-select"></select>
         </div>
-        <div class="att-toggle-row" id="rehearsal-radios"></div>
+        <div class="att-field-group">
+          <label class="att-label" for="rehearsal-status">Your response</label>
+          <select id="rehearsal-status" class="form-input att-select">
+            <option value="yes">I'll be there</option>
+            <option value="no">I won't be there</option>
+          </select>
+        </div>
         <div class="att-reason-wrap" id="rehearsal-reason-wrap" hidden>
           <input type="text" id="rehearsal-reason" class="att-reason form-input"
                  placeholder="Reason (optional)">

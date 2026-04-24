@@ -322,7 +322,7 @@ pdtsingers/                  ← repo root
 - ✅ Google Workspace for Nonprofits approved and active (Goodstack, 2026-04-18)
 - ✅ The Sunburst newsletter blog live in member portal
 - ✅ pdt-decisions.md and pdt-tech-maintainers-guide.md current as of Session 11
-- ⚠️ Vector logo files still pending from Mercedes Gibson
+- ✅ Vector logo files received from Mercedes Gibson
 
 ---
 

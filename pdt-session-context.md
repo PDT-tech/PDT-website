@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-18 (Session 9)  
+**Last updated:** 2026-04-24 (Session 11)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -309,17 +309,19 @@ pdtsingers/                  ← repo root
 
 ## Current State
 
-*Last updated: Session 9 — 2026-04-18*
+*Last updated: Session 11 — 2026-04-24*
 
 - ✅ All Phase 1 member portal work complete
 - ✅ All public pages live with placeholder/real content
-- ✅ Magic link auth live via Resend SMTP
+- ✅ OTP login live — magic link code preserved behind USE_MAGIC_LINKS = false flag
 - ✅ Member accounts seeded (April 16)
 - ✅ Issue tracker migrated to `pdt-issues.md` (CC-owned); §13 removed from requirements
 - ✅ `CLAUDE.md` added — CC standing instructions for issue tracking and conventions
 - ✅ `pdt-decisions.md` added — architecture/design decision log, in Project Memory
 - ✅ Music Library fully operational — Workspace Drive (president@pdtsingers.org), Dropbox retired
 - ✅ Google Workspace for Nonprofits approved and active (Goodstack, 2026-04-18)
+- ✅ The Sunburst newsletter blog live in member portal
+- ✅ pdt-decisions.md and pdt-tech-maintainers-guide.md current as of Session 11
 - ⚠️ Vector logo files still pending from Mercedes Gibson
 
 ---
@@ -332,10 +334,34 @@ pdtsingers/                  ← repo root
 - Vector logo files from Mercedes Gibson
 - Public page content polish (real copy, real photos)
 - SEO: meta tags, XML sitemap, Google Search Console
+- OTP login cooldown timer (Issue 042) — 60s disable/countdown on Send button
+- Footer link label standardization (Issue 043)
+- Member portal nav + layout consistency pass (Issues 044, 045)
+- Calendar → Events blog automation: cancellations and new performances (Issues 046, 047)
+- The Sunburst: public-facing version under Friends page (not yet started)
 
 ---
 
 ## Session History
+
+### Session 11 — 2026-04-24
+
+- ✅ Attendance Save button bug fixed — startStatus now null when no prior record;
+  isDirty() returns true for null; Save enables on first load (Issue 049 closed)
+- ✅ Music Library left margin fixed — .music-header horizontal padding restored;
+  .container centered with max-width (Issue 050 closed)
+- ✅ The Sunburst newsletter blog added — members/sunburst.html, blog_type='sunburst',
+  gold accent, admin-only posting, nav link added to all 11 member pages (Issue 051 closed)
+- ✅ OTP login implemented — USE_MAGIC_LINKS = false; magic link code preserved behind
+  flag; OTP path: email → 6-digit code → verifyOtp → redirect; TODO comment marks
+  cooldown location
+- ✅ Issues logged: 042 (login cooldown), 043 (footer link labels), 044 (portal nav
+  right-justification), 045 (portal page layout consistency), 046 (cancelled event →
+  Events post), 047 (new performance/social → Events post), 048 (content loading slowness)
+- ✅ pdt-decisions.md updated — auth method entry superseded: OTP replaces magic link
+- ✅ pdt-tech-maintainers-guide.md updated — §10 rewritten for OTP, §7 updated with
+  The Sunburst, §14 retired in favor of pdt-issues.md pointer
+- ✅ CC batching principles documented in claude.ai memory and userMemories
 
 ### Session 10 — 2026-04-18
 

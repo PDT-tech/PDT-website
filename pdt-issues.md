@@ -1,6 +1,6 @@
 # PDT Singers — Issue Tracker
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
-# Last updated: 2026-04-23
+# Last updated: 2026-04-23 (second commit)
 
 001 | DONE   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010. Fixed 2026-04-20: wrapped "Portland DayTime Singers" in footer span as <a href="/"> across all 10 member pages.
 002 | DONE   | Logo: new WebP assets from Mercedes Gibson deployed for both cityscape and words portions of hero. Cityscape has residual light halo in dark mode (watercolor wash pixels not fully transparent) — requires source file fix from designer when words transparent file is also delivered. Good enough to ship. Fixed 2026-04-19.
@@ -42,3 +42,4 @@
 038 | DONE   | Mobile: hamburger menu not opening. Root causes: (1) css/main.css 720px responsive block set .nav-links { display: none } without the matching .nav-links.is-open override, leaving the open state fighting a later CSS rule; (2) nav.js click handler had no null guard for navLinks — silent TypeError if element missing. Fix: removed stray .nav-links rule from 720px block (768px block handles it correctly with both states); added null guard to nav.js IIFE. Fixed 2026-04-23.
 039 | DONE   | Mobile: hamburger nav dropdown transparent / unreadable over hero. When .nav-links.is-open overflowed below the site-nav's fixed height box, the overflow had no background. Fix: added background: var(--forest) and z-index: 100 to .nav-links.is-open in the 768px media query; added rgba(255,255,255,0.8) link color and #ffffff hover for readability on dark background. Fixed 2026-04-23.
 040 | DONE   | Footer Navigate section missing Member Portal link. All 7 public-page footers (index, about, performances, join, friends, contact, music) lacked a link to /members/. Added as last item in the Navigate list, styled by existing .footer-col ul li a rule. Fixed 2026-04-23.
+041 | DONE   | Dark mode: hamburger icon invisible on public pages. var(--forest) is #1a1a1a (near-black, not overridden in dark mode); the dark mode site-nav background is #111 — spans invisible against it. Member portal forces color-scheme: light so never affected. Fix: added .nav-hamburger span { background: rgba(255,255,255,0.85) } to dark mode Nav section in main.css. Fixed 2026-04-23.

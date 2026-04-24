@@ -1,7 +1,7 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-04-21
+# Last updated: 2026-04-24
 
 ---
 
@@ -39,9 +39,9 @@
 
 **Question:** Email + password or magic link?
 
-**Decision:** Magic link only (as of Session 5, 2026-04-15). Do not reopen.
+**Decision:** OTP (6-digit email code) only, as of Session 11 (2026-04-24). USE_MAGIC_LINKS = false in login.js. Magic link code preserved behind the flag — do not delete it. Do not reopen without Kevin explicitly requesting it.
 
-**History:** Originally designed as magic link. Switched to email + password in Session 2 (2026-03-29) because Supabase's built-in SMTP only allows 2 emails/hour to non-domain addresses — incompatible with a membership using personal email (Gmail, Comcast, etc.). Switched back to magic link in Session 5 after Resend SMTP was wired into Supabase, eliminating the rate limit. `shouldCreateUser: false` ensures only admin-created accounts can receive magic links.
+**History:** Originally designed as magic link. Switched to email + password in Session 2 (2026-03-29) — Supabase built-in SMTP limited to 2 emails/hour, incompatible with personal email addresses. Switched back to magic link in Session 5 (2026-04-15) after Resend SMTP was wired in. Switched to OTP in Session 11 (2026-04-24) — magic links were breaking for at least one member (Sam Vigil) due to ISP link-mangling; OTP is more robust, has no email-client dependency, and avoids link expiry race conditions. shouldCreateUser: false preserved — only admin-created accounts can request a code.
 
 ---
 

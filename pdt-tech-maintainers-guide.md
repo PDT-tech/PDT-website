@@ -173,6 +173,7 @@ can post via the member portal UI. There is no external CMS.
 - Director's Notes → `musical_director` or `admin`
 - Grand Poohbah's Prattlings → `admin` only
 - Events Blog → `events_editor` or `admin`
+- The Sunburst → `admin` only (newsletter_editor role reserved for future use)
 
 Posts have a `published` boolean. Unpublished posts are only visible to the author
 and admin. Published posts are visible to all authenticated members.
@@ -248,31 +249,25 @@ Do not construct direct `drive.google.com` download URLs in client code — they
 
 ---
 
-## 10. Email (Magic Link Login)
+## 10. Email (OTP Login)
 
-Magic links are sent via Resend (resend.com), wired into Supabase SMTP.  
+Login codes are sent via Resend (resend.com), wired into Supabase SMTP.  
 **From address:** noreply@pdtsingers.org  
-**Template:** Supabase dashboard → Authentication → Email Templates → Magic Link
+**Code format:** 6-digit numeric OTP  
+**Expiry:** 24 hours (TODO: reduce to 15 minutes — Supabase → Authentication →
+Settings → OTP Expiry)
 
-The link expires in 24 hours (TODO: reduce to 15 minutes — Supabase →
-Authentication → Settings → OTP Expiry).
+The login flow: member enters email → clicks "Send me a login code" → receives
+a 6-digit code by email → enters code on the verify screen → redirected to
+members/index.html.
 
-If members report not receiving login emails:
+Magic link code still exists in login.js behind `const USE_MAGIC_LINKS = false`.
+Do not enable without Kevin's explicit direction.
+
+If members report not receiving login codes:
 1. Check Resend dashboard for delivery status
 2. Ask member to check spam folder
 3. Verify their email address in Supabase matches exactly what they're entering
-
-### Local development magic link workaround
-
-Magic links sent by Supabase point to the production domain (pdtsingers.org). When
-testing locally, the link won't redirect to localhost automatically. Workaround:
-
-1. Request the magic link as normal (enter email on the login page)
-2. Open the email and copy the magic link URL
-3. Swap the domain: replace `https://pdtsingers.org` with `http://localhost:8080`
-4. Paste the modified URL in your browser
-
-The token is domain-agnostic — the swap works reliably.
 
 ---
 
@@ -331,16 +326,11 @@ Domain: pdtsingers.org at Helping Hosting → Netlify DNS
 
 ## 14. Known Issues & Backlog
 
-- [ ] Cap OTP expiry at 15 minutes (currently 24 hours)
-- [ ] "Resend link" button on magic link confirmation state ✅ done
-- [ ] Disable password auth in Supabase (magic link confirmed working)
-- [ ] env.local.js console error in production (nosniff header blocking onerror suppression) — benign
-- [ ] Calendar polish: prev/next arrows, detail panel on load, mobile layout
-- [ ] Add second account owner to all services
-- [ ] Onboard Moss Egli — Supabase account, events_editor role, Facebook setup
-- [ ] Build members/whats-new.html (member-facing changelog)
-- [ ] Finalize public page content (About, Join, Performances, etc.)
+Issues are tracked in `pdt-issues.md` in the repo root, maintained by CC.
+Run `cat pdt-issues.md` to see the current list.
 
 ---
 
 *PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship & Fun*
+
+<!-- html-synced: needs update after maintainers guide HTML sync -->

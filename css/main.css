@@ -135,6 +135,16 @@ body {
 
   .nav-links.is-open {
     display: flex;
+    background: var(--forest);
+    z-index: 100;
+  }
+
+  .nav-links.is-open a {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .nav-links.is-open a:hover {
+    color: #ffffff;
   }
 
   .nav-links li a {
@@ -652,7 +662,6 @@ body {
 }
 
 @media (max-width: 720px) {
-  .nav-links { display: none; }
   .info-section { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
   .hero-words { max-width: 320px; }

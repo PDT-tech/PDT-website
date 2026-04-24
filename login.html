@@ -48,7 +48,7 @@
     <!-- STATE: Default — email input -->
     <div id="state-form" hidden>
       <p class="login-instructions">
-        Enter your email and we'll send you a secure login link — no password needed.
+        Enter your email and we'll email you a 6-digit login code — no password needed.
       </p>
 
       <form id="login-form" novalidate>
@@ -68,14 +68,48 @@
         </div>
 
         <button type="submit" class="btn-primary btn-full" id="submit-btn" style="background-color: #c4a24a; color: #1a1a1a;">
-          Send me a login link
+          Send me a login code
         </button>
 
         <div class="form-error" id="submit-error" hidden></div>
       </form>
     </div>
 
-    <!-- STATE: Confirmation -->
+    <!-- STATE: OTP verify — enter 6-digit code -->
+    <div id="state-verify" hidden>
+      <div class="login-confirm-icon">✉️</div>
+      <h2 class="login-confirm-title">Enter your code</h2>
+      <p class="login-confirm-body">
+        We sent a 6-digit code to <strong id="verify-email-display"></strong>.
+        Enter it below to sign in.
+      </p>
+      <form id="verify-form" novalidate>
+        <div class="form-error" id="otp-error" hidden></div>
+        <div class="form-group">
+          <label for="otp-input" class="form-label">6-digit code from your email</label>
+          <input
+            type="text"
+            id="otp-input"
+            name="otp"
+            class="form-input"
+            placeholder="123456"
+            autocomplete="one-time-code"
+            inputmode="numeric"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            required
+          >
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="verify-btn" style="background-color: #c4a24a; color: #1a1a1a;">
+          Verify code
+        </button>
+      </form>
+      <p class="login-confirm-help">
+        Didn't get it? <a href="#" id="otp-back-link">Go back and try again</a>.
+      </p>
+    </div>
+
+    <!-- STATE: Confirmation (magic link mode only) -->
     <div id="state-confirmation" hidden>
       <div class="login-confirm-icon">✉️</div>
       <h2 class="login-confirm-title">Check your email</h2>
@@ -112,22 +146,28 @@
 <script type="module">
   import { supabase, getSession } from './js/supabase.js'
 
-  const params = new URLSearchParams(window.location.search)
+  const USE_MAGIC_LINKS = false
+
+  const params    = new URLSearchParams(window.location.search)
   const nextParam = params.get('next')
-  const callbackUrl = nextParam
-    ? `${window.location.origin}/login.html?next=${encodeURIComponent(nextParam)}`
-    : `${window.location.origin}/login.html`
+
+  // Only needed for magic link callback URL
+  const callbackUrl = USE_MAGIC_LINKS
+    ? (nextParam
+        ? `${window.location.origin}/login.html?next=${encodeURIComponent(nextParam)}`
+        : `${window.location.origin}/login.html`)
+    : null
 
   // Check for a Supabase error in the URL hash (e.g. expired magic link).
   const hashParams = new URLSearchParams(window.location.hash.slice(1))
-  const hashError = hashParams.get('error')
+  const hashError  = hashParams.get('error')
   if (hashError) {
     history.replaceState(null, '', window.location.pathname + window.location.search)
-    const desc = hashParams.get('error_description') || ''
+    const desc      = hashParams.get('error_description') || ''
     const linkError = document.getElementById('link-error')
     linkError.textContent = desc.toLowerCase().includes('expired')
-      ? 'That login link has expired — links are only valid for a short time. Enter your email below to get a fresh one.'
-      : 'Something went wrong with that login link. Please request a new one.'
+      ? 'That login code has expired. Enter your email below to request a new one.'
+      : 'Something went wrong. Please request a new one.'
     linkError.hidden = false
   }
 
@@ -142,8 +182,7 @@
     showState('form')
   }
 
-  // Handle magic link callback: when Supabase processes the token in the URL
-  // hash, it fires SIGNED_IN — this is the reliable redirect path for magic links.
+  // SIGNED_IN fires for both magic link callbacks and OTP verifyOtp success.
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session) {
       const next = params.get('next') || '/members/'
@@ -153,7 +192,7 @@
 
   // ── State management ───────────────────────────────────────
   function showState (state) {
-    const states = ['form', 'confirmation', 'inactive']
+    const states = ['form', 'verify', 'confirmation', 'inactive']
     states.forEach(s => {
       document.getElementById(`state-${s}`).hidden = (s !== state)
     })
@@ -166,77 +205,137 @@
   const emailError  = document.getElementById('email-error')
   const submitError = document.getElementById('submit-error')
 
+  let _pendingEmail = ''
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const email = emailInput.value.trim()
-
-    // Basic validation
     if (!email || !email.includes('@')) {
       emailError.textContent = 'Please enter a valid email address.'
       emailError.hidden = false
       return
     }
-    emailError.hidden = true
+    emailError.hidden  = true
     submitError.hidden = true
 
+    // TODO: add 60s cooldown timer (see pdt-issues.md)
     submitBtn.textContent = 'Sending…'
-    submitBtn.disabled = true
+    submitBtn.disabled    = true
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: callbackUrl
+    if (USE_MAGIC_LINKS) {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false, emailRedirectTo: callbackUrl }
+      })
+
+      if (error) {
+        submitError.textContent = 'Something went wrong. Please try again or contact Kevin.'
+        submitError.hidden      = false
+        submitBtn.textContent   = 'Send me a login link'
+        submitBtn.disabled      = false
+        return
       }
-    })
 
-    if (error) {
-      submitError.textContent = 'Something went wrong. Please try again or contact Kevin.'
-      submitError.hidden = false
-      submitBtn.textContent = 'Send me a login link'
-      submitBtn.disabled = false
+      // Supabase returns success even for unknown emails (shouldCreateUser: false
+      // means it simply won't send anything) — show confirmation either way to
+      // avoid user enumeration.
+      document.getElementById('confirm-email').textContent = email
+      showState('confirmation')
+    } else {
+      // OTP mode — signInWithOtp without emailRedirectTo sends a 6-digit code
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false }
+      })
+
+      if (error) {
+        submitError.textContent = 'Something went wrong. Please try again or contact Kevin.'
+        submitError.hidden      = false
+        submitBtn.textContent   = 'Send me a login code'
+        submitBtn.disabled      = false
+        return
+      }
+
+      _pendingEmail = email
+      document.getElementById('verify-email-display').textContent = email
+      document.getElementById('otp-input').value = ''
+      document.getElementById('otp-error').hidden = true
+      showState('verify')
+    }
+  })
+
+  // ── OTP verify ─────────────────────────────────────────────
+  document.getElementById('verify-form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const code      = document.getElementById('otp-input').value.trim()
+    const otpError  = document.getElementById('otp-error')
+    const verifyBtn = document.getElementById('verify-btn')
+
+    if (!code || code.length !== 6) {
+      otpError.textContent = 'Please enter the 6-digit code from your email.'
+      otpError.hidden      = false
       return
     }
 
-    // Show confirmation — Supabase returns success even for unknown emails
-    // (with shouldCreateUser: false it simply won't send anything), so we
-    // show the same confirmation either way to avoid user enumeration.
-    document.getElementById('confirm-email').textContent = email
-    showState('confirmation')
-  })
+    otpError.hidden       = true
+    verifyBtn.textContent = 'Verifying…'
+    verifyBtn.disabled    = true
 
-  // ── Resend link ────────────────────────────────────────────
-  document.getElementById('resend-link').addEventListener('click', async (e) => {
-    e.preventDefault()
-    const resendEl = e.target
-    resendEl.textContent = 'Sending…'
-    resendEl.style.pointerEvents = 'none'
-
-    const email = document.getElementById('confirm-email').textContent
-    await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: callbackUrl
-      }
+    const { error } = await supabase.auth.verifyOtp({
+      email: _pendingEmail,
+      token: code,
+      type:  'email'
     })
 
-    resendEl.textContent = 'Sent!'
-    setTimeout(() => {
-      resendEl.textContent = 'resend the link'
-      resendEl.style.pointerEvents = ''
-    }, 3000)
+    if (error) {
+      otpError.textContent  = 'Invalid or expired code. Please request a new one.'
+      otpError.hidden       = false
+      verifyBtn.textContent = 'Verify code'
+      verifyBtn.disabled    = false
+      return
+    }
+    // onAuthStateChange(SIGNED_IN) handles the redirect
   })
+
+  document.getElementById('otp-back-link').addEventListener('click', (e) => {
+    e.preventDefault()
+    submitBtn.textContent = 'Send me a login code'
+    submitBtn.disabled    = false
+    showState('form')
+    emailInput.focus()
+  })
+
+  // ── Magic link: resend (USE_MAGIC_LINKS only) ──────────────
+  if (USE_MAGIC_LINKS) {
+    document.getElementById('resend-link').addEventListener('click', async (e) => {
+      e.preventDefault()
+      const resendEl = e.target
+      resendEl.textContent      = 'Sending…'
+      resendEl.style.pointerEvents = 'none'
+
+      const email = document.getElementById('confirm-email').textContent
+      await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false, emailRedirectTo: callbackUrl }
+      })
+
+      resendEl.textContent = 'Sent!'
+      setTimeout(() => {
+        resendEl.textContent         = 'resend the link'
+        resendEl.style.pointerEvents = ''
+      }, 3000)
+    })
+  }
 
   // ── Try a different email ──────────────────────────────────
   document.getElementById('try-different-email').addEventListener('click', (e) => {
     e.preventDefault()
-    emailInput.value = ''
-    submitBtn.textContent = 'Send me a login link'
-    submitBtn.disabled = false
-    emailError.hidden = true
-    submitError.hidden = true
+    emailInput.value      = ''
+    submitBtn.textContent = USE_MAGIC_LINKS ? 'Send me a login link' : 'Send me a login code'
+    submitBtn.disabled    = false
+    emailError.hidden     = true
+    submitError.hidden    = true
     showState('form')
     emailInput.focus()
   })

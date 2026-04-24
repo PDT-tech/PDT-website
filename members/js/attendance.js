@@ -115,7 +115,8 @@ function loadEvent(key, eventId) {
   const status = saved?.status ?? 'attending'
   const reason = saved?.reason ?? ''
 
-  c.startStatus = status
+  // null when no prior record — any selection counts as a change
+  c.startStatus = saved ? saved.status : null
   c.startReason = reason
 
   if (key === 'singout') {
@@ -129,8 +130,8 @@ function loadEvent(key, eventId) {
   document.getElementById(`${key}-reason-wrap`).hidden = status === 'attending'
 
   const saveBtn = document.getElementById(`${key}-save-btn`)
-  saveBtn.disabled    = true
   saveBtn.textContent = 'Save'
+  saveBtn.disabled    = !isDirty(key)
   document.getElementById(`${key}-save-status`).hidden = true
   document.getElementById(`${key}-save-error`).hidden  = true
 }
@@ -220,6 +221,7 @@ function getCurrentReason(key) {
 function isDirty(key) {
   const c = clusters[key]
   if (!c.selectedId) return false
+  if (c.startStatus === null) return true  // no prior record — any selection is a change
   return getCurrentStatus(key) !== c.startStatus ||
          getCurrentReason(key) !== (c.startReason ?? '').trim()
 }

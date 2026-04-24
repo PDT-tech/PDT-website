@@ -15,7 +15,7 @@
   gap: var(--space-lg);
 }
 
-.blog-header-inner { flex: 1; }
+.blog-header-inner { flex: 1; max-width: var(--max-width); margin: 0 auto; }
 
 .blog-eyebrow {
   font-family: var(--font-ui);

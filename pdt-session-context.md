@@ -335,7 +335,8 @@ pdtsingers/                  ← repo root
 - SEO: meta tags, XML sitemap, Google Search Console
 - Footer link label standardization (Issue 043)
 - Member portal nav right-justification (Issue 044)
-- Calendar → Events blog automation: cancellations and new performances (Issues 046, 047)
+- ✅ Issue #053 closed — event_id column wired (posts table, events.html submit handler)
+- Calendar → Events blog automation: cancellation notice for cancelled events (Issue 046)
 - The Sunburst: public-facing version under Friends page (not yet started)
 
 ---
@@ -352,7 +353,13 @@ pdtsingers/                  ← repo root
 - ✅ Password auth disable confirmed — no discrete toggle in Supabase; signInWithPassword is effectively dead code
 - ✅ pdt-issues.md added to Project Memory (Kevin uploads; end-of-session hygiene)
 - ✅ OTP Send button cooldown — startCooldown()/clearCooldown() added to login.html; 60s countdown starts on successful signInWithOtp(); clears on "Go back" link (Issue 042 closed)
-- ▶️ Next: New Event form — issues 035, 036, 047 as one unified build (CC investigation underway in new chat)
+- ✅ council_member role added — profiles CHECK constraint updated, posts RLS updated (INSERT/UPDATE/DELETE), maintainers guide roles section rewritten with full per-feature permission matrix
+- ✅ posts RLS — non-admin edit/delete scoped to own posts only; poohbah blog now allows council_member
+- ✅ Issue #035 closed — Cancel button fix: .btn-secondary { background: #f0f0f0 } in members.css
+- ✅ Issue #036 closed — call_time and on_stage fields added to event form and detail panel; show time label renamed; performance fields conditional on event_type
+- ✅ Issue #047 closed — new performance/social event prompts Events blog post; pre-populates events.html via URL params; event_id threaded through but deferred to #053
+- ✅ Issue #053 closed — event_id column added to posts table (migration run); submit handler wired; TODO removed
+- ✅ posts table: event_id uuid column added (FK → events on delete set null)
 
 ### Session 11 — 2026-04-24
 

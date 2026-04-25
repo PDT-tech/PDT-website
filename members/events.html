@@ -261,9 +261,10 @@
     const excerpt    = document.getElementById('post-excerpt').value.trim() || null
     const body       = document.getElementById('post-body').value.trim()
     const published  = document.getElementById('post-published').checked
-    // TODO (#053): add event_id to payload once event_id column added to posts table (migration needed)
+    const eventIdRaw = document.getElementById('post-event-id').value
     const payload    = { blog_type: BLOG_TYPE, title, event_date, excerpt, body, published,
-                         author_id: window.__PDT_USER?.id }
+                         author_id: window.__PDT_USER?.id,
+                         ...(eventIdRaw ? { event_id: eventIdRaw } : {}) }
 
     let error
     if (id) {

@@ -399,7 +399,7 @@ body .pdt-events-editor-only {
   background: #ffffff;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .nav-hamburger {
     display: flex;
   }
@@ -697,8 +697,5 @@ body .pdt-events-editor-only {
 @media (max-width: 600px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
-  }
-  .member-nav-links {
-    display: none;
   }
 }

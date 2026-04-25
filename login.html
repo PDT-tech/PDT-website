@@ -205,7 +205,34 @@
   const emailError  = document.getElementById('email-error')
   const submitError = document.getElementById('submit-error')
 
-  let _pendingEmail = ''
+  let _pendingEmail  = ''
+  let _cooldownTimer = null
+
+  function startCooldown () {
+    let remaining = 60
+    submitBtn.disabled    = true
+    submitBtn.textContent = `Resend in ${remaining}s…`
+    _cooldownTimer = setInterval(() => {
+      remaining -= 1
+      if (remaining <= 0) {
+        clearInterval(_cooldownTimer)
+        _cooldownTimer        = null
+        submitBtn.disabled    = false
+        submitBtn.textContent = 'Send me a login code'
+      } else {
+        submitBtn.textContent = `Resend in ${remaining}s…`
+      }
+    }, 1000)
+  }
+
+  function clearCooldown () {
+    if (_cooldownTimer) {
+      clearInterval(_cooldownTimer)
+      _cooldownTimer = null
+    }
+    submitBtn.disabled    = false
+    submitBtn.textContent = 'Send me a login code'
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -219,7 +246,6 @@
     emailError.hidden  = true
     submitError.hidden = true
 
-    // TODO: add 60s cooldown timer (see pdt-issues.md)
     submitBtn.textContent = 'Sending…'
     submitBtn.disabled    = true
 
@@ -261,6 +287,7 @@
       document.getElementById('verify-email-display').textContent = email
       document.getElementById('otp-input').value = ''
       document.getElementById('otp-error').hidden = true
+      startCooldown()
       showState('verify')
     }
   })
@@ -300,8 +327,7 @@
 
   document.getElementById('otp-back-link').addEventListener('click', (e) => {
     e.preventDefault()
-    submitBtn.textContent = 'Send me a login code'
-    submitBtn.disabled    = false
+    clearCooldown()
     showState('form')
     emailInput.focus()
   })

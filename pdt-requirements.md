@@ -1,6 +1,6 @@
 # PDT Singers Website — Requirements
 
-**Last updated:** 2026-04-21  
+**Last updated:** 2026-04-25  
 **Status:** Draft — active development  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
@@ -98,22 +98,30 @@ retired once new site is live. DNS cutover at that time.
 ## 5. Functional Requirements
 
 ### 5a. Authentication & Member Area
-- Login via **Supabase** — email + password (switched from magic link 2026-03-29;
-  see note below)
+- Login via **Supabase** — email → 6-digit OTP code (switched from password auth 2026-03-29,
+  then to OTP from magic links 2026-04-24)
 - Admin approval workflow:
   1. Prospective member submits interest form on /join
   2. Admin (Kevin / Grand Poohbah) receives email notification
   3. Admin creates account in Supabase dashboard and sets `is_active = true`
-  4. Member receives credentials and logs in at /login
+  4. Member receives OTP code by email, enters code at /login
   5. Unapproved/inactive visitors see "Account not active" message
 - Role-based: approved members see /members; others do not
 - No self-registration — all accounts require admin creation
 
-**Auth note — updated 2026-04-15:**
-Magic link is the sole login method. Password auth is being retired. Resend (resend.com)
-handles transactional email (magic links) via SMTP wired into Supabase. Sends from
-noreply@pdtsingers.org. Resend domain verified April 2026. `shouldCreateUser: false`
-ensures only admin-created accounts receive magic links — strangers get nothing.
+**Auth method — OTP (current, as of 2026-04-24):**
+Login uses 6-digit numeric codes sent via Resend (resend.com), wired into Supabase SMTP.
+Sends from noreply@pdtsingers.org. Resend domain verified April 2026. OTP expiry is 24 hours
+(can be reduced to 15 minutes — Supabase → Authentication → Settings → OTP Expiry).
+`shouldCreateUser: false` ensures only admin-created accounts receive codes — strangers
+get nothing. Magic link code is preserved in login.js behind `const USE_MAGIC_LINKS = false`
+flag for potential future use, but is not currently active.
+
+**Previous auth methods:**
+- 2026-03-28 to 2026-03-29: magic link (abandoned due to Supabase SMTP rate limit)
+- 2026-03-29 to 2026-04-15: password auth (stateless, simple)
+- 2026-04-15 to 2026-04-24: magic link (Resend SMTP enabled high throughput)
+- 2026-04-24 onwards: OTP code (current, simpler UX for members)
 
 ### 5b. Content Management
 - Public content: hand-edited HTML files, updated by maintainer
@@ -156,6 +164,34 @@ Add bio/highlight to About Us page post-launch.
 - XML sitemap + Google Search Console setup at launch
 - Mobile-responsive design
 - WCAG AA accessibility target
+
+### 5f-1. Member Attendance Tracking
+
+Members declare attendance intent at `/members/attendance.html`:
+- **Rehearsals**: Members are assumed attending unless they mark "I won't be there"
+- **Sing-outs and non-rehearsal events**: Three-state status (attending / not_sure / not_attending)
+
+Members make local selections using dropdowns; a single "Save" button batch-writes all
+changed rows to Supabase. On success, the page shows "Saved ✓" confirmation.
+
+When Save succeeds, a Supabase Edge Function (`notify-attendance-change`) sends:
+- Director email with member's status summary and deep-link to attendance census
+- Member confirmation email (includes full event details if attending)
+
+**Admin features:**
+- `/members/admin-attendance.html` (admin/musical_director only): census view showing
+  all members' statuses (attending / not sure / not attending / no response) for upcoming
+  sing-outs and rehearsals. Accepts `?event=<uuid>` deep-link from director emails.
+- Event fields `call_time`, `address`, `dress_code`, `parking_notes` appear on attendance
+  cards and in member confirmation emails.
+
+**Deferred features** (post-launch, see pdt-issues.md #031–#033):
+- Escalation pipeline: 10-day nudge emails + 7-day auto-mark with director notification
+- Admin override: Kevin entering clipboard marks from rehearsals
+- Attendance report: detailed voting breakdown
+
+**Technical:** Batch-save model prevents per-row notifications; single `event_attendance`
+table stores all status; Edge Function replaces prior per-row database webhook approach.
 
 ### 5g. Music Library — Architecture & Rationale
 
@@ -206,10 +242,18 @@ mismatch possible.
 - Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
-  (updated to Workspace Drive value `REDACTED-see-Netlify-env-GOOGLE_DRIVE_MUSIC_FOLDER_ID` — April 2026)
-- Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` (Music folder
-  must be temporarily set to "Anyone with link" for local testing — revert after)
-- Production: page calls `/.netlify/functions/drive-music` which holds all credentials
+  (Workspace Drive value — April 2026)
+- **File listings** (members/music.html → `/api/music`): Netlify Function
+  (`netlify/functions/drive-music.js`) authenticates to Drive via service account,
+  returns folder + file listings as JSON
+- **File downloads** (members/music.html → `/api/music-download`): Netlify Edge Function
+  (`netlify/edge-functions/drive-music-download.js`) streams file content directly to
+  browser — no buffering, no size ceiling, service account token never leaves function.
+  Replaces prior base64-encoding approach (Netlify Function) which hit 6MB response
+  limit immediately on first production use.
+- Local dev: page calls Drive API directly using `GOOGLE_DRIVE_API_KEY` for both listings
+  and downloads (Music folder must be temporarily set to "Anyone with link" for local
+  testing — revert after)
 - ✅ **Drive migration complete**: Music folder now in Workspace Drive (`president@pdtsingers.org`).
   Service account share updated. No code changes were required.
 
@@ -512,9 +556,10 @@ assistant director. Formal corporate title: **President**.
 - ✅ Public pages: about.html, performances.html, join.html, music.html, friends.html, contact.html (placeholder content)
 - ✅ Public nav restructured to full 7-link structure with real URLs
 - ✅ Resend SMTP wired into Supabase (noreply@pdtsingers.org, domain verified April 2026)
-- [ ] Magic link login — login.html redesign (in progress)
-- [ ] Magic link email template customization (subject + body, warm and on-brand)
-- [ ] Tech Maintainer's Guide
+- ✅ OTP login implemented — login.html email → code → verify flow; magic link code preserved behind flag
+- ✅ OTP email template customized in Supabase dashboard — code display design using {{ .Token }}
+- ✅ Attendance feature deployed — batch save + director/member notifications; admin census report
+- ✅ Tech Maintainer's Guide — updated for OTP, attendance, Edge Function streaming
 
 ### Phase 2 — Public Site Complete
 - [ ] Performances page (+ Netlify Form: booking inquiry)
@@ -559,14 +604,15 @@ assistant director. Formal corporate title: **President**.
 - [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile path, proceed independently
 - [x] Nav logo oversized on music.html — fixed in main.css
 - [x] Social media manager: **Moss Egli** (Kevin's granddaughter) — confirmed
-- [ ] **Moss Egli onboarding** — Supabase account + role TBD; first task: PDT Facebook group
-- [ ] **Cross-posting** — Facebook Events + newsletters; requirements TBD with Moss (§5h)
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Who is the second site maintainer (post-launch)?
 - [ ] Should member Blog allow comments, or read-only initially?
 - [ ] Duane Lundsten memorial — form/placement TBD (pending group discussion)
 - [ ] Grant's prioritized website landing page elements — input pending
 - [ ] Vectorized logo files — pending delivery from Mercedes Gibson via Dropbox
+- [ ] Attendance escalation pipeline (10-day nudges, 7-day auto-mark) — Issue #031, design pending
+- [ ] Admin attendance override (clipboard mark entry) — Issue #032, design pending
+- [ ] Director attendance report (voting breakdown) — Issue #033, design pending
 - [ ] Groups.io for Friends of PDT — tabled; Google Workspace now active, can proceed when ready
 - [ ] Music Library local dev testing — Music folder must be temporarily set to
       "Anyone with link" for local API key calls to work; revert after testing

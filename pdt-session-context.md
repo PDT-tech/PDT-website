@@ -360,6 +360,9 @@ pdtsingers/                  ← repo root
 - ✅ Issue #047 closed — new performance/social event prompts Events blog post; pre-populates events.html via URL params; event_id threaded through but deferred to #053
 - ✅ Issue #053 closed — event_id column added to posts table (migration run); submit handler wired; TODO removed
 - ✅ posts table: event_id uuid column added (FK → events on delete set null)
+- ✅ Issue #054 closed — events_editor removed from New Event button visibility; admin and calendar_manager only (Option A); matches RLS
+- ✅ pdt-calendar-spec.md synced to as-built — roles table, form fields, schema columns updated
+- ✅ applyRoleVisibility() fix confirmed — New Event button restricted correctly
 
 ### Session 11 — 2026-04-24
 

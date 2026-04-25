@@ -343,6 +343,16 @@ pdtsingers/                  ← repo root
 
 ## Session History
 
+### Session 5 — 2026-04-25
+
+- ✅ Issue 044: Member portal nav links right-aligned (css/members.css: justify-content: flex-end on .member-nav-links desktop; flex-start override on mobile)
+- ✅ Issue 043: Footer home link labels standardized across all 16 pages — member pages: "Members Only Portal Home"; public pages: "PDT Singers Home"; members/index.html destination also corrected (/ → /members/)
+- ✅ Issue 046: Calendar cancellation → Events blog prompt — prevWasCancelled tracker + openBlogPrompt(mode) branch; events.html ?new=1 detection reused unchanged
+- ✅ Issue 052: README.md fully rewritten — stack, local dev, deploy, env vars, file tree, key docs, roles, Music Library architecture
+- ✅ Issue 037: §15 MCP connectors section added to pdt-tech-maintainers-guide.md
+- ✅ Issue 055: Member portal nav "Home" → "Member Home" across all 10 pages
+- ✅ Issue 056: Member portal nav overflow fix — hamburger breakpoint raised 768px → 1100px; redundant 600px display:none removed (css/members.css)
+
 ### Session 12 — 2026-04-25
 
 - ✅ pdt-conventions.md auth method corrected — "magic-link-only" replaced with "6-digit email OTP" (via verifyOtp); conventions re-uploaded to Project Memory

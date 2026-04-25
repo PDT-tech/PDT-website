@@ -1,6 +1,6 @@
 # PDT Singers — Member Calendar Feature Spec
 
-**Last updated:** 2026-03-28  
+**Last updated:** 2026-04-25  
 **Status:** Approved — ready to build  
 **Part of:** Phase 3 — Member Portal
 
@@ -20,13 +20,14 @@ primary purposes:
 
 ## 2. User Roles & Permissions
 
-| Role | Supabase Value | Who | Permissions |
-|------|---------------|-----|-------------|
-| `admin` | `admin` | Kevin Bier | Full access: create/edit/delete events, view all absences, manage members, post to any blog |
-| `musical_director` | `musical_director` | Chris Gabel | Post to Director's Notes blog; read all member content |
-| `events_editor` | `events_editor` | Social media manager, Wives Auxiliary, etc. | Post to Events blog only |
-| `calendar_manager` | `calendar_manager` | Future social media hire (non-member) | Create/edit/delete events only; cannot see member data |
-| `member` | `member` | All active PDT Singers members | Mark own absence; view all member content; read-only on blogs |
+| Role | Supabase Value | Who | Calendar | Blog |
+|------|---------------|-----|----------|------|
+| `admin` | `admin` | Kevin Bier | Full CRUD | All blogs, any author |
+| `council_member` | `council_member` | Grant Gibson + HC members Kevin designates | Read + mark absences | Grand Poohbah's Prattlings (own posts) |
+| `musical_director` | `musical_director` | Chris Gabel | Read + mark absences | Director's Notes (own posts) |
+| `calendar_manager` | `calendar_manager` | Future events coordinator | Full CRUD | None |
+| `events_editor` | `events_editor` | Moss Egli + others | Read + mark absences | Events blog (own posts) |
+| `member` | `member` | All active PDT Singers | Read + mark absences | None |
 
 ---
 
@@ -70,12 +71,14 @@ primary purposes:
 - **Create event** button (admins and calendar_managers)
 - Event form fields:
   - Title (text)
-  - Type (dropdown: Rehearsal / Performance / Board Meeting / Social Event)
+  - Type (dropdown: Rehearsal / Sing-out / High Council / Social Event)
   - Date (date picker)
-  - Start time, End time
+  - Event begins at, End time
+  - Call time (performance only)
+  - On stage (performance only — defaults to show time if blank)
   - Location (text)
   - Notes/description (textarea)
-  - Cancelled (checkbox) — for cancelling a recurring rehearsal
+  - Cancelled (checkbox)
 - **Edit** and **Delete** buttons on any event (admins/calendar_managers only)
 - Deleting an event also deletes associated absences (cascade)
 
@@ -147,6 +150,11 @@ create table events (
   is_cancelled  boolean not null default false,
   is_recurring  boolean not null default false,  -- true for auto-generated rehearsals
   created_by    uuid references profiles(id),
+  call_time     time,                            -- performance only: when singers must arrive
+  on_stage      time,                            -- performance only: show start (defaults to start_time if null)
+  address       text,                            -- full street address (separate from location label)
+  dress_code    text,
+  parking_notes text,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );

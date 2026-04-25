@@ -354,6 +354,7 @@ body .pdt-events-editor-only {
   gap: 1.2rem;
   align-items: center;
   flex: 1;
+  justify-content: flex-end;
 }
 
 .member-nav-links a {
@@ -410,6 +411,7 @@ body .pdt-events-editor-only {
   .member-nav-links {
     display: none;
     flex-direction: column;
+    justify-content: flex-start;
     width: 100%;
     padding: var(--space-sm) 0 var(--space-md);
     gap: 0;

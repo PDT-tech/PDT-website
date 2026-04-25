@@ -131,12 +131,27 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="event-start">Start time</label>
+            <label class="form-label" for="event-start">Event begins at</label>
             <input type="time" id="event-start" class="form-input">
           </div>
           <div class="form-group">
             <label class="form-label" for="event-end">End time</label>
             <input type="time" id="event-end" class="form-input">
+          </div>
+        </div>
+        <div class="perf-times-section modal-hidden" id="perf-times-section">
+          <div class="perf-times-header">Performance times</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="event-call-time">Call time</label>
+              <input type="time" id="event-call-time" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="event-on-stage">
+                On stage <span class="form-hint">Leave blank to use show time</span>
+              </label>
+              <input type="time" id="event-on-stage" class="form-input">
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -208,6 +223,14 @@
           <span class="cal-detail-label">Time</span>
           <span class="cal-detail-value" id="dm-time"></span>
         </div>
+        <div class="cal-detail-row modal-hidden" id="dm-call-time-row">
+          <span class="cal-detail-label">Call time</span>
+          <span class="cal-detail-value" id="dm-call-time"></span>
+        </div>
+        <div class="cal-detail-row modal-hidden" id="dm-on-stage-row">
+          <span class="cal-detail-label">On stage</span>
+          <span class="cal-detail-value" id="dm-on-stage"></span>
+        </div>
         <div class="cal-detail-row modal-hidden" id="dm-location-row">
           <span class="cal-detail-label">Location</span>
           <span class="cal-detail-value" id="dm-location"></span>
@@ -235,6 +258,23 @@
         <button class="btn-secondary btn-sm" id="dm-edit-btn">Edit</button>
         <button class="btn-danger btn-sm" id="dm-delete-btn">Delete</button>
       </div>
+    </div>
+  </div>
+
+  <!-- BLOG POST PROMPT MODAL (#047) -->
+  <div class="post-modal-overlay modal-hidden" id="blog-prompt-modal">
+    <div class="post-modal" style="max-width: 420px;">
+      <div class="post-modal-header">
+        <h2 class="post-modal-title">Post to Events page?</h2>
+        <button class="post-modal-close" id="blog-prompt-close">&times;</button>
+      </div>
+      <form id="blog-prompt-form">
+        <p id="blog-prompt-body" class="form-hint" style="margin-bottom: 0;"></p>
+        <div class="post-modal-actions">
+          <button type="button" class="btn-primary btn-forest" id="blog-prompt-yes">Yes, create post</button>
+          <button type="button" class="btn-secondary" id="blog-prompt-skip">Skip</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -446,6 +486,23 @@
       timeRow.classList.add('modal-hidden')
     }
 
+    const callTimeRow = document.getElementById('dm-call-time-row')
+    const onStageRow  = document.getElementById('dm-on-stage-row')
+    if (ev.event_type === 'performance') {
+      if (ev.call_time) {
+        document.getElementById('dm-call-time').textContent = formatTime(ev.call_time)
+        callTimeRow.classList.remove('modal-hidden')
+      } else {
+        callTimeRow.classList.add('modal-hidden')
+      }
+      document.getElementById('dm-on-stage').textContent =
+        ev.on_stage ? formatTime(ev.on_stage) : 'same as show time'
+      onStageRow.classList.remove('modal-hidden')
+    } else {
+      callTimeRow.classList.add('modal-hidden')
+      onStageRow.classList.add('modal-hidden')
+    }
+
     const locRow = document.getElementById('dm-location-row')
     if (ev.location) {
       document.getElementById('dm-location').textContent = ev.location
@@ -583,9 +640,12 @@
     document.getElementById('event-date').value = ev?.event_date || ''
     document.getElementById('event-start').value = ev?.start_time?.slice(0,5) || ''
     document.getElementById('event-end').value = ev?.end_time?.slice(0,5) || ''
+    document.getElementById('event-call-time').value = ev?.call_time?.slice(0,5) || ''
+    document.getElementById('event-on-stage').value = ev?.on_stage?.slice(0,5) || ''
     document.getElementById('event-location').value = ev?.location || ''
     document.getElementById('event-notes').value = ev?.notes || ''
     document.getElementById('event-cancelled').checked = ev?.is_cancelled || false
+    document.getElementById('perf-times-section').classList.toggle('modal-hidden', ev?.event_type !== 'performance')
     document.getElementById('event-modal').classList.remove('modal-hidden')
   }
 
@@ -594,28 +654,36 @@
     document.getElementById('event-form').reset()
   }
 
+  document.getElementById('event-type').addEventListener('change', () => {
+    const isPerf = document.getElementById('event-type').value === 'performance'
+    document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
+  })
+
   document.getElementById('event-form').addEventListener('submit', async (e) => {
     e.preventDefault()
     const saveBtn = document.getElementById('event-modal-save')
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true
-    const id = document.getElementById('event-id').value
+    const id     = document.getElementById('event-id').value
+    const isPerf = document.getElementById('event-type').value === 'performance'
     const payload = {
       title:        document.getElementById('event-title').value.trim(),
       event_type:   document.getElementById('event-type').value,
       event_date:   document.getElementById('event-date').value,
       start_time:   document.getElementById('event-start').value || null,
       end_time:     document.getElementById('event-end').value || null,
+      call_time:    isPerf ? (document.getElementById('event-call-time').value || null) : null,
+      on_stage:     isPerf ? (document.getElementById('event-on-stage').value || null) : null,
       location:     document.getElementById('event-location').value.trim() || null,
       notes:        document.getElementById('event-notes').value.trim() || null,
       is_cancelled: document.getElementById('event-cancelled').checked,
       created_by:   window.__PDT_USER?.id
     }
-    let error
+    let error, insertedEvent
     if (id) {
       ;({ error } = await supabase.from('events').update(payload).eq('id', id))
     } else {
-      ;({ error } = await supabase.from('events').insert(payload))
+      ;({ data: insertedEvent, error } = await supabase.from('events').insert(payload).select().single())
     }
     saveBtn.textContent = 'Save'
     saveBtn.disabled = false
@@ -623,6 +691,12 @@
     closeEventModal()
     closeDetailModal()
     await loadMonth()
+    const PROMPT_ROLES = ['admin', 'calendar_manager', 'events_editor']
+    if (!id && insertedEvent &&
+        (payload.event_type === 'performance' || payload.event_type === 'social') &&
+        PROMPT_ROLES.includes(window.__PDT_USER?.role)) {
+      openBlogPrompt(insertedEvent)
+    }
   })
 
   // ── Delete event ───────────────────────────────────────────
@@ -680,6 +754,38 @@
     currentMonth = now.getMonth()
     closeDetailModal()
     loadMonth()
+  })
+
+  // ── Blog post prompt (#047) ────────────────────────────────
+  let blogPromptEvent = null
+
+  function openBlogPrompt (ev) {
+    blogPromptEvent = ev
+    document.getElementById('blog-prompt-body').textContent =
+      `Would you like to create an Events blog post for "${ev.title}"?`
+    document.getElementById('blog-prompt-modal').classList.remove('modal-hidden')
+  }
+
+  function closeBlogPrompt () {
+    document.getElementById('blog-prompt-modal').classList.add('modal-hidden')
+    blogPromptEvent = null
+  }
+
+  document.getElementById('blog-prompt-yes').addEventListener('click', () => {
+    if (!blogPromptEvent) return
+    const ev = blogPromptEvent
+    closeBlogPrompt()
+    const params = new URLSearchParams({ new: '1', title: ev.title, event_date: ev.event_date, event_id: ev.id })
+    if (ev.start_time) params.set('start_time', ev.start_time)
+    if (ev.location)   params.set('location', ev.location)
+    if (ev.notes)      params.set('notes', ev.notes)
+    window.location.href = `/members/events.html?${params.toString()}`
+  })
+
+  document.getElementById('blog-prompt-skip').addEventListener('click', closeBlogPrompt)
+  document.getElementById('blog-prompt-close').addEventListener('click', closeBlogPrompt)
+  document.getElementById('blog-prompt-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('blog-prompt-modal')) closeBlogPrompt()
   })
 
   // ── Init ───────────────────────────────────────────────────

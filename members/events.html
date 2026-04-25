@@ -89,6 +89,7 @@
       </div>
       <form id="post-form">
         <input type="hidden" id="post-id">
+        <input type="hidden" id="post-event-id">
         <div class="form-group">
           <label class="form-label" for="post-title">Title</label>
           <input type="text" id="post-title" class="form-input" required
@@ -228,6 +229,7 @@
   function openModal (post = null) {
     document.getElementById('modal-title').textContent = post?.id ? 'Edit Event Post' : 'New Event Post'
     document.getElementById('post-id').value = post?.id || ''
+    document.getElementById('post-event-id').value = post?.event_id || ''
     document.getElementById('post-title').value = post?.title || ''
     document.getElementById('post-event-date').value = post?.event_date || ''
     document.getElementById('post-excerpt').value = post?.excerpt || ''
@@ -259,6 +261,7 @@
     const excerpt    = document.getElementById('post-excerpt').value.trim() || null
     const body       = document.getElementById('post-body').value.trim()
     const published  = document.getElementById('post-published').checked
+    // TODO (#053): add event_id to payload once event_id column added to posts table (migration needed)
     const payload    = { blog_type: BLOG_TYPE, title, event_date, excerpt, body, published,
                          author_id: window.__PDT_USER?.id }
 
@@ -287,6 +290,22 @@
   }
 
   if (window.location.hash === '#new') openModal()
+
+  // Pre-populate from calendar ?new=1 params (#047)
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('new') === '1') {
+    const parts = []
+    if (urlParams.get('start_time')) parts.push(`Show time: ${urlParams.get('start_time')}`)
+    if (urlParams.get('location'))   parts.push(`Location: ${urlParams.get('location')}`)
+    if (urlParams.get('notes'))      parts.push(urlParams.get('notes'))
+    openModal({
+      title:      urlParams.get('title') || '',
+      event_date: urlParams.get('event_date') || '',
+      event_id:   urlParams.get('event_id') || '',
+      body:       parts.join('\n')
+    })
+  }
+
   loadPosts()
 </script>
 

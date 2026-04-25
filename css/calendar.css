@@ -501,3 +501,18 @@ body .pdt-cal-manager-only { display: none; }
   }
 }
 
+/* ── Performance-only time fields (New/Edit Event form) ────── */
+.perf-times-section {
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: var(--space-sm);
+}
+
+.perf-times-header {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6a9ab8;
+  margin-bottom: var(--space-sm);
+}
+

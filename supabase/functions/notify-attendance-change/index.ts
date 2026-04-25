@@ -15,9 +15,11 @@ const CORS_HEADERS = {
 }
 
 interface Change {
-  event_id: string
-  status:   string
-  reason:   string | null
+  event_id:        string
+  status:          string
+  reason:          string | null
+  admin_override?: boolean
+  member_id?:      string
 }
 
 Deno.serve(async (req) => {
@@ -43,6 +45,9 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(supabaseUrl, serviceRoleKey)
 
+  const adminChanges   = changes.filter(c => c.admin_override === true)
+  const regularChanges = changes.filter(c => !c.admin_override)
+
   // Fetch all referenced events in one query
   const eventIds = [...new Set(changes.map(c => c.event_id))]
   const { data: events, error: eventsErr } = await supabase
@@ -54,7 +59,7 @@ Deno.serve(async (req) => {
   const eventMap: Record<string, Record<string, any>> =
     Object.fromEntries(events.map(e => [e.id, e]))
 
-  // Fetch member user + profile
+  // Fetch calling member user + profile
   const [{ data: { user: memberUser } }, { data: memberProfile }] = await Promise.all([
     supabase.auth.admin.getUserById(user.id),
     supabase.from('profiles').select('full_name').eq('id', user.id).single()
@@ -68,20 +73,51 @@ Deno.serve(async (req) => {
 
   const errors: string[] = []
 
-  // Member confirmation email — always send, all changes
-  const confirmErr = await sendMemberSummary({
-    to: memberEmail, firstName: memberFirstName,
-    changes, eventMap, attendanceUrl
-  })
-  if (confirmErr) errors.push(`member: ${confirmErr}`)
+  // ── Regular changes: member confirmation + director summary ──
+  if (regularChanges.length > 0) {
+    const confirmErr = await sendMemberSummary({
+      to: memberEmail, firstName: memberFirstName,
+      changes: regularChanges, eventMap, attendanceUrl
+    })
+    if (confirmErr) errors.push(`member: ${confirmErr}`)
 
-  // Director email — only if any non-rehearsal events changed
-  const nonRehearsalChanges = changes.filter(c => {
-    const evt = eventMap[c.event_id]
-    return evt && evt.event_type !== 'rehearsal'
-  })
+    const nonRehearsalRegular = regularChanges.filter(c => {
+      const evt = eventMap[c.event_id]
+      return evt && evt.event_type !== 'rehearsal'
+    })
 
-  if (nonRehearsalChanges.length > 0) {
+    if (nonRehearsalRegular.length > 0) {
+      const { data: directors } = await supabase
+        .from('profiles').select('id').eq('role', 'musical_director')
+
+      for (const dp of (directors ?? [])) {
+        const { data: { user: dirUser } } = await supabase.auth.admin.getUserById(dp.id)
+        if (!dirUser?.email) continue
+        const { data: dirProfile } = await supabase
+          .from('profiles').select('full_name').eq('id', dp.id).single()
+        const dirFirstName = (dirProfile?.full_name ?? '').split(' ')[0] || 'Chris'
+
+        const notifyErr = await sendDirectorSummary({
+          to: dirUser.email, dirFirstName, memberName,
+          changes: nonRehearsalRegular, eventMap,
+          censusUrl: `${SITE_URL}/members/admin-attendance.html`
+        })
+        if (notifyErr) errors.push(`director: ${notifyErr}`)
+      }
+    }
+  }
+
+  // ── Admin override changes: director-only summary ─────────────
+  if (adminChanges.length > 0) {
+    const overriddenIds = [...new Set(
+      adminChanges.map(c => c.member_id).filter(Boolean)
+    )] as string[]
+    const { data: overriddenProfiles } = await supabase
+      .from('profiles').select('id, full_name').in('id', overriddenIds)
+    const profileMap: Record<string, string> = Object.fromEntries(
+      (overriddenProfiles ?? []).map(p => [p.id, p.full_name])
+    )
+
     const { data: directors } = await supabase
       .from('profiles').select('id').eq('role', 'musical_director')
 
@@ -92,12 +128,16 @@ Deno.serve(async (req) => {
         .from('profiles').select('full_name').eq('id', dp.id).single()
       const dirFirstName = (dirProfile?.full_name ?? '').split(' ')[0] || 'Chris'
 
-      const notifyErr = await sendDirectorSummary({
-        to: dirUser.email, dirFirstName, memberName,
-        changes: nonRehearsalChanges, eventMap,
-        censusUrl: `${SITE_URL}/members/admin-attendance.html`
-      })
-      if (notifyErr) errors.push(`director: ${notifyErr}`)
+      for (const change of adminChanges) {
+        const overriddenName = profileMap[change.member_id ?? ''] ?? 'a member'
+        const notifyErr = await sendDirectorSummary({
+          to: dirUser.email, dirFirstName, memberName: overriddenName,
+          changes: [change], eventMap,
+          censusUrl: `${SITE_URL}/members/admin-attendance.html`,
+          adminNote: overriddenName
+        })
+        if (notifyErr) errors.push(`director (override): ${notifyErr}`)
+      }
     }
   }
 
@@ -144,24 +184,28 @@ async function sendMemberSummary (opts: {
 
 async function sendDirectorSummary (opts: {
   to: string, dirFirstName: string, memberName: string,
-  changes: Change[], eventMap: Record<string, Record<string, any>>, censusUrl: string
+  changes: Change[], eventMap: Record<string, Record<string, any>>, censusUrl: string,
+  adminNote?: string
 }): Promise<string | null> {
-  const { to, dirFirstName, memberName, changes, eventMap, censusUrl } = opts
+  const { to, dirFirstName, memberName, changes, eventMap, censusUrl, adminNote } = opts
   const changeLines = buildChangeLines(changes, eventMap)
 
-  const text = [
+  const lines = [
     `Hi ${dirFirstName},`,
     '',
     `Here's what ${memberName} submitted:`,
     ...changeLines,
     '',
-    'View the full attendance census:',
-    `  ${censusUrl}`,
-    '',
-    '— PDT Singers system',
-  ].join('\n')
+  ]
 
-  return sendEmail(to, `PDT Singers: Attendance update from ${memberName}`, text)
+  if (adminNote) {
+    lines.push(`Note: This status was set by the chorus administrator on behalf of ${adminNote}.`)
+    lines.push('')
+  }
+
+  lines.push('View the full attendance census:', `  ${censusUrl}`, '', '— PDT Singers system')
+
+  return sendEmail(to, `PDT Singers: Attendance update from ${memberName}`, lines.join('\n'))
 }
 
 // ── Shared utilities ─────────────────────────────────────────

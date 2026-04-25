@@ -260,6 +260,7 @@
 .att-save-error {
   margin: 0;
   font-size: var(--text-sm);
+  color: #c0392b;
 }
 
 @media (max-width: 768px) {
@@ -441,4 +442,36 @@
     max-width: 100%;
     width: 100%;
   }
+}
+
+/* ── Utility ────────────────────────────────────────────────── */
+.modal-hidden { display: none !important; }
+
+/* ── Admin override form ────────────────────────────────────── */
+.override-section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) 0;
+}
+
+.override-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: var(--space-md);
+}
+
+.override-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  padding: var(--space-lg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  max-width: 520px;
+}
+
+.override-card .att-reason {
+  max-width: none;
+  width: 100%;
 }

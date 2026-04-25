@@ -60,6 +60,57 @@
     </div>
   </div>
 
+  <!-- ADMIN OVERRIDE FORM — visible to admin role only -->
+  <div class="pdt-admin-only">
+    <div class="override-section">
+      <h2 class="override-heading">Override Member Attendance</h2>
+      <div class="override-card">
+
+        <div class="att-field-group">
+          <label class="att-label" for="override-member">Member</label>
+          <select id="override-member" class="form-input att-select">
+            <option value="" disabled selected>Select member…</option>
+          </select>
+        </div>
+
+        <div class="att-field-group">
+          <label class="att-label" for="override-event">Event (sing-outs only)</label>
+          <select id="override-event" class="form-input att-select">
+            <option value="" disabled selected>Select event…</option>
+          </select>
+        </div>
+
+        <div class="att-field-group">
+          <div class="att-label">Status</div>
+          <div class="att-radio-group">
+            <label class="att-radio-label">
+              <input type="radio" name="override-status" value="attending"> I'll be there
+            </label>
+            <label class="att-radio-label">
+              <input type="radio" name="override-status" value="not_sure"> Not sure
+            </label>
+            <label class="att-radio-label">
+              <input type="radio" name="override-status" value="not_attending"> Can't make it
+            </label>
+          </div>
+        </div>
+
+        <div class="att-field-group modal-hidden" id="override-reason-wrap">
+          <label class="att-label" for="override-reason">Reason</label>
+          <textarea id="override-reason" class="form-input att-reason" rows="2"
+            placeholder="Reason (optional)"></textarea>
+        </div>
+
+        <div class="att-save-bar">
+          <button id="override-save" class="btn-primary" disabled>Save Override</button>
+          <span class="att-save-status modal-hidden" id="override-save-status">Saved ✓</span>
+          <p class="att-save-error modal-hidden" id="override-save-error"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <div class="census-controls">
     <div class="census-filters">
       <label class="form-label" for="event-filter" style="margin:0">Event</label>

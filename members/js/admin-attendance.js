@@ -44,6 +44,7 @@ async function init () {
 
   populateDropdown()
   bindFilters()
+  initOverride()
 
   const targetId = new URLSearchParams(window.location.search).get('event')
   if (targetId) {
@@ -167,6 +168,115 @@ async function renderReport () {
   }))
 
   report.innerHTML = sections.join('')
+}
+
+// ── Admin override form ───────────────────────────────────────
+
+function initOverride () {
+  if (window.__PDT_USER?.role !== 'admin') return
+
+  // Populate member dropdown sorted by last name
+  const memberSel = document.getElementById('override-member')
+  const sorted = [...allProfiles].sort((a, b) => {
+    const la = lastNameOf(a.full_name), lb = lastNameOf(b.full_name)
+    return la.localeCompare(lb) || a.full_name.localeCompare(b.full_name)
+  })
+  sorted.forEach(p => {
+    const opt = document.createElement('option')
+    opt.value = p.id
+    opt.textContent = p.full_name
+    memberSel.appendChild(opt)
+  })
+
+  // Populate event dropdown (allEvents = non-rehearsal, future, already fetched)
+  const eventSel = document.getElementById('override-event')
+  allEvents.forEach(e => {
+    const opt = document.createElement('option')
+    opt.value = e.id
+    opt.textContent = `${e.event_date} — ${e.title}`
+    eventSel.appendChild(opt)
+  })
+
+  document.querySelectorAll('input[name="override-status"]').forEach(r => {
+    r.addEventListener('change', onOverrideStatusChange)
+  })
+  memberSel.addEventListener('change', updateOverrideSaveBtn)
+  eventSel.addEventListener('change', updateOverrideSaveBtn)
+  document.getElementById('override-save').addEventListener('click', saveOverride)
+}
+
+function onOverrideStatusChange () {
+  const val = document.querySelector('input[name="override-status"]:checked')?.value
+  const reasonWrap = document.getElementById('override-reason-wrap')
+  if (val === 'not_attending' || val === 'not_sure') {
+    reasonWrap.classList.remove('modal-hidden')
+  } else {
+    reasonWrap.classList.add('modal-hidden')
+    document.getElementById('override-reason').value = ''
+  }
+  updateOverrideSaveBtn()
+}
+
+function updateOverrideSaveBtn () {
+  const hasMember = !!document.getElementById('override-member').value
+  const hasEvent  = !!document.getElementById('override-event').value
+  const hasStatus = !!document.querySelector('input[name="override-status"]:checked')
+  document.getElementById('override-save').disabled = !(hasMember && hasEvent && hasStatus)
+}
+
+function lastNameOf (fullName) {
+  const parts = String(fullName ?? '').trim().split(/\s+/)
+  return parts[parts.length - 1]
+}
+
+async function saveOverride () {
+  const memberId = document.getElementById('override-member').value
+  const eventId  = document.getElementById('override-event').value
+  const status   = document.querySelector('input[name="override-status"]:checked')?.value
+  const reason   = document.getElementById('override-reason').value.trim() || null
+
+  if (!memberId || !eventId || !status) return
+
+  const saveBtn    = document.getElementById('override-save')
+  const saveStatus = document.getElementById('override-save-status')
+  const saveError  = document.getElementById('override-save-error')
+
+  saveBtn.disabled    = true
+  saveBtn.textContent = 'Saving…'
+  saveStatus.classList.add('modal-hidden')
+  saveError.classList.add('modal-hidden')
+
+  const { error } = await supabase
+    .from('event_attendance')
+    .upsert(
+      { event_id: eventId, member_id: memberId, status, reason, updated_at: new Date().toISOString() },
+      { onConflict: 'event_id,member_id' }
+    )
+
+  if (error) {
+    saveError.textContent = error.message || 'Something went wrong. Please try again.'
+    saveError.classList.remove('modal-hidden')
+    saveBtn.textContent = 'Save Override'
+    saveBtn.disabled    = false
+    return
+  }
+
+  supabase.functions.invoke('notify-attendance-change', {
+    body: { changes: [{ event_id: eventId, member_id: memberId, status, reason, admin_override: true }] }
+  }).catch(() => {})
+
+  saveBtn.textContent = 'Save Override'
+  saveStatus.classList.remove('modal-hidden')
+  clearTimeout(saveStatus._t)
+  saveStatus._t = setTimeout(() => {
+    saveStatus.classList.add('modal-hidden')
+    document.getElementById('override-member').value = ''
+    document.getElementById('override-event').value  = ''
+    document.querySelectorAll('input[name="override-status"]').forEach(r => { r.checked = false })
+    document.getElementById('override-reason-wrap').classList.add('modal-hidden')
+    document.getElementById('override-reason').value = ''
+    updateOverrideSaveBtn()
+  }, 3000)
 }
 
 function formatDateShort (ds) {

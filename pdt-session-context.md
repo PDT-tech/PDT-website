@@ -336,7 +336,7 @@ pdtsingers/                  ← repo root
 - SEO: meta tags, XML sitemap, Google Search Console
 - OTP login cooldown timer (Issue 042) — 60s disable/countdown on Send button
 - Footer link label standardization (Issue 043)
-- Member portal nav + layout consistency pass (Issues 044, 045)
+- Member portal nav right-justification (Issue 044)
 - Calendar → Events blog automation: cancellations and new performances (Issues 046, 047)
 - The Sunburst: public-facing version under Friends page (not yet started)
 
@@ -362,6 +362,12 @@ pdtsingers/                  ← repo root
 - ✅ pdt-tech-maintainers-guide.md updated — §10 rewritten for OTP, §7 updated with
   The Sunburst, §14 retired in favor of pdt-issues.md pointer
 - ✅ CC batching principles documented in claude.ai memory and userMemories
+- ✅ Supabase posts_blog_type_check constraint updated to include sunburst (SQL run manually in Supabase dashboard)
+- ✅ OTP email template updated in Supabase dashboard — Magic Link template replaced with code-display design using {{ .Token }}
+- ✅ Attendance page: button groups replaced with dropdowns; dirty flag fixed — only triggers if selection differs from saved state (Issue logged as resolved)
+- ✅ Page layout consistency sweep complete — headline/intro margins aligned to resources.html standard across admin-attendance, calendar, sunburst, comms, events, poohbah, directors-notes (Issues 044, 045 closed)
+- ✅ New Event form moved to modal dialog — mobile-friendly, 480px max-width, guiding text added; "Performance" → "Sing-out" and "Board Meeting" → "High Council" in all UI display contexts (DB values unchanged); button order Save left / Cancel right (Issue 034 closed)
+- ✅ Resources page strategy decided: chorus-facing docs via Drive proxy (same pattern as Music Library); High Council docs via direct Drive share to HC members' Google accounts — no selective portal access needed; selective access requirement dropped
 
 ### Session 10 — 2026-04-18
 

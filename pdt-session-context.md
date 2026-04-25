@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-24 (Session 11)  
+**Last updated:** 2026-04-25 (Session 12)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -320,6 +320,8 @@ pdtsingers/                  ← repo root
 - ✅ The Sunburst newsletter blog live in member portal
 - ✅ pdt-decisions.md and pdt-tech-maintainers-guide.md current as of Session 11
 - ✅ Vector logo files received from Mercedes Gibson
+- ✅ OTP login cooldown implemented — 60s countdown on Send button; startCooldown()/clearCooldown() helpers added to login.html (Issue 042 closed)
+- ✅ Password auth confirmed effectively disabled — no discrete Supabase toggle exists; signInWithPassword is dead code behind USE_MAGIC_LINKS flag
 
 ---
 
@@ -331,7 +333,6 @@ pdtsingers/                  ← repo root
 - Vector logo files from Mercedes Gibson
 - Public page content polish (real copy, real photos)
 - SEO: meta tags, XML sitemap, Google Search Console
-- OTP login cooldown timer (Issue 042) — 60s disable/countdown on Send button
 - Footer link label standardization (Issue 043)
 - Member portal nav right-justification (Issue 044)
 - Calendar → Events blog automation: cancellations and new performances (Issues 046, 047)
@@ -340,6 +341,18 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 12 — 2026-04-25
+
+- ✅ pdt-conventions.md auth method corrected — "magic-link-only" replaced with "6-digit email OTP" (via verifyOtp); conventions re-uploaded to Project Memory
+- ✅ Open items audit completed — photo feature, Sunburst on Friends page, Groups.io, WCAG audit, Facebook cross-posting, README rewrite, whats-new.html, second maintainer onboarding all moved to post-launch
+- ✅ Moss Egli onboarding confirmed complete — Supabase account, events_editor role, Facebook group setup done
+- ✅ Deceased member notification confirmed complete
+- ✅ OTP settings confirmed: 6-digit code, 600s (10 min) expiry — both verified working 2026-04-25
+- ✅ Password auth disable confirmed — no discrete toggle in Supabase; signInWithPassword is effectively dead code
+- ✅ pdt-issues.md added to Project Memory (Kevin uploads; end-of-session hygiene)
+- ✅ OTP Send button cooldown — startCooldown()/clearCooldown() added to login.html; 60s countdown starts on successful signInWithOtp(); clears on "Go back" link (Issue 042 closed)
+- ▶️ Next: New Event form — issues 035, 036, 047 as one unified build (CC investigation underway in new chat)
 
 ### Session 11 — 2026-04-24
 

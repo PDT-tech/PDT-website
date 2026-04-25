@@ -357,8 +357,8 @@ pdtsingers/                  ← repo root
   Edge Function: notify-attendance-change extended — admin_override flag splits changes
   into adminChanges (director email only, member name noted) vs regularChanges
   (existing behavior unchanged).
-  ⚠️ PENDING MANUAL STEPS: (1) Run migration in Supabase dashboard SQL editor.
-  (2) supabase functions deploy notify-attendance-change
+  ✅ Migration run in Supabase dashboard SQL editor.
+  ⚠️ PENDING: supabase functions deploy notify-attendance-change
 
 ### Session 5 — 2026-04-25
 

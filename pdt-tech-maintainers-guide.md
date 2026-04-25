@@ -152,7 +152,7 @@ and find the new row (auto-created by trigger). Set:
 
 | Field | Value |
 |-------|-------|
-| `role` | `member` (singers), `events_editor` (SMM/Events), `musical_director` (Chris), `admin` (Kevin) |
+| `role` | `member` (singers), `council_member` (High Council), `events_editor` (SMM/Events), `musical_director` (Chris), `calendar_manager` (events coordinator), `admin` (Kevin) |
 | `voice_part` | `Tenor`, `Lead`, `Baritone`, `Bass`, or `null` for non-singers |
 | `full_name` | Member's full name |
 | `is_active` | `true` |
@@ -176,13 +176,20 @@ and see the correct content for their role.
 
 ### Roles reference
 
-| Role | Access |
-|------|--------|
-| `admin` | Everything — all blogs, all member content, site management |
-| `musical_director` | Director's Notes blog + all member content |
-| `events_editor` | Events blog + all member content |
-| `calendar_manager` | Calendar management + all member content |
-| `member` | All member content, read-only |
+| Role | Assigned to | Calendar | Poohbah's Prattlings | Director's Notes | Events Blog | Member content |
+|------|-------------|----------|----------------------|------------------|-------------|----------------|
+| `admin` | Kevin Bier | Full CRUD | Post (any author) | Post (any author) | Post (any author) | Full access |
+| `council_member` | Grant Gibson + any HC member Kevin designates | Read only | Post own entries | — | — | Full access |
+| `musical_director` | Chris Gabel | Read only | — | Post own entries | — | Full access |
+| `calendar_manager` | Future social coordinator or non-member volunteer | Full CRUD | — | — | — | Full access |
+| `events_editor` | Moss Egli (SMM) + Wives Auxiliary, etc. | Read only | — | — | Post own entries | Full access |
+| `member` | All active PDT Singers | Read + mark absences | — | — | — | Full access |
+
+**Notes:**
+- "Post own entries" means the role can create, edit, and delete only posts they authored. Admin can edit or delete any post.
+- `calendar_manager` can create, edit, and delete any calendar event. No blog posting rights.
+- Non-singing roles (`calendar_manager`, `events_editor`) have `voice_part = null`.
+- To assign a role, see Step 2 above.
 
 ### Deactivating a member
 
@@ -198,9 +205,11 @@ can post via the member portal UI. There is no external CMS.
 
 **Blog → Role required to post:**
 - Director's Notes → `musical_director` or `admin`
-- Grand Poohbah's Prattlings → `admin` only
+- Grand Poohbah's Prattlings → `council_member` or `admin`
 - Events Blog → `events_editor` or `admin`
 - The Sunburst → `admin` only (newsletter_editor role reserved for future use)
+
+Non-admin authors can only edit and delete their own posts. Admins can edit and delete any post by any author.
 
 Posts have a `published` boolean. Unpublished posts are only visible to the author
 and admin. Published posts are visible to all authenticated members.

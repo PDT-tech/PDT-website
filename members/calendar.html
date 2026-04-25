@@ -632,7 +632,10 @@
     openEventModal(ev)
   })
 
+  let prevWasCancelled = false
+
   function openEventModal (ev = null) {
+    prevWasCancelled = ev?.is_cancelled || false
     document.getElementById('event-modal-title').textContent = ev?.id ? 'Edit Event' : 'New Event'
     document.getElementById('event-id').value = ev?.id || ''
     document.getElementById('event-title').value = ev?.title || ''
@@ -691,11 +694,15 @@
     closeEventModal()
     closeDetailModal()
     await loadMonth()
-    const PROMPT_ROLES = ['admin', 'calendar_manager', 'events_editor']
+    const PROMPT_ROLES = ['admin', 'calendar_manager']
+    const role = window.__PDT_USER?.role
     if (!id && insertedEvent &&
         (payload.event_type === 'performance' || payload.event_type === 'social') &&
-        PROMPT_ROLES.includes(window.__PDT_USER?.role)) {
-      openBlogPrompt(insertedEvent)
+        PROMPT_ROLES.includes(role)) {
+      openBlogPrompt(insertedEvent, 'new-event')
+    } else if (id && payload.is_cancelled && !prevWasCancelled && PROMPT_ROLES.includes(role)) {
+      openBlogPrompt({ id, title: payload.title, event_date: payload.event_date,
+                       start_time: payload.start_time, location: payload.location }, 'cancellation')
     }
   })
 
@@ -756,29 +763,41 @@
     loadMonth()
   })
 
-  // ── Blog post prompt (#047) ────────────────────────────────
+  // ── Blog post prompt (#047 new event, #046 cancellation) ──
   let blogPromptEvent = null
+  let blogPromptMode  = null
 
-  function openBlogPrompt (ev) {
+  function openBlogPrompt (ev, mode) {
     blogPromptEvent = ev
-    document.getElementById('blog-prompt-body').textContent =
-      `Would you like to create an Events blog post for "${ev.title}"?`
+    blogPromptMode  = mode
+    const body = mode === 'cancellation'
+      ? `Post a cancellation notice to the Events page for "${ev.title}"?`
+      : `Would you like to create an Events blog post for "${ev.title}"?`
+    document.getElementById('blog-prompt-body').textContent = body
     document.getElementById('blog-prompt-modal').classList.remove('modal-hidden')
   }
 
   function closeBlogPrompt () {
     document.getElementById('blog-prompt-modal').classList.add('modal-hidden')
     blogPromptEvent = null
+    blogPromptMode  = null
   }
 
   document.getElementById('blog-prompt-yes').addEventListener('click', () => {
     if (!blogPromptEvent) return
     const ev = blogPromptEvent
+    const mode = blogPromptMode
     closeBlogPrompt()
-    const params = new URLSearchParams({ new: '1', title: ev.title, event_date: ev.event_date, event_id: ev.id })
+    const params = new URLSearchParams({ new: '1', event_date: ev.event_date, event_id: ev.id })
+    if (mode === 'cancellation') {
+      params.set('title', `Cancellation: ${ev.title}`)
+      params.set('notes', 'This event has been cancelled. We apologize for the inconvenience.')
+    } else {
+      params.set('title', ev.title)
+      if (ev.notes) params.set('notes', ev.notes)
+    }
     if (ev.start_time) params.set('start_time', ev.start_time)
     if (ev.location)   params.set('location', ev.location)
-    if (ev.notes)      params.set('notes', ev.notes)
     window.location.href = `/members/events.html?${params.toString()}`
   })
 

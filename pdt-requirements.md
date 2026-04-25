@@ -135,7 +135,7 @@ flag for potential future use, but is not currently active.
 - Group email via **Google Workspace for Nonprofits** (Google Groups)
 - ✅ **Google Workspace for Nonprofits approved and active** — approved via Goodstack (2026-04-18). Note: TechSoup was the historical nonprofit vetting partner; Goodstack is now the active Google program partner.
 - ✅ **IRS 501(c)(3) exemption letter in hand** (confirmed at 3/26/26 BoD meeting)
-- Groups.io for Friends of PDT email list — tabled; Google Workspace now active, can proceed when ready
+- Groups.io for Friends of PDT email list — deferred to post-launch
 
 ### 5d. Social Media
 | Platform | Plan | Notes |

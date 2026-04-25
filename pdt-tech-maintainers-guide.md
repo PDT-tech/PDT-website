@@ -444,6 +444,24 @@ Three post-launch features are planned for the attendance system:
 
 ---
 
+## 15. Claude.ai MCP Connectors
+
+Claude.ai (the chat interface used for all PDT website work) supports MCP connectors that give Claude direct access to external services — Google Drive, Gmail, Stripe, and others. The PDT project has evaluated the available connectors.
+
+**Connector status as of April 2026:**
+
+| Connector | Status | When useful |
+|-----------|--------|------------|
+| Google Drive | Disconnected | Not needed for website work — CC reads all files via the repo. Re-enable only if you want claude.ai to directly browse or read files from the PDT Workspace Drive during a planning session. |
+| Gmail | Disconnected | Not needed for website work. Re-enable if you want claude.ai to help draft or read emails from president@pdtsingers.org during a session. |
+| Stripe | Not relevant | PDT does not use Stripe. Leave disconnected. |
+
+**General principle:** MCP connectors are session-scoped. Connecting them gives claude.ai live access to that service during the conversation — useful for specific tasks, not needed for routine coding work. Disconnect after use if you prefer not to grant standing access.
+
+**How to manage connectors:** In claude.ai, open the PDT project → Settings → Connected tools (or similar — exact UI may vary). Connect or disconnect per session as needed.
+
+---
+
 *PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship & Fun*
 
 <!-- html-synced: needs update after maintainers guide HTML sync -->

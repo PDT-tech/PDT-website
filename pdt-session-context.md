@@ -109,7 +109,6 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 
 ### Phase 3 — Polish & Launch
 - [ ] Mobile responsiveness audit
-- [ ] Accessibility audit (WCAG AA)
 - [ ] Cross-browser testing
 - [ ] Final content review
 - [ ] Populate Drive Music folders with files from Dropbox
@@ -122,12 +121,12 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [ ] Social media accounts live → update Friends page links
 - [ ] Onboard second site maintainer
 - [ ] Document update procedures (blog post, add member, update schedule)
+- [ ] Accessibility audit (WCAG AA)
 - [ ] Update TechSoup account email to @pdtsingers.org once Google Workspace is live
-- [ ] **Onboard Moss Egli as Social Media Manager** — create Supabase account, determine role (events_editor to start, may need dedicated social_media_manager role — TBD)
+- [x] **Onboard Moss Egli as Social Media Manager** — ✅ Complete. Supabase account created, events_editor role assigned.
 - [ ] **Cross-posting feature**: post PDT events/announcements to Facebook Events and newsletters from website — requirements TBD with Moss
 - [ ] **members/whats-new.html** — simple static changelog page for members; hand-maintained; lists website functionality changes (not content)
-- [ ] **About Us highlight for Moss Egli** — add SMM bio/blurb to About Us page
-- [ ] Notify deceased member's son to deactivate old site
+- [x] Notify deceased member's son to deactivate old site ✅ Complete
 
 ---
 
@@ -171,17 +170,15 @@ pairs are added, list them here.
 - [x] IRS 501(c)(3) letter: **in hand** — Google Workspace now unblocked
 - [x] Music Library architecture: Netlify Function + service account (see requirements §5g)
 - [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile, proceed independently
-- [ ] **Moss Egli onboarding** — Supabase account + role TBD; first task: set up PDT Facebook group
+- [x] **Moss Egli onboarding** — ✅ Moss Egli onboarded — Supabase account created, events_editor role assigned, Facebook group setup complete
 - [ ] **Cross-posting requirements** — Moss to drive; Facebook Events + newsletter integration
 - [ ] **members/whats-new.html** — post-launch changelog page for members
-- [ ] **Moss highlight on About Us** — SMM bio TBD
 - [ ] Desired email addresses?
 - [ ] Second site maintainer?
 - [ ] Member Blog: comments or read-only?
 - [ ] Duane Lundsten memorial form/placement (group discussion pending)
-- [ ] Grant's prioritized landing page elements (input pending)
 - [ ] Vectorized logo files (pending from Mercedes Gibson)
-- [ ] Groups.io for Friends of PDT (tabled until Google Workspace live)
+- [x] Groups.io for Friends of PDT — tabled; deferred to post-launch
 - [ ] Music Library local dev testing — temporarily set Music folder to "Anyone with link",
       test, then revert. Don't forget to revert.
 
@@ -364,6 +361,7 @@ pdtsingers/                  ← repo root
 - ✅ CC batching principles documented in claude.ai memory and userMemories
 - ✅ Supabase posts_blog_type_check constraint updated to include sunburst (SQL run manually in Supabase dashboard)
 - ✅ OTP email template updated in Supabase dashboard — Magic Link template replaced with code-display design using {{ .Token }}
+- ✅ OTP expiry confirmed set to 600 seconds (10 minutes) in Supabase Auth settings; 6-digit code length confirmed. Both verified working 2026-04-25.
 - ✅ Attendance page: button groups replaced with dropdowns; dirty flag fixed — only triggers if selection differs from saved state (Issue logged as resolved)
 - ✅ Page layout consistency sweep complete — headline/intro margins aligned to resources.html standard across admin-attendance, calendar, sunburst, comms, events, poohbah, directors-notes (Issues 044, 045 closed)
 - ✅ New Event form moved to modal dialog — mobile-friendly, 480px max-width, guiding text added; "Performance" → "Sing-out" and "Board Meeting" → "High Council" in all UI display contexts (DB values unchanged); button order Save left / Cancel right (Issue 034 closed)

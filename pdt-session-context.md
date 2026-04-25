@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-25 (Session 12)  
+**Last updated:** 2026-04-25 (Session 13)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -327,6 +327,8 @@ pdtsingers/                  ← repo root
 
 ## On the Horizon
 
+- ✅ FWI-B (Issue 032): Admin attendance override — complete (Session 13)
+- **FWI-C (Issue 033) — next**: Sing-out attendance census report UI on admin-attendance.html; as-built investigation done in Session 13; implementation prompt ready to generate
 - **The Sunburst** (Ray Heller's newsletter) — draft HTML delivered, awaiting Ray's feedback before finalizing PDF
 - Photo carousel and gallery feature (`pdt-photo-feature.md`) — next major work item; open questions not yet walked through
 - Music Library streaming via Edge Function — monitor for files approaching 6MB after base64 expansion (~4.5MB raw)
@@ -342,6 +344,21 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 13 — 2026-04-25
+
+- ✅ Issue 032 (FWI-B): Admin attendance override — complete.
+  admin-attendance.html: override form added (admin-only, sing-outs only).
+  admin-attendance.js: member + event dropdowns, three-way status radio, reason
+  textarea, upsert to event_attendance, fire-and-forget notify-attendance-change
+  with admin_override: true + member_id.
+  Migration: 20260425120000_event_attendance_admin_insert.sql — attendance_insert_admin
+  policy on event_attendance.
+  Edge Function: notify-attendance-change extended — admin_override flag splits changes
+  into adminChanges (director email only, member name noted) vs regularChanges
+  (existing behavior unchanged).
+  ⚠️ PENDING MANUAL STEPS: (1) Run migration in Supabase dashboard SQL editor.
+  (2) supabase functions deploy notify-attendance-change
 
 ### Session 5 — 2026-04-25
 

@@ -358,7 +358,7 @@ pdtsingers/                  ← repo root
   into adminChanges (director email only, member name noted) vs regularChanges
   (existing behavior unchanged).
   ✅ Migration run in Supabase dashboard SQL editor.
-  ⚠️ PENDING: supabase functions deploy notify-attendance-change
+  ✅ supabase functions deploy notify-attendance-change — deployed.
 
 ### Session 5 — 2026-04-25
 

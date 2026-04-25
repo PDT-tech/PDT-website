@@ -117,8 +117,7 @@ Reference any issue or backlog item if relevant.
 - Check for its presence before using: `window.__PDT_ENV?.SUPABASE_URL || ''`
 - Log a console error if credentials are missing — see `js/supabase.js` for the pattern
 
-**Auth is magic-link-only.** `signInWithPassword` remains in `supabase.js` with a
-TODO comment but is not used. Do not wire it up to any UI.
+**Auth uses 6-digit email OTP** (via Supabase `verifyOtp`). `signInWithPassword` remains in `supabase.js` with a TODO comment but is not used. Do not wire it up to any UI.
 
 ---
 

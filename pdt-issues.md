@@ -1,6 +1,6 @@
 # PDT Singers — Issue Tracker
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
-# Last updated: 2026-04-24
+# Last updated: 2026-04-25
 
 001 | DONE   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010. Fixed 2026-04-20: wrapped "Portland DayTime Singers" in footer span as <a href="/"> across all 10 member pages.
 002 | DONE   | Logo: new WebP assets from Mercedes Gibson deployed for both cityscape and words portions of hero. Cityscape has residual light halo in dark mode (watercolor wash pixels not fully transparent) — requires source file fix from designer when words transparent file is also delivered. Good enough to ship. Fixed 2026-04-19.
@@ -58,3 +58,4 @@
 054 | DONE   | Calendar: events_editor role sees + New Event button but cannot create events — RLS blocks the insert. Root cause: #047 added events_editor to the New Event button visibility (calendar.html:325–326) so they could trigger the blog-post prompt, but events_insert_admin_or_manager policy only allows admin + calendar_manager. Fixed 2026-04-25: removed events_editor from New Event button visibility (option A — visibility restricted to admin + calendar_manager, matching RLS). File: members/calendar.html.
 055 | DONE   | Member portal nav: "Home" label renamed to "Member Home" across all 10 member pages (comms.html had two nav lists — both updated). Fixed 2026-04-25.
 056 | DONE   | Member portal nav: links clipped and inaccessible between 769px–1300px window width. Root cause: 10 white-space:nowrap items need ~1300px; overflow-x:auto on the outer container wasn't triggering because .member-nav-links flex:1 absorbed space internally, silently clipping items. Fix: raised hamburger breakpoint from 768px to 1100px so the existing working dropdown activates sooner; removed redundant display:none from the 600px block. Fixed 2026-04-25. File: css/members.css.
+057 | DONE   | directors-notes blog_type constraint mismatch. directors-notes.html was posting blog_type='directors_notes' (underscore) but posts_blog_type_check constraint only allowed 'directors-notes' (hyphen). Fixed by dropping and recreating constraint with correct values: directors_notes, poohbah, events, sunburst. No data migration needed — no rows existed with the hyphen form. Fixed 2026-04-25.

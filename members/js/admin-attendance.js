@@ -124,20 +124,10 @@ async function renderReport () {
     const cantMake   = allProfiles.filter(p => attMap[p.id]?.status === 'not_attending')
     const noResponse = allProfiles.filter(p => !attMap[p.id])
 
-    const nameList = (profiles, showReason = false) => {
-      if (!profiles.length) return '<span class="census-name census-none">—</span>'
-      return profiles.map(p => {
-        const reason = showReason && attMap[p.id]?.reason
-          ? ` (${escHtml(attMap[p.id].reason)})`
-          : ''
-        return `<span class="census-name">${escHtml(p.full_name)}${reason}</span>`
-      }).join('')
-    }
-
     const meta = [
       formatDateLong(evt.event_date),
-      evt.location  ? escHtml(evt.location)           : null,
-      evt.start_time ? formatTime(evt.start_time)     : null,
+      evt.location   ? escHtml(evt.location)       : null,
+      evt.start_time ? formatTime(evt.start_time)  : null,
     ].filter(Boolean).join(' &middot; ')
 
     return `
@@ -146,28 +136,35 @@ async function renderReport () {
           <div class="census-event-title">${escHtml(evt.title)}</div>
           <div class="census-event-meta">${meta}</div>
         </div>
-        <div class="census-groups">
-          <div class="census-group">
-            <div class="census-group-label">✅ Attending (${attending.length})</div>
-            <div class="census-names">${nameList(attending)}</div>
-          </div>
-          <div class="census-group">
-            <div class="census-group-label">❓ Not sure yet (${notSure.length})</div>
-            <div class="census-names">${nameList(notSure)}</div>
-          </div>
-          <div class="census-group">
-            <div class="census-group-label">❌ Can't make it (${cantMake.length})</div>
-            <div class="census-names">${nameList(cantMake, true)}</div>
-          </div>
-          <div class="census-group">
-            <div class="census-group-label">⬜ No response (${noResponse.length})</div>
-            <div class="census-names">${nameList(noResponse)}</div>
-          </div>
+        <div class="census-buckets">
+          ${renderBucket('✅ Attending',     'census-bucket--attending',     attending,  attMap, false)}
+          ${renderBucket('❓ Not Sure',      'census-bucket--not-sure',      notSure,    attMap, true)}
+          ${renderBucket('❌ Not Attending', 'census-bucket--not-attending', cantMake,   attMap, true)}
+          ${renderBucket('— No Response',   'census-bucket--no-response',   noResponse, attMap, false)}
         </div>
       </div>`
   }))
 
   report.innerHTML = sections.join('')
+}
+
+function renderBucket (label, cls, profiles, attMap, showReason) {
+  if (!profiles.length) return ''
+  const sorted = [...profiles].sort((a, b) => {
+    const la = lastNameOf(a.full_name), lb = lastNameOf(b.full_name)
+    return la.localeCompare(lb) || a.full_name.localeCompare(b.full_name)
+  })
+  const items = sorted.map(p => {
+    const reason = showReason && attMap[p.id]?.reason
+      ? `<div class="census-member-reason">${escHtml(attMap[p.id].reason)}</div>`
+      : ''
+    return `<div class="census-member">${escHtml(p.full_name)}${reason}</div>`
+  }).join('')
+  return `
+    <div class="census-bucket">
+      <div class="census-bucket-label ${cls}">${label} (${profiles.length})</div>
+      <div class="census-members">${items}</div>
+    </div>`
 }
 
 // ── Admin override form ───────────────────────────────────────

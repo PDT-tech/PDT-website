@@ -280,6 +280,7 @@ python3 -m http.server 8080</pre>
       <tr><td><code>SUPABASE_ANON_KEY</code></td><td>Supabase publishable anon key</td><td>Netlify env vars</td></tr>
       <tr><td><code>GOOGLE_DRIVE_API_KEY</code></td><td>Drive API key (local dev only)</td><td>Netlify env vars</td></tr>
       <tr><td><code>GOOGLE_DRIVE_MUSIC_FOLDER_ID</code></td><td>Music folder ID in Drive</td><td>Netlify env vars</td></tr>
+      <tr><td><code>GOOGLE_DRIVE_SUNBURST_FOLDER_ID</code></td><td>ID of the Sunburst newsletter folder in Drive</td><td>Netlify env vars</td></tr>
       <tr><td><code>GOOGLE_SERVICE_ACCOUNT_JSON</code></td><td>Service account JSON (secret)</td><td>Netlify env vars</td></tr>
     </tbody>
   </table>
@@ -304,8 +305,8 @@ python3 -m http.server 8080</pre>
     <li>Click <strong>Invite user</strong></li>
     <li>Enter the member's email address and click <strong>Send invitation</strong></li>
   </ul>
-  <p>Supabase sends a magic link invitation email. The member clicks it, lands on the
-  member portal, and is authenticated. No password required.</p>
+  <p>Supabase sends an invitation email. The member uses it to set up access, then logs
+  in via the OTP flow (email → 6-digit code). No password required.</p>
 
   <p><strong>Step 2 — Set role and profile fields</strong></p>
   <p>After the account appears in Authentication → Users, open Table Editor → profiles
@@ -426,11 +427,7 @@ WHERE id = (
   From address: <code>noreply@pdtsingers.org</code>. Template: Supabase dashboard →
   Authentication → Email Templates → Magic Link.</p>
 
-  <div class="callout amber">
-    <div class="callout-label">Backlog item</div>
-    <p>Link expiry is currently 24 hours. Reduce to 15 minutes: Supabase →
-    Authentication → Settings → OTP Expiry.</p>
-  </div>
+  <p><strong>OTP expiry:</strong> 10 minutes / 600 seconds (confirmed in Supabase → Authentication → Settings)</p>
 
   <h3>If members report not receiving login emails</h3>
   <ul>
@@ -464,7 +461,7 @@ WHERE id = (
       <tr><td>Cancel a rehearsal</td><td>Calendar page (admin view) → mark Cancelled</td></tr>
       <tr><td>View form submissions</td><td>Netlify → Forms</td></tr>
       <tr><td>Update env variables</td><td>Netlify → Site configuration → Environment variables</td></tr>
-      <tr><td>Edit magic link email template</td><td>Supabase → Authentication → Email Templates</td></tr>
+      <tr><td>Edit OTP login email template</td><td>Supabase → Authentication → Email Templates</td></tr>
       <tr><td>Trigger a deploy</td><td>Netlify → Deploys → Trigger deploy</td></tr>
       <tr><td>View error logs</td><td>Netlify → Functions → drive-music → logs</td></tr>
     </tbody>

@@ -88,6 +88,7 @@ first-person plural. Tagline: "Music, Fellowship & Fun."
 - [x] Netlify auto-publish disabled — manual deploy only, credits preserved ✅
 - [x] Build member calendar (members/calendar.html) ✅
 - [x] Build Music Library (members/music.html) ✅
+- [x] Build The Sunburst newsletter page (members/sunburst.html) — Drive-backed PDF listing ✅
 - [x] Build Drive proxy Netlify Function (netlify/functions/drive-music.js) ✅
 - [x] Update inject-env.js with Google Drive env vars ✅
 - [x] Set up Google Drive + service account for Music Library ✅
@@ -249,6 +250,7 @@ pdtsingers/                  ← repo root
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
 **Music folder ID:** `[REDACTED — see GOOGLE_DRIVE_MUSIC_FOLDER_ID in Netlify env vars]` (Workspace Drive, president@pdtsingers.org — updated Session 4)  
+**Sunburst folder ID:** `[REDACTED — see GOOGLE_DRIVE_SUNBURST_FOLDER_ID in Netlify env vars]` (Workspace Drive, president@pdtsingers.org)  
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
@@ -344,6 +346,19 @@ pdtsingers/                  ← repo root
 ---
 
 ## Session History
+
+### Session 5 — 2026-04-25
+- ✅ Sunburst newsletter feature complete and live
+  - members/sunburst.html rewritten as Drive-backed PDF issue listing
+  - css/sunburst.css created — warm palette tokens (--sb-gold, --sb-amber, --sb-highlight, --sb-cream, --sb-ink, --sb-muted) and layout classes
+  - sunburst-issue-template.html created — standalone print-to-PDF production tool for newsletter issues
+  - netlify/functions/drive-music.js extended with sunburst-list action
+  - Google Drive Sunburst folder created, shared with service account
+  - GOOGLE_DRIVE_SUNBURST_FOLDER_ID added to Netlify env vars and env.local.js
+  - Sunburst folder ID: [REDACTED — see GOOGLE_DRIVE_SUNBURST_FOLDER_ID in Netlify env vars]
+  - 401 fix: Open/Download buttons now use fetch→blob→synthetic anchor pattern (window.open and `<a download>` cannot carry Authorization headers to Edge Function)
+  - pdt-conventions.md updated with "Authenticated File Downloads" section
+  - pdt-decisions.md updated with Sunburst architecture decision
 
 ### Session 14 — 2026-04-25
 

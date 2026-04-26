@@ -260,3 +260,31 @@ entry costs less than five minutes of the session that creates it and saves
 30+ minutes (and significant token cost) in the session that implements it.
 This pattern is especially important for items with non-obvious schema
 dependencies or partially-built backing logic.
+
+---
+
+## 2026-04-25 — The Sunburst: Drive-backed PDF listing, no new storage
+
+**Question:** How do we store and serve Ray Heller's PDF newsletter to members?
+
+**Decision:** Google Drive `Sunburst` folder under president@pdtsingers.org,
+served via the existing service account proxy. No new storage service.
+
+**Details:**
+- Folder shared with service account (Viewer) — same pattern as Music Library
+- Listing: new `sunburst-list` action in `netlify/functions/drive-music.js`
+- Downloads: existing `netlify/edge-functions/drive-music-download.js` —
+  no changes needed
+- File naming convention: `YYYY-MM-DD — Title.pdf` (em dash U+2014, spaces
+  around it) — filename is the sole metadata source, no sidecar files
+- Auth pattern: fetch → blob → URL.createObjectURL → synthetic anchor.
+  window.open() and `<a download>` rejected — cannot carry Authorization
+  headers to the Edge Function (returns 401). Documented in pdt-conventions.md.
+- Mobile UX: Open button opens PDF in new tab (OS native viewer). iframe
+  rejected — iOS Safari doesn't render PDFs in iframes reliably.
+- Newsletter production pipeline: Ray sends .docx → Kevin converts using
+  sunburst-issue-template.html → Chromium print-to-PDF → rename to
+  convention → upload to Drive. Page auto-reflects on next load, no deploy.
+
+**Env var:** `GOOGLE_DRIVE_SUNBURST_FOLDER_ID`  
+**Folder ID:** [REDACTED — see GOOGLE_DRIVE_SUNBURST_FOLDER_ID in Netlify env vars]

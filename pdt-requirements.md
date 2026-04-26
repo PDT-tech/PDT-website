@@ -1,7 +1,7 @@
 # PDT Singers Website — Requirements
 
 **Last updated:** 2026-04-25  
-**Status:** Draft — active development  
+**Status:** Active — Phase 1 & 2 complete; Phase 3 in progress  
 **Source:** Synthesized from project discussions + PDT_Singers_Site_Brief.md (March 2026)
 
 ---
@@ -27,8 +27,7 @@ stated clearly on the About page.
 - Signed by: Roger G. Heer (Secretary) and Kenny Ray Hatton (President), WBQA/SPPBSQSUS
 
 **Domain:** pdtsingers.org (registered at helpinghosting.com)  
-**Current placeholder site:** GreenGeeks.com — controlled by a deceased member; to be
-retired once new site is live. DNS cutover at that time.
+✅ GreenGeeks placeholder retired — DNS cutover to Netlify complete.
 
 ---
 
@@ -83,12 +82,13 @@ retired once new site is live. DNS cutover at that time.
 | Director's Notes | `/members/directors-notes.html` | Blog — Chris Gabel |
 | Grand Poohbah's Prattlings | `/members/poohbah.html` | Blog — Kevin Bier |
 | Events Blog | `/members/events.html` | Performances, sing-outs, social event announcements |
-| Communications | `/members/comms.html` | Announcements, meeting notes |
+| The Sunburst | `/members/sunburst.html` | Newsletter — Drive-backed PDF issue listing; admin posting only |
+| Admin Attendance | `/members/admin-attendance.html` | Admin attendance override + sing-out census report (admin/musical_director only) |
 | Chorus Calendar | `/members/calendar.html` | Rehearsal + performance schedule; absence tracking |
 | Music Library | `/members/music.html` | Song catalog; PDF sheet music + MP3 learning tracks per song; served via Netlify Function + Google Drive service account. See §5g. |
 | Can You Be There? | `/members/attendance.html` | Member attendance self-declaration for upcoming rehearsals and sing-outs; see §5j |
-| Resources | `/members/resources.html` | Additional documents, links |
-| Login | `/login.html` | Magic link only; accounts created by admin; inactive accounts blocked |
+| Resources | `/members/resources.html` | Additional documents, links — suppressed from nav; file retained, content TBD |
+| Login | `/login.html` | OTP (6-digit code) only; accounts created by admin only; inactive accounts blocked |
 
 ### 4.3 Utility
 - **404** — Friendly error page in site style
@@ -111,8 +111,7 @@ retired once new site is live. DNS cutover at that time.
 
 **Auth method — OTP (current, as of 2026-04-24):**
 Login uses 6-digit numeric codes sent via Resend (resend.com), wired into Supabase SMTP.
-Sends from noreply@pdtsingers.org. Resend domain verified April 2026. OTP expiry is 24 hours
-(can be reduced to 15 minutes — Supabase → Authentication → Settings → OTP Expiry).
+Sends from noreply@pdtsingers.org. Resend domain verified April 2026. OTP expiry is 10 minutes / 600 seconds (confirmed in Supabase → Authentication → Settings).
 `shouldCreateUser: false` ensures only admin-created accounts receive codes — strangers
 get nothing. Magic link code is preserved in login.js behind `const USE_MAGIC_LINKS = false`
 flag for potential future use, but is not currently active.
@@ -140,16 +139,16 @@ flag for potential future use, but is not currently active.
 ### 5d. Social Media
 | Platform | Plan | Notes |
 |----------|------|-------|
-| Facebook | Launch | Primary platform — Moss Egli setting up group |
+| Facebook | Launch | Primary platform — Moss Egli — PDT Facebook page live April 2026 |
 | Instagram | Launch | Secondary |
 | YouTube | Phase 2 | Deferred until regular performances established |
 | WBQA Facebook | Link only | `facebook.com/WBQA.Sings` — link from Friends page |
 
 **Social Media Manager: Moss Egli** (Kevin's granddaughter, age 19) — prior SMM experience
 at a flower store in Camas, WA. First task: set up PDT Singers Facebook group. Will drive
-content creation in coordination with website updates. Needs Supabase member account;
-role TBD (events_editor to start, or dedicated social_media_manager role if needed).
-Add bio/highlight to About Us page post-launch.
+content creation in coordination with website updates. ✅ Supabase account created,
+events_editor role assigned, Facebook group setup complete. Bio/highlight on About Us
+page — deferred.
 
 ### 5e. Forms (all via Netlify Forms — free tier)
 - **Join Us interest form**: name, email, voice part (optional), message → triggers admin
@@ -187,8 +186,8 @@ When Save succeeds, a Supabase Edge Function (`notify-attendance-change`) sends:
 
 **Deferred features** (post-launch, see pdt-issues.md #031–#033):
 - Escalation pipeline: 10-day nudge emails + 7-day auto-mark with director notification
-- Admin override: Kevin entering clipboard marks from rehearsals
-- Attendance report: detailed voting breakdown
+- Admin override: Kevin entering clipboard marks from rehearsals ✅ DONE — Fixed 2026-04-25. See pdt-issues.md #032.
+- Attendance report: detailed voting breakdown ✅ DONE — Fixed 2026-04-25. See pdt-issues.md #033.
 
 **Technical:** Batch-save model prevents per-row notifications; single `event_attendance`
 table stores all status; Edge Function replaces prior per-row database webhook approach.
@@ -239,7 +238,7 @@ mismatch possible.
 **Implementation details:**
 - Service account: `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
 - GCP project: `pdt-singers-music-library`
-- Drive: `.PDT` folder restricted; `Music` subfolder shared with service account (Viewer)
+- Drive: Music folder in Workspace Drive (president@pdtsingers.org), shared with service account (Viewer). Dropbox retired April 2026.
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
   (Workspace Drive value — April 2026)
@@ -434,8 +433,8 @@ Palette drawn directly from the PDT logo watercolor wash.
 | `PDT_logo_color_1.jpeg` | Color variant 1 | Hero, marketing |
 | `PDT_logo_color_2.jpeg` | Color variant 2 | Alternate placements |
 | `WBQA_logo.png` | WBQA badge (black on transparent) | Footer, About page |
-| *(pending)* | Vectorized PDT logo files (SVG/EPS) | From Mercedes Gibson via Dropbox — Grant coordinating |
-| *(pending)* | "Words only" logo variant | Text element only — from Mercedes Gibson |
+| PDT_logo_vector.* | Vectorized PDT logo (SVG/EPS) | ✅ Delivered by Mercedes Gibson April 2026 |
+| PDT_logo_words.* | "Words only" logo variant | ✅ Delivered by Mercedes Gibson April 2026 |
 
 WBQA logo also available as `WBQA_logo.avif` (424×434px, RGBA, black on transparent — works on any background).
 
@@ -532,12 +531,14 @@ assistant director. Formal corporate title: **President**.
 | Auth & DB | **Supabase** (free tier) | Member login, admin approval workflow, blog/post storage |
 | Hosting | Netlify (free tier) | Free SSL, GitHub deploy, custom domain, Forms included |
 | Serverless Functions | Netlify Functions (free tier) | Drive proxy for Music Library; 125k calls/month free |
+| Edge Functions | Netlify Edge Functions | env var injection (inject-env.js); streaming file downloads (drive-music-download.js) |
 | Forms | Netlify Forms | No backend needed, free tier sufficient |
 | Music Library | Google Drive + Netlify Function | Service account proxy; see §5g for full rationale |
-| CMS (optional) | Decap CMS | Non-technical blog posting — Phase 3+ |
+| CMS (optional) | Decap CMS | Non-technical blog posting — Phase 3+ (unlikely to be implemented; member portal blog editor supersedes this) |
 | Repo | GitHub | Version control, Netlify CI/CD integration |
 | Email | Google Workspace for Nonprofits | ✅ Approved and active via Goodstack (2026-04-18) |
-| Domain | pdtsingers.org (already owned) | DNS to be pointed to Netlify at cutover |
+| Transactional Email | Resend (resend.com) | OTP codes + attendance notifications; noreply@pdtsingers.org; domain verified April 2026 |
+| Domain | pdtsingers.org (already owned) | ✅ pdtsingers.org live on Netlify — DNS cutover complete |
 
 **Monthly cost target:** Under $10/mo (likely free outside ~$12/yr domain renewal)
 
@@ -562,12 +563,12 @@ assistant director. Formal corporate title: **President**.
 - ✅ Tech Maintainer's Guide — updated for OTP, attendance, Edge Function streaming
 
 ### Phase 2 — Public Site Complete
-- [ ] Performances page (+ Netlify Form: booking inquiry)
-- [ ] Our Music page
-- [ ] Friends of PDT page
-- [ ] Contact page (+ Netlify Form)
-- [ ] Upload group photos
-- [ ] Finalize all public copy
+- ✅ Performances page (+ Netlify Form: booking inquiry)
+- ✅ Our Music page
+- ✅ Friends of PDT page
+- ✅ Contact page (+ Netlify Form)
+- ✅ Group photos available; photo carousel feature deferred (pdt-issues.md #014, #015)
+- ⬜ Finalize all public copy — placeholder content live; real copy TBD
 - [ ] SEO: meta tags, XML sitemap, Google Search Console
 
 ### Phase 3 — Polish & Launch
@@ -580,7 +581,7 @@ assistant director. Formal corporate title: **President**.
 ### Phase 4 — Post-Launch
 - ✅ Google Workspace for Nonprofits — approved and active via Goodstack (2026-04-18)
 - ✅ Migrate Music Library Drive share to Workspace Drive — complete April 2026
-- [ ] Social media accounts live → update Friends page links
+- ✅ Social media accounts live → Facebook page live April 2026
 - [ ] Onboard second site maintainer
 - [ ] Document update procedures
 
@@ -607,12 +608,11 @@ assistant director. Formal corporate title: **President**.
 - [ ] Desired email addresses (info@, director@, members@, etc.)?
 - [ ] Who is the second site maintainer (post-launch)?
 - [ ] Should member Blog allow comments, or read-only initially?
-- [ ] Duane Lundsten memorial — form/placement TBD (pending group discussion)
-- [ ] Grant's prioritized website landing page elements — input pending
-- [ ] Vectorized logo files — pending delivery from Mercedes Gibson via Dropbox
+- [ ] Duane Lundsten memorial — website placement TBD; memorial plaque approved and being procured
+- ✅ Vectorized logo files delivered by Mercedes Gibson April 2026
 - [ ] Attendance escalation pipeline (10-day nudges, 7-day auto-mark) — Issue #031, design pending
-- [ ] Admin attendance override (clipboard mark entry) — Issue #032, design pending
-- [ ] Director attendance report (voting breakdown) — Issue #033, design pending
+- ✅ Admin attendance override — DONE (pdt-issues.md #032, fixed 2026-04-25)
+- ✅ Director attendance report — DONE (pdt-issues.md #033, fixed 2026-04-25)
 - [ ] Groups.io for Friends of PDT — tabled; Google Workspace now active, can proceed when ready
 - [ ] Music Library local dev testing — Music folder must be temporarily set to
       "Anyone with link" for local API key calls to work; revert after testing

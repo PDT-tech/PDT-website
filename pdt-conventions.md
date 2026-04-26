@@ -174,6 +174,19 @@ Auto-publishing is **locked**. Pushes to GitHub do not auto-deploy.
 
 ---
 
+## Document Authority: Markdown vs. HTML
+
+For any document that exists in both `.md` and `.html` versions, **the markdown
+is the authoritative working document**. The HTML is a presentation-only version
+for human consumption.
+
+- Always modify the `.md` first
+- HTML versions are synced periodically (roughly weekly) — never the reverse
+- CC never edits an HTML doc as a primary target; changes flow `.md` → `.html`
+- This applies to `pdt-tech-maintainers-guide` and any future dual-format docs
+
+---
+
 ## Director Name
 
 The director's name is **Chris Gabel** — German spelling. Not "Gable". This appears

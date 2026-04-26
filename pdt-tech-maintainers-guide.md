@@ -376,7 +376,7 @@ Login codes (6-digit OTP) are sent via Resend (resend.com), wired into Supabase 
 
 **From address:** noreply@pdtsingers.org  
 **Resend domain:** pdtsingers.org — verified April 2026  
-**OTP expiry:** 24 hours (TODO: reduce to 15 minutes — set in Supabase → Authentication → Settings → OTP Expiry = 1440s)  
+**OTP expiry:** 15 minutes (set in Supabase → Authentication → Settings → OTP Expiry)  
 **Template:** Supabase dashboard → Authentication → Email Templates → Magic Link (code display template)
 
 **Login flow:**
@@ -523,4 +523,4 @@ Claude.ai (the chat interface used for all PDT website work) supports MCP connec
 
 *PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship & Fun*
 
-<!-- html-synced: needs update after maintainers guide HTML sync -->
+<!-- html-synced: 2026-04-26 — §10 OTP expiry TODO resolved -->

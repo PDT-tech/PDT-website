@@ -444,6 +444,21 @@ Three post-launch features are planned for the attendance system:
 
 ---
 
+## Retired / Suppressed Pages
+
+**Communications (members/comms.html)** — retired April 2026.
+Was a board announcement feed (blog_type='comms'). Removed because the
+existing Director's Notes and Poohbahs' Prattlings blogs serve the same
+purpose. If a general announcement channel is needed in future, restore
+this page and add a nav link. The posts table comms rows (if any) remain
+in the DB — no data was deleted.
+
+**Resources (members/resources.html)** — suppressed April 2026.
+Page exists but nav link removed. Content and purpose TBD. Re-add the nav
+link when the page has content worth surfacing.
+
+---
+
 ## 15. Claude.ai MCP Connectors
 
 Claude.ai (the chat interface used for all PDT website work) supports MCP connectors that give Claude direct access to external services — Google Drive, Gmail, Stripe, and others. The PDT project has evaluated the available connectors.

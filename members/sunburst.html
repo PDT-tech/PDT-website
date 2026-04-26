@@ -171,13 +171,35 @@
     })
   }
 
+  let _token = null
+  async function getToken () {
+    if (_token) return _token
+    const { data } = await supabase.auth.getSession()
+    _token = data.session?.access_token ?? ''
+    return _token
+  }
+
+  async function proxyIssue (fileId, filename, download) {
+    const res = await fetch(
+      `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
+      { headers: { Authorization: `Bearer ${await getToken()}` } }
+    )
+    if (!res.ok) {
+      alert(download ? 'Download failed — please try again.' : 'Could not open issue — please try again.')
+      return
+    }
+    const blobUrl = URL.createObjectURL(await res.blob())
+    const a       = document.createElement('a')
+    a.href        = blobUrl
+    if (download) { a.download = filename } else { a.target = '_blank'; a.rel = 'noopener' }
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+  }
+
   async function loadIssues () {
     try {
-      const { data } = await supabase.auth.getSession()
-      const token    = data.session?.access_token ?? ''
-
       const res = await fetch('/.netlify/functions/drive-music?action=sunburst-list', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${await getToken()}` }
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const issues = await res.json()
@@ -191,7 +213,6 @@
 
       const list = document.getElementById('sb-list')
       issues.forEach(issue => {
-        const url      = `/api/music-download?fileId=${encodeURIComponent(issue.id)}&filename=${encodeURIComponent(issue.title + '.pdf')}`
         const filename = issue.title + '.pdf'
         const li       = document.createElement('li')
         li.className   = 'sb-issue-row'
@@ -201,15 +222,21 @@
             ${issue.date ? `<span class="sb-issue-date">${escHtml(formatDate(issue.date))}</span>` : ''}
           </div>
           <div class="sb-issue-actions">
-            <button class="btn btn-primary sb-open-btn" data-url="${escHtml(url)}">Open</button>
-            <a class="btn btn-secondary" href="${escHtml(url)}" download="${escHtml(filename)}">Download</a>
+            <button class="btn btn-primary sb-open-btn"
+                    data-file-id="${escHtml(issue.id)}"
+                    data-filename="${escHtml(filename)}">Open</button>
+            <button class="btn btn-secondary sb-dl-btn"
+                    data-file-id="${escHtml(issue.id)}"
+                    data-filename="${escHtml(filename)}">Download</button>
           </div>`
         list.appendChild(li)
       })
 
-      list.addEventListener('click', e => {
-        const btn = e.target.closest('.sb-open-btn')
-        if (btn) window.open(btn.dataset.url, '_blank')
+      list.addEventListener('click', async e => {
+        const openBtn = e.target.closest('.sb-open-btn')
+        const dlBtn   = e.target.closest('.sb-dl-btn')
+        if (openBtn) await proxyIssue(openBtn.dataset.fileId, openBtn.dataset.filename, false)
+        if (dlBtn)   await proxyIssue(dlBtn.dataset.fileId, dlBtn.dataset.filename, true)
       })
 
       list.style.display = 'block'

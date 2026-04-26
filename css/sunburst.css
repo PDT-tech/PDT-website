@@ -1,0 +1,114 @@
+/* ============================================================
+   THE SUNBURST — Newsletter Design Tokens & Layout
+   Used by sunburst-issue-template.html (PDF production tool).
+   Not linked from any member portal pages.
+   ============================================================ */
+
+:root {
+  --sb-gold:      #c4a24a;
+  --sb-amber:     #e8a830;
+  --sb-highlight: #f2c060;
+  --sb-cream:     #f7f0e4;
+  --sb-ink:       #2a1f08;
+  --sb-muted:     #8a7050;
+}
+
+/* ── Masthead ────────────────────────────────────────────────── */
+
+.sb-masthead {
+  background:  var(--sb-cream);
+  border-top:  6px solid var(--sb-gold);
+  padding:     2rem 2.5rem 1.5rem;
+  display:     flex;
+  align-items: center;
+  gap:         1.5rem;
+}
+
+.sb-masthead-icon {
+  width:      72px;
+  height:     72px;
+  flex-shrink: 0;
+}
+
+.sb-masthead-text {
+  flex: 1;
+}
+
+.sb-title {
+  font-family:    'Playfair Display', Georgia, serif;
+  font-size:      2.8rem;
+  font-weight:    700;
+  color:          var(--sb-ink);
+  letter-spacing: -0.02em;
+  margin:         0;
+}
+
+.sb-tagline {
+  font-family:    'Source Sans 3', Arial, sans-serif;
+  font-size:      0.75rem;
+  letter-spacing: 0.18em;
+  color:          var(--sb-muted);
+  text-transform: uppercase;
+  margin:         0.25rem 0 0;
+}
+
+.sb-issue-line {
+  font-family:  'Source Serif 4', serif;
+  font-size:    0.95rem;
+  font-style:   italic;
+  color:        var(--sb-muted);
+  border-top:   1px solid var(--sb-gold);
+  padding-top:  0.6rem;
+  margin-top:   0.6rem;
+}
+
+/* ── Body ────────────────────────────────────────────────────── */
+
+.sb-body {
+  font-family: 'Source Serif 4', serif;
+  font-size:   1.05rem;
+  line-height: 1.75;
+  color:       var(--sb-ink);
+  max-width:   680px;
+  margin:      0 auto;
+  padding:     2rem 2.5rem;
+}
+
+.sb-body h2 {
+  font-family:    'Playfair Display', Georgia, serif;
+  font-size:      1.4rem;
+  color:          var(--sb-ink);
+  border-bottom:  1px solid var(--sb-amber);
+  padding-bottom: 0.3rem;
+  margin-top:     2rem;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+
+.sb-footer {
+  font-family: 'Source Sans 3', Arial, sans-serif;
+  font-size:   0.8rem;
+  color:       var(--sb-muted);
+  text-align:  center;
+  border-top:  1px solid var(--sb-gold);
+  padding:     1rem 2.5rem;
+  margin-top:  2rem;
+}
+
+/* ── Print ───────────────────────────────────────────────────── */
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust:         exact;
+  }
+
+  .sb-masthead {
+    border-top-width: 6px;
+  }
+
+  body {
+    margin:  0;
+    padding: 0;
+  }
+}

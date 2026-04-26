@@ -107,8 +107,8 @@
         </div>
         <div class="form-group form-check">
           <label class="form-check-label">
-            <input type="checkbox" id="post-published" checked>
-            Published (visible to all members)
+            <input type="checkbox" id="post-published">
+            Save as draft
           </label>
         </div>
         <div class="post-modal-actions">
@@ -211,7 +211,7 @@
     document.getElementById('post-title').value = post?.title || ''
     document.getElementById('post-excerpt').value = post?.excerpt || ''
     document.getElementById('post-body').value = post?.body || ''
-    document.getElementById('post-published').checked = post ? post.published : true
+    document.getElementById('post-published').checked = post ? !post.published : false
     document.getElementById("modal-overlay").classList.remove("modal-hidden")
   }
 
@@ -236,7 +236,7 @@
     const title     = document.getElementById('post-title').value.trim()
     const excerpt   = document.getElementById('post-excerpt').value.trim() || null
     const body      = document.getElementById('post-body').value.trim()
-    const published = document.getElementById('post-published').checked
+    const published = !document.getElementById('post-published').checked
     const payload   = { blog_type: BLOG_TYPE, title, excerpt, body, published,
                         author_id: window.__PDT_USER?.id }
 

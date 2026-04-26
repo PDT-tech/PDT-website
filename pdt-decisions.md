@@ -159,27 +159,6 @@ same pattern, different folder IDs).
 
 ---
 
-## 2026-04-18 — Music Library: streaming Edge Function replaces base64 serverless function
-
-**Question:** How do we serve large Drive files to authenticated members without a
-size ceiling or token exposure?
-
-**Decision:** Deno Edge Function (`netlify/edge-functions/drive-music-download.js`)
-as a terminal handler on `/api/music-download`. Streams `driveRes.body` directly
-to the browser — no buffering, no base64, no size ceiling. Service account token
-never leaves the function. Declared before `inject-env` in `netlify.toml` so
-inject-env never fires for download requests.
-
-**Rationale:** Base64 encoding in a serverless function hit Netlify's 6MB response
-ceiling immediately on first real use (6.5MB bass track). Google Drive has no
-signed URL equivalent to GCS — token-in-URL was the only serverless alternative,
-which is a security exposure (token in browser history, server logs, referrer
-headers, valid for ~1 hour). Edge Function streaming eliminates both problems.
-GCS migration (Option 4) remains the cleaner long-term architecture if Drive
-becomes a pain point.
-
----
-
 ## 2026-04-21 — Attendance page: two-cluster dropdown UI redesign
 
 **Question:** How should the "Can You Be There?" attendance page present upcoming

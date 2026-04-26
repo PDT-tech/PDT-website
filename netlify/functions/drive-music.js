@@ -139,8 +139,47 @@ export const handler = async (event) => {
   }
 
   const params   = event.queryStringParameters || {}
+  const action   = params.action
   const type     = params.type
   const folderId = params.folderId
+
+  // ── sunburst-list action ─────────────────────────────────────
+  if (action === 'sunburst-list') {
+    const sunburstFolderId = process.env.GOOGLE_DRIVE_SUNBURST_FOLDER_ID
+    if (!sunburstFolderId) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Sunburst folder not configured' }) }
+    }
+    try {
+      const token = await getAccessToken(serviceAccount)
+      const q   = `'${sunburstFolderId}' in parents and mimeType='application/pdf' and trashed=false`
+      const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name)&orderBy=name desc`
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      if (!res.ok) throw new Error(`Drive sunburst fetch failed: ${res.status}`)
+      const data  = await res.json()
+      const files = data.files || []
+      const parsed = files.map(f => {
+        const parts = f.name.split(' — ')
+        if (parts.length >= 2) {
+          return { id: f.id, date: parts[0], title: parts.slice(1).join(' — ').replace(/\.pdf$/i, '') }
+        }
+        return { id: f.id, date: null, title: f.name.replace(/\.pdf$/i, '') }
+      })
+      parsed.sort((a, b) => {
+        if (a.date === null && b.date === null) return 0
+        if (a.date === null) return 1
+        if (b.date === null) return -1
+        return b.date.localeCompare(a.date)
+      })
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, max-age=300' },
+        body: JSON.stringify(parsed)
+      }
+    } catch (err) {
+      console.error('drive-music sunburst-list error:', err)
+      return { statusCode: 500, body: JSON.stringify({ error: 'Drive API error', detail: err.message }) }
+    }
+  }
 
   if (!type || !['folders', 'files'].includes(type)) {
     return { statusCode: 400, body: JSON.stringify({ error: 'type must be folders or files' }) }

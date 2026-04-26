@@ -250,7 +250,7 @@ pdtsingers/                  ← repo root
 **Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
 **Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
 **Music folder ID:** `[REDACTED — see GOOGLE_DRIVE_MUSIC_FOLDER_ID in Netlify env vars]` (Workspace Drive, president@pdtsingers.org — updated Session 4)  
-**Sunburst folder ID:** `[REDACTED — see GOOGLE_DRIVE_SUNBURST_FOLDER_ID in Netlify env vars]` (Workspace Drive, president@pdtsingers.org)  
+**Sunburst folder ID:** `1MWi8I8-702dtX4BNKabApXpCggszIul_` (Workspace Drive, president@pdtsingers.org)  
 **GCP project:** `pdt-singers-music-library`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
@@ -355,7 +355,7 @@ pdtsingers/                  ← repo root
   - netlify/functions/drive-music.js extended with sunburst-list action
   - Google Drive Sunburst folder created, shared with service account
   - GOOGLE_DRIVE_SUNBURST_FOLDER_ID added to Netlify env vars and env.local.js
-  - Sunburst folder ID: [REDACTED — see GOOGLE_DRIVE_SUNBURST_FOLDER_ID in Netlify env vars]
+  - Sunburst folder ID: 1MWi8I8-702dtX4BNKabApXpCggszIul_
   - 401 fix: Open/Download buttons now use fetch→blob→synthetic anchor pattern (window.open and `<a download>` cannot carry Authorization headers to Edge Function)
   - pdt-conventions.md updated with "Authenticated File Downloads" section
   - pdt-decisions.md updated with Sunburst architecture decision

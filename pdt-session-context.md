@@ -1,558 +1,348 @@
 # PDT Singers Website — Session Context
 
-**Project:** PDT Singers website build  
-**Last updated:** 2026-04-25 (Session 14)  
-**Requirements doc:** `pdt-requirements.md`  
-**Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
+**Last updated:** 2026-04-26 (Session 15)
+**Requirements doc:** `pdt-requirements.md`
+**Decision log:** `pdt-decisions.md`
+**Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
+**Session history:** `pdt-session-history.md`
 
 ---
 
 ## How to Use This Document
 
-Paste the **Project Summary** section below into any new Claude session to resume
-work without re-explaining the project. Update the Session History and Open Questions
-sections at the end of each session.
+Paste the **Project Summary** section into any new Claude session to resume work
+without re-explaining the project. The rest of this doc is current-state reference.
+Session history has been moved to `pdt-session-history.md`.
 
 ---
 
 ## Project Summary ← paste this into any new session
 
 We are hand-coding a website for **Portland DayTime Singers (PDT Singers)**, a men's
-barbershop-style chorus in Portland, Oregon that performs free concerts for seniors in
-care facilities and recruits male singers. PDT Singers is **Lodge #18 of the Worldwide
-Barbershop Quartet Association (WBQA)**, co-founded by director **Chris Gabel** and
-**Kevin Bier** (Grand Poohbah). NOT affiliated with BHS — state clearly on About page.
+barbershop chorus in Portland, Oregon that performs sing-outs for seniors in care
+facilities and the community, and recruits male singers. PDT Singers is
+**Lodge #18 of the Worldwide Barbershop Quartet Association (WBQA)**, co-founded by
+director **Chris Gabel** and **Kevin Bier** (Grand Poohbah / president).
+NOT affiliated with BHS — state clearly on About page.
 
-**Domain:** pdtsingers.org (helpinghosting.com). Current placeholder at GreenGeeks to
-be retired at DNS cutover when new site launches.
+**Domain:** pdtsingers.org — live on Netlify. DNS cutover complete.
 
 **Tech stack:**
-- Hand-coded HTML5 / CSS3 / vanilla JS — no frameworks, no WordPress
-- Hosted on **Netlify** (free tier) — GitHub CI/CD deploy
-- Auth via **Supabase** (magic link via Resend SMTP, admin controls access via is_active flag, member content storage)
+- Hand-coded HTML5 / CSS3 / vanilla JS — no frameworks, no WordPress, no build step
+- Hosted on **Netlify** (free tier) — manual deploy only (auto-publish always locked)
+- Auth via **Supabase** — email → 6-digit OTP code via Resend SMTP; admin-created accounts
+  only (`shouldCreateUser: false`); `is_active` flag gates portal access
+- Database via **Supabase** — profiles, events, event_attendance, absences, posts tables
 - Forms via **Netlify Forms**
-- **Netlify Functions** (serverless) — Drive proxy for Music Library
-- Source control on **GitHub**: https://github.com/kevin36v/PDT-website
-- Email via **Google Workspace for Nonprofits** (TechSoup verification pending)
+- **Netlify Functions** — serverless Drive proxy for Music Library and Sunburst newsletter
+- **Netlify Edge Functions** — `inject-env.js` (env var injection), `drive-music-download.js`
+  (streaming file downloads)
+- Source control: **GitHub** — https://github.com/kevin36v/PDT-website
+- Email (transactional): **Resend** (resend.com) — noreply@pdtsingers.org
+- Email (group): **Google Workspace for Nonprofits** — president@pdtsingers.org (active)
+- Music files: **Google Workspace Drive** — president@pdtsingers.org, served via service
+  account proxy
+- GCP project: `pdt-singers-music-library` — service account for Drive proxy
 
-**Owner/maintainer:** Kevin Bier — experienced software/product exec (C++, 25+ yrs
-product leadership at HP/Microsoft/Nike), light on DB and web coding, fully capable of
-technical lifting with guidance.
+**Owner/maintainer:** Kevin Bier (president@pdtsingers.org) — experienced software/product
+exec (C++, 25+ yrs product leadership at HP/Microsoft/Nike). Talk architecture and
+tradeoffs, not basics.
 
-**Design:** Palette from PDT logo watercolor wash (sky blues + cream + forest dark +
-gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
-first-person plural. Tagline: "Music, Fellowship & Fun."
+**Design:** Palette from PDT logo watercolor wash (sky blues + cream + forest dark + gold).
+Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused, first-person plural.
+Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 2 active — all public pages live, member portal fully operational. comms.html retired. OTP login live.
+**Terminology:** They do **sing-outs**, not concerts. Director is **Chris Gabel** (German
+spelling — not "Gable"). Moss Egli (Social Media Manager) uses she/her pronouns.
 
----
+**Key people:**
+- Kevin Bier — Grand Poohbah, co-founder, tech maintainer, admin role
+- Chris Gabel — Musical Director, co-founder, musical_director role
+- Moss Egli — Social Media Manager, events_editor role, onboarded April 2026
+- Ray Heller — High Council, produces The Sunburst newsletter
+- Sam Vigil — handles recruiting outreach
+- Grant Gibson — Secretary-Treasurer
 
-## Phases & Milestones
-
-### Phase 0 — Foundation ✅ Complete
-- [x] Define goals, audience, site structure
-- [x] Choose tech stack
-- [x] Create pdt-requirements.md and pdt-session-context.md
-- [x] Review and incorporate PDT_Singers_Site_Brief.md
-- [x] Review WBQA website (sppbsqsus.org)
-- [x] Review homepage comp (PDT_Singers_Homepage_Comp.html)
-- [x] Resolve director name spelling (Chris Gabel ✓)
-- [x] Confirm all logos in hand
-- [x] Get GitHub repo URL — https://github.com/kevin36v/PDT-website
-
-### Phase 1 — Foundation / Scaffolding (current)
-- [x] Kevin creates GitHub repo
-- [x] Scaffold full file/folder structure in repo
-- [x] Set up Netlify project, connect to GitHub repo
-- [x] Configure custom domain (pdtsingers.org → Netlify) ✅ DNS cutover complete
-- [x] GreenGeeks decommission — Trevor notified ✅
-- [x] Create base HTML template (head, nav, footer, meta)
-- [x] Create base CSS (variables, reset, typography, layout)
-- [x] Deploy skeleton site — placeholder live and looking great ✅
-- [x] Apply for Google Workspace for Nonprofits — TechSoup registered (4139-GERS-YP8U), awaiting verification
-- [x] Set up Supabase project (Americas region) ✅
-- [x] Deploy DB schema: profiles, events, absences + RLS policies ✅
-- [x] Auto-profile trigger on auth.users insert ✅
-- [x] Netlify env vars: SUPABASE_URL, SUPABASE_ANON_KEY ✅
-- [x] Write pdt-calendar-spec.md ✅
-- [x] Build member auth flow (login page, Supabase JS client, auth-guard) ✅
-- [x] Build member dashboard (members/index.html) ✅
-- [x] Build Director's Notes blog (members/directors-notes.html) ✅
-- [x] Build Grand Poohbah's Prattlings blog (members/poohbah.html) ✅
-- [x] Build Events blog (members/events.html) ✅
-- [x] Build blog CSS (css/blog.css) ✅
-- [x] posts table + RLS policies deployed to Supabase ✅
-- [x] Switch auth from magic link to email + password ✅
-- [x] Music Fairy test account — full CRUD on events blog verified ✅
-- [x] env.local.js local dev solution — Supabase creds injected locally, gitignored ✅
-- [x] Netlify auto-publish disabled — manual deploy only, credits preserved ✅
-- [x] Build member calendar (members/calendar.html) ✅
-- [x] Build Music Library (members/music.html) ✅
-- [x] Build The Sunburst newsletter page (members/sunburst.html) — Drive-backed PDF listing ✅
-- [x] Build Drive proxy Netlify Function (netlify/functions/drive-music.js) ✅
-- [x] Update inject-env.js with Google Drive env vars ✅
-- [x] Set up Google Drive + service account for Music Library ✅
-- [x] Fix nav logo oversized on music.html — added `.nav-logo img` height constraint to main.css ✅
-- [ ] Fix env.local.js console error in production (nosniff header blocking onerror suppression)
-- [x] Build Communications page (members/comms.html) ✅
-- [ ] Build Home page (copy updates pending from group)
-- [x] Build About Us page (placeholder) ✅
-- [x] Build Join Us page (placeholder) ✅
-
-### Phase 2 — Public Site Complete
-- [x] Build Performances page — placeholder live ✅
-- [x] Build Our Music page — placeholder live ✅
-- [x] Build Friends of PDT page — placeholder live ✅
-- [x] Build Contact page — placeholder live ✅
-- [ ] Upload group photos
-- [ ] Finalize all public copy
-- [ ] SEO: meta tags, XML sitemap, Google Search Console
-
-### Phase 3 — Polish & Launch
-- [ ] Mobile responsiveness audit
-- [ ] Cross-browser testing
-- [ ] Final content review
-- [ ] Populate Drive Music folders with files from Dropbox
-- [x] DNS cutover: pdtsingers.org → Netlify ✅ Complete
-- [x] GreenGeeks retired — Trevor notified ✅
-
-### Phase 4 — Post-Launch
-- [ ] Google Workspace for Nonprofits activation — TechSoup verification pending (4139-GERS-YP8U)
-- [ ] Migrate Music Library Drive share to Workspace Drive (no code changes needed)
-- [ ] Social media accounts live → update Friends page links
-- [ ] Onboard second site maintainer
-- [ ] Document update procedures (blog post, add member, update schedule)
-- [ ] Accessibility audit (WCAG AA)
-- [ ] Update TechSoup account email to @pdtsingers.org once Google Workspace is live
-- [x] **Onboard Moss Egli as Social Media Manager** — ✅ Complete. Supabase account created, events_editor role assigned.
-- [ ] **Cross-posting feature**: post PDT events/announcements to Facebook Events and newsletters from website — requirements TBD with Moss
-- [ ] **members/whats-new.html** — simple static changelog page for members; hand-maintained; lists website functionality changes (not content)
-- [x] Notify deceased member's son to deactivate old site ✅ Complete
+**Claude Code (CC) workflow:** CC has full live repo context. Default to CC prompts for
+all repo changes. claude.ai produces new files that don't yet exist; everything else is
+a CC prompt. Always commit AND push to origin after changes. Netlify auto-publish is
+always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
 ---
 
-## Key Decisions Log
+## Current State (as of 2026-04-26)
 
-Decisions have been migrated to **`pdt-decisions.md`** (repo root, also in Project Memory). That file is the authoritative record with full rationale. CC never modifies it. Update it in chat and re-upload to Project Memory when new decisions are made.
+### Phase 1 — Member Portal ✅ Complete
+All member portal features are live and functional:
+- Login (OTP email code, 10-minute expiry, 60-second cooldown on resend)
+- Member dashboard with role-based card display
+- Director's Notes blog (musical_director + admin)
+- Poohbahs' Prattlings blog (admin only)
+- Events blog (events_editor + admin) — with calendar → blog prompts for new/cancelled events
+- The Sunburst newsletter (Drive-backed PDF listing, admin posting, gold accent)
+- Chorus calendar with full event CRUD, absence tracking, cancellation flow
+- "Can You Be There?" attendance page — two-cluster dropdown UI (sing-outs left, rehearsals right)
+- Admin attendance override page
+- Sing-out attendance census report (admin/director)
+- Music Library (Drive-backed, accordion UI, voice-part sorting, streaming downloads)
+- Member account management (admin-created accounts only)
+
+### Phase 2 — Public Site ✅ Complete
+All public pages live:
+- index.html (Home — hero, chorus identity, CTAs)
+- about.html
+- performances.html (with Netlify booking inquiry form)
+- join.html
+- music.html
+- friends.html (with live Facebook page link)
+- contact.html
+- 404.html
+
+### Ops & Infrastructure ✅ Complete
+- Google Workspace for Nonprofits — approved and active (via Goodstack, April 2026)
+- Music Library Drive folders populated from Dropbox — Dropbox retired
+- Moss Egli onboarded — Supabase account, events_editor role, Facebook group setup
+- Resend transactional email — domain verified, OTP delivery confirmed working
+- Facebook page live
+- Lodge #18 permanent status confirmed
+- 501(c)(3) confirmed — IRS letter in hand
+- Vector logo files received from Mercedes Gibson
+- README.md fully rewritten (Issue #052)
+- pdt-issues.md, pdt-decisions.md, pdt-conventions.md, CLAUDE.md all in repo
+- Duane Lundsten memorial plaque approved
+
+### Open Items
+Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
+
+| # | Item |
+|---|------|
+| 014 | Main page: animated photo carousel (reconcile with #015 first) |
+| 015 | Photo upload, gallery, and animated carousel — full feature (see `pdt-photo-feature.md`) |
+| 048 | Member portal: slow first load after project idle (Supabase cold-start) — low priority |
+
+**Deferred (not abandoned):**
+- `members/whats-new.html` — member-facing changelog, hand-maintained, no DB
+- `env.local.js` console error in production (nosniff header) — benign, tracked
+
+**Standing backlog:**
+- Add second admin account owner to all services (Netlify, Supabase, GitHub, GCP, GWS, Resend, Helping Hosting, Goodstack) — Grant Gibson is the natural candidate
+- Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
+- Admin attendance override (#032) — ✅ complete (Session 13)
+- Sing-out attendance census report (#033) — ✅ complete (Session 14/15)
+- SEO: meta tags, XML sitemap, Google Search Console
+- Mobile responsiveness audit (WCAG AA)
+- Public page content polish — real copy, real photos
+- The Sunburst: public-facing version under Friends page (not yet started)
+- Vacation block feature — member self-service away window (design discussion needed)
+- Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
+- Moss Egli bio/blurb on About Us page
 
 ---
 
-## Document Reconciliation (Sunday evenings)
+## Document Consistency Note (2026-04-26)
 
-Living docs (.md files) are updated throughout the week by CC. The .html versions
-are reconciled once per week — Sunday evenings only.
+A cross-document consistency audit was performed in Session 15. All four operating docs —
+`pdt-session-context.md`, `pdt-decisions.md`, `pdt-conventions.md`, and
+`pdt-tech-maintainers-guide.md` — were reviewed and brought into alignment. The session
+context doc was split into this file (current state) and `pdt-session-history.md` (archive).
+The HTML version of the maintainers guide was also synced with its markdown.
 
-**Workflow for the Sunday reconciliation chat:**
-1. Ask CC to `cat pdt-tech-maintainers-guide.md`
-2. Find all lines matching `<!-- html-synced: ... -->`
-3. Any .md change made AFTER the most recent `html-synced` marker is the delta
-   to carry into the .html
-4. After reconciling, CC adds a new `<!-- html-synced: YYYY-MM-DD -->` marker
-   and commits both files
-
-**Scope:** Currently applies to `pdt-tech-maintainers-guide` only. If other .md/.html
-pairs are added, list them here.
+**Standing rule:** The markdown is always the authoritative working document. HTML versions
+(if any) are presentation-only and updated periodically (roughly weekly). Never modify an
+HTML version as the primary edit target.
 
 ---
 
-## Open Questions
-
-- [x] Domain: pdtsingers.org at helpinghosting.com; GreenGeeks placeholder to be retired
-- [x] Director name: **Chris Gabel** (German spelling — "Gable" was the typo)
-- [x] Voice parts: TTBB barbershop chorus
-- [x] Logos: raster versions in hand; vectorized + "words only" pending (Mercedes Gibson → Grant → Kevin)
-- [x] Rehearsal details confirmed
-- [x] Charter: Lodge #18, WBQA Convention 2026, San Antonio TX (reissue pending)
-- [x] Group photos: available
-- [x] Social media: website first; Facebook deferred
-- [x] Tagline: "Music, Fellowship & Fun"
-- [x] Performance fee: $150 standard; free for mission-aligned
-- [x] **GitHub repo: https://github.com/kevin36v/PDT-website**
-- [x] IRS 501(c)(3) letter: **in hand** — Google Workspace now unblocked
-- [x] Music Library architecture: Netlify Function + service account (see requirements §5g)
-- [x] Lodge phone: decoupled — Kevin has iPhone 11 + Mint Mobile, proceed independently
-- [x] **Moss Egli onboarding** — ✅ Moss Egli onboarded — Supabase account created, events_editor role assigned, Facebook group setup complete
-- [ ] **Cross-posting requirements** — Moss to drive; Facebook Events + newsletter integration
-- [ ] **members/whats-new.html** — post-launch changelog page for members
-- [ ] Desired email addresses?
-- [ ] Second site maintainer?
-- [ ] Member Blog: comments or read-only?
-- [ ] Duane Lundsten memorial form/placement (group discussion pending)
-- [ ] Vectorized logo files (pending from Mercedes Gibson)
-- [x] Groups.io for Friends of PDT — tabled; deferred to post-launch
-- [ ] Music Library local dev testing — temporarily set Music folder to "Anyone with link",
-      test, then revert. Don't forget to revert.
-
----
-
-## File/Folder Structure (planned)
+## Architecture Summary
 
 ```
-pdtsingers/                  ← repo root
-├── index.html               ← Home
+Browser
+  └── pdtsingers.org (Netlify CDN)
+        ├── Static HTML/CSS/JS files (GitHub repo)
+        ├── inject-env.js (Netlify Edge Function)
+        │     └── Injects SUPABASE_URL, SUPABASE_ANON_KEY, DRIVE credentials into window.__PDT_ENV
+        ├── drive-music.js (Netlify Function)
+        │     └── Authenticates to Google Drive via service account JWT
+        │     └── Returns song listings (music-list) and Sunburst PDF listings (sunburst-list)
+        ├── drive-music-download.js (Netlify Edge Function — /api/music-download)
+        │     └── Streams Drive file content directly to browser
+        │     └── No buffering, no size ceiling; service account token never leaves function
+        └── Netlify Forms (public form submissions)
+
+Authentication:  Supabase (email → 6-digit OTP via Resend SMTP; shouldCreateUser: false)
+Database:        Supabase (profiles, events, event_attendance, absences, posts tables)
+Edge Functions:  Supabase
+  ├── generate-rehearsals — weekly cron; creates Monday rehearsals 12 weeks out
+  ├── notify-attendance-change — database trigger; fires on event_attendance upsert
+  └── send-attendance-emails — nightly cron; 10-day nudge emails (deferred, Issue #031)
+Music files:     Google Workspace Drive (president@pdtsingers.org)
+  └── Music/ folder — song subfolders with PDF + MP3 tracks
+  └── Sunburst/ folder — PDF issues named YYYY-MM-DD — Title.pdf
+Email (transactional): Resend — OTP codes + attendance notifications
+Email (group):   Google Workspace Gmail + Groups
+Domain:          pdtsingers.org at Helping Hosting → Netlify DNS
+GCP project:     pdt-singers-music-library
+Service account: pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com
+```
+
+---
+
+## Netlify Environment Variables (6 set)
+
+| Key | What it is |
+|-----|-----------|
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase publishable anon key |
+| `GOOGLE_DRIVE_API_KEY` | Drive API key (local dev direct calls only) |
+| `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | ID of the Music folder in Workspace Drive |
+| `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Workspace Drive |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (secret); used by Netlify Function |
+
+Supabase Edge Function secrets (separate system — set in Supabase dashboard):
+
+| Key | What it is |
+|-----|-----------|
+| `RESEND_API_KEY` | Resend API key for attendance notification emails |
+| `SITE_URL` | `https://pdtsingers.org` — used in email deep-links |
+
+---
+
+## File / Folder Structure (current)
+
+```
+PDT-website/                      ← repo root
+├── index.html                    ← Home (public)
 ├── about.html
-├── music.html
-├── performances.html
+├── performances.html             ← Includes Netlify booking inquiry form
 ├── join.html
+├── music.html                    ← "Our Music" public page
 ├── friends.html
 ├── contact.html
-├── login.html
 ├── 404.html
+├── login.html                    ← OTP login; USE_MAGIC_LINKS = false flag
 ├── members/
-│   ├── index.html              ← Member dashboard (Supabase-gated)
-│   ├── directors-notes.html    ← Blog — Chris Gabel
-│   ├── poohbah.html            ← Blog — Kevin Bier ("Prattling from the Grand Poohbah")
-│   ├── events.html             ← Events blog (performances, sing-outs, socials)
-│   ├── comms.html              ← Communications / announcements
-│   ├── calendar.html           ← Chorus calendar + absence tracking
-│   ├── music.html              ← Music Library (Drive proxy via Netlify Function)
-│   └── resources.html          ← Additional resources
+│   ├── index.html                ← Member dashboard
+│   ├── directors-notes.html      ← Blog — Chris Gabel
+│   ├── poohbah.html              ← Blog — Kevin Bier (Poohbahs' Prattlings)
+│   ├── events.html               ← Events blog (performances, sing-outs, socials)
+│   ├── sunburst.html             ← The Sunburst newsletter (Drive-backed PDF listing)
+│   ├── calendar.html             ← Chorus calendar + event CRUD + absence tracking
+│   ├── music.html                ← Music Library (Drive proxy, streaming downloads)
+│   ├── attendance.html           ← "Can You Be There?" member self-service
+│   ├── admin-attendance.html     ← Admin override + sing-out census report
+│   ├── resources.html            ← Suppressed from nav (file retained, content TBD)
+│   └── js/
+│       └── attendance.js         ← Attendance page logic (shared by attendance + admin pages)
 ├── netlify/
 │   ├── edge-functions/
-│   │   └── inject-env.js       ← Injects all env vars into HTML at runtime
+│   │   ├── inject-env.js         ← Injects all env vars into window.__PDT_ENV at runtime
+│   │   └── drive-music-download.js ← Streams Drive files to browser (/api/music-download)
 │   └── functions/
-│       └── drive-music.js      ← Drive proxy: authenticates via service account
+│       └── drive-music.js        ← Drive proxy: listings for Music Library + Sunburst
+├── supabase/
+│   └── functions/
+│       ├── generate-rehearsals/  ← Weekly cron — creates Monday rehearsals 12 weeks out
+│       ├── notify-attendance-change/ ← DB trigger — emails on attendance upsert
+│       └── send-attendance-emails/   ← Nightly cron — nudge emails (deferred #031)
 ├── css/
 │   ├── reset.css
-│   ├── variables.css
-│   └── main.css
+│   ├── variables.css             ← Design tokens (palette, type, spacing)
+│   ├── main.css                  ← Public site styles
+│   ├── members.css               ← Member portal nav + layout
+│   ├── blog.css                  ← Blog page styles (shared by all five blogs)
+│   ├── calendar.css              ← Calendar page styles
+│   ├── attendance.css            ← Attendance page styles
+│   └── sunburst.css              ← Sunburst newsletter styles (warm palette tokens)
 ├── js/
-│   ├── supabase.js
-│   ├── members.js
-│   └── main.js
+│   ├── supabase.js               ← Supabase client + auth helpers
+│   ├── nav.js                    ← Public nav hamburger behavior
+│   └── main.js                   ← Public page scripts
 ├── assets/
 │   └── images/
 │       ├── PDT_logo_bw.png
 │       ├── PDT_logo_color_1.jpeg
 │       ├── PDT_logo_color_2.jpeg
 │       └── WBQA_logo.png
-├── netlify.toml
-├── env.local.js              ← gitignored; local dev credentials
-├── pdt-singers-music-library-*.json  ← gitignored; service account key
-└── README.md
+├── sunburst-issue-template.html  ← Standalone print-to-PDF tool for Sunburst production
+├── netlify.toml                  ← Netlify config (edge function order matters)
+├── CLAUDE.md                     ← CC standing instructions (conventions, issue tracking)
+├── pdt-issues.md                 ← Issue tracker (CC-owned, never manually edited)
+├── pdt-decisions.md              ← Architecture/design decision log (Kevin + claude.ai)
+├── pdt-conventions.md            ← Coding conventions (CC reads at session start)
+├── pdt-requirements.md           ← Full project requirements
+├── pdt-session-context.md        ← This file (current state; uploaded to Project Memory)
+├── pdt-session-history.md        ← Session log archive (Sessions 1–14)
+├── pdt-tech-maintainers-guide.md ← Human-readable tech reference (markdown authoritative)
+├── pdt-tech-maintainers-guide.html ← Presentation version of maintainers guide
+├── investigate-before-you-design.md ← Pattern doc for pre-implementation investigations
+├── README.md                     ← Repo onboarding (stack, local dev, deploy, structure)
+├── env.local.js                  ← gitignored — local dev credentials (never commit)
+└── pdt-singers-music-library-*.json ← gitignored — service account key
 ```
 
 ---
 
 ## Key Reference Data
 
-**Rehearsals:** Mondays 10:30am–12:30pm  
-**Location:** 13420 SW Butner Rd, Beaverton OR 97005 (Westside United Methodist / Westside Journey UMC)  
-**Voice placement:** Sing Happy Birthday in comfortable range — not an audition  
-**First performance:** February 2026 at The Social Kitchen, Vancouver WA (2/6/2026)  
-**Performance fee:** $150 standard 40-min performance; free for philanthropic/mission/recruitment  
-**Current repertoire:** 8 songs (God Bless America just added); 3 additional rehearsal-only songs in Drive  
-**WBQA:** sppbsqsus.org / facebook.com/WBQA.Sings  
-**Charter:** Lodge #18, WBQA Annual Convention, San Antonio TX, March 14, 2026  
-**GitHub repo:** https://github.com/kevin36v/PDT-website  
-**Netlify project:** astonishing-douhua-7cfbb7.netlify.app  
-**pdtsingers.org:** ✅ Live on Netlify — DNS cutover complete  
-**Financials:** Banking at OnPoint Credit Union; $565 raised to date; 501(c)(3) confirmed  
-**Sheet music:** Kevin's Google Drive `.PDT/Music/` — served via Netlify Function + service account  
-**Music folder ID:** `[REDACTED — see GOOGLE_DRIVE_MUSIC_FOLDER_ID in Netlify env vars]` (Workspace Drive, president@pdtsingers.org — updated Session 4)  
-**Sunburst folder ID:** `1MWi8I8-702dtX4BNKabApXpCggszIul_` (Workspace Drive, president@pdtsingers.org)  
-**GCP project:** `pdt-singers-music-library`  
-**Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
-**Service account key:** gitignored JSON file in repo root; also stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify  
-**Lodge phone:** TBD — Kevin has iPhone 11 to donate; Mint Mobile ~$180/yr; decoupled from website  
-**TechSoup:** ✅ Registered — Association code **4139-GERS-YP8U** — awaiting verification  
-⚠️ **Reminder: Update TechSoup account email to @pdtsingers.org once Google Workspace is live**
-
----
-
-## Netlify Environment Variables (all 5 set)
-
-| Key | What it is |
-|-----|-----------|
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_ANON_KEY` | Supabase publishable anon key |
-| `GOOGLE_DRIVE_API_KEY` | Drive API key (used for local dev direct calls) |
-| `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | ID of the Music folder in Drive |
-| `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (secret); used by Netlify Function in production |
-
----
-
-## Key Learnings & Principles
-
-- **Newsletter / one-pager pipeline:** Create as HTML using PDT design tokens. Kevin opens in Chromium, Cmd+P → Save as PDF, Margins: None, Background graphics checked. No sandbox PDF rendering — wkhtmltopdf and LibreOffice both mangle CSS grid and gradients.
-- **Netlify auto-publish is permanently locked.** Kevin always manually publishes. Never remind him to lock it — it is never unlocked.
+| Item | Value |
+|------|-------|
+| Rehearsals | Mondays 10:30am–12:30pm |
+| Location | 13420 SW Butner Rd, Beaverton OR 97005 (Westside Journey UMC) |
+| Voice placement | Sing Happy Birthday in comfortable range — not an audition |
+| Performance fee | $150 standard 40-min; free for philanthropic/mission/recruitment |
+| WBQA | sppbsqsus.org / facebook.com/WBQA.Sings |
+| Charter | Lodge #18, WBQA Annual Convention, San Antonio TX, March 14, 2026 |
+| GitHub | https://github.com/kevin36v/PDT-website |
+| Netlify project | astonishing-douhua-7cfbb7.netlify.app |
+| Live site | pdtsingers.org ✅ |
+| Supabase project | Americas region |
+| GCP project | pdt-singers-music-library |
+| Service account | pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com |
+| Goodstack (GWS) | ✅ Approved and active — TechSoup association code 4139-GERS-YP8U |
+| 501(c)(3) | ✅ Confirmed — IRS letter in hand |
+| Banking | OnPoint Credit Union |
+| Facebook | ✅ PDT Singers page live |
 
 ---
 
 ## Notes & Gotchas
 
-- PDT Singers is **NOT BHS** — must be stated on About page; some visitors will assume BHS affiliation
-- **Three member blogs**: Director's Notes (musical_director + admin), Prattling from the Grand Poohbah (admin only), Events blog (events_editor + admin)
-- **Roles**: admin (Kevin), musical_director (Chris), events_editor (social media mgr/Wives Auxiliary/etc.), calendar_manager, member
-- **Music Library**: Drive is source of truth — no Supabase songs table. Production calls Netlify Function which uses service account JWT auth. Local dev calls Drive API directly with API key (requires Music folder temporarily set to "Anyone with link" — don't forget to revert).
-- **Service account key security**: original key was exposed in chat during Session 3 and immediately rotated. New key is in repo root (gitignored) and in Netlify env vars.
-- **inject-env.js**: now injects all 4 PDT env vars (Supabase + Drive). Edge function is safe to commit — no hardcoded values.
-- Duane Lundsten (Poohbah of Complex Stuff) passed March 2026 — memorial placeholder in design; no action before Phase 1
-- WBQA lodge list page is nearly empty — no central directory driving traffic to lodge sites; PDT SEO work is important
-- Supabase free tier is generous but has a 1-week inactivity pause policy — member activity should prevent this
-- Netlify Forms free tier: 100 submissions/month — more than sufficient for this site
-- Netlify Functions free tier: 125k invocations/month — Music Library uses ~30/day max
-- Google Workspace nonprofit application takes 2–4 weeks via TechSoup after IRS letter in hand
-- Director's name is **Gabel** (German spelling) — confirmed by Kevin. Earlier comp had "Gable" which was the typo.
-- **Local dev**: `cd ~/PDT-website && python3 -m http.server 8080` — keep browser dev tools open with cache disabled
-- **env.local.js**: gitignored local file that sets window.__PDT_ENV with all 4 credentials. Must be present in repo root for local dev. Never commit.
-- **Role visibility pattern**: use `applyRoleVisibility()` checking `window.__PDT_USER` directly, falling back to `pdt:profile-loaded` event — direct event listener alone has a timing race condition
-- **Supabase posts RLS policies**: insert/update/delete are role+blog_type scoped; select has two policies — `posts_select_authenticated` (published only, all members) + `posts_select_admin` (all posts, admin only) + `posts_select_author` (own posts, any role)
-- **pdtsingers.music@gmail.com**: created as staging account but not used — Music files live in Workspace Drive. May dispose of this account.
-
----
-
-## Session History
-
----
-
-## Current State
-
-*Last updated: Session 11 — 2026-04-24*
-
-- ✅ All Phase 1 member portal work complete
-- ✅ All public pages live with placeholder/real content
-- ✅ OTP login live — magic link code preserved behind USE_MAGIC_LINKS = false flag
-- ✅ Member accounts seeded (April 16)
-- ✅ Issue tracker migrated to `pdt-issues.md` (CC-owned); §13 removed from requirements
-- ✅ `CLAUDE.md` added — CC standing instructions for issue tracking and conventions
-- ✅ `pdt-decisions.md` added — architecture/design decision log, in Project Memory
-- ✅ Music Library fully operational — Workspace Drive (president@pdtsingers.org), Dropbox retired
-- ✅ Google Workspace for Nonprofits approved and active (Goodstack, 2026-04-18)
-- ✅ The Sunburst newsletter blog live in member portal
-- ✅ pdt-decisions.md and pdt-tech-maintainers-guide.md current as of Session 11
-- ✅ Vector logo files received from Mercedes Gibson
-- ✅ OTP login cooldown implemented — 60s countdown on Send button; startCooldown()/clearCooldown() helpers added to login.html (Issue 042 closed)
-- ✅ Password auth confirmed effectively disabled — no discrete Supabase toggle exists; signInWithPassword is dead code behind USE_MAGIC_LINKS flag
-
----
-
-## On the Horizon
-
-- ✅ FWI-B (Issue 032): Admin attendance override — complete (Session 13)
-- **FWI-C (Issue 033) — next**: Sing-out attendance census report UI on admin-attendance.html; as-built investigation done in Session 13; implementation prompt ready to generate
-- **The Sunburst** (Ray Heller's newsletter) — draft HTML delivered, awaiting Ray's feedback before finalizing PDF
-- Photo carousel and gallery feature (`pdt-photo-feature.md`) — next major work item; open questions not yet walked through
-- Music Library streaming via Edge Function — monitor for files approaching 6MB after base64 expansion (~4.5MB raw)
-- Vector logo files from Mercedes Gibson
-- Public page content polish (real copy, real photos)
-- SEO: meta tags, XML sitemap, Google Search Console
-- ✅ Issue #053 closed — event_id column wired (posts table, events.html submit handler)
-- Calendar → Events blog automation: cancellation notice for cancelled events (Issue 046)
-- The Sunburst: public-facing version under Friends page (not yet started)
-- **Vacation block feature** — design discussion needed before implementation; member self-service away window that auto-marks attendance for covered events
-- **The Sunburst PDF workflow** — design needed; members/sunburst.html currently has a text editor modal only; need PDF upload/display via Drive proxy
-
----
-
-## Session History
-
-### Session 5 — 2026-04-25
-- ✅ Sunburst newsletter feature complete and live
-  - members/sunburst.html rewritten as Drive-backed PDF issue listing
-  - css/sunburst.css created — warm palette tokens (--sb-gold, --sb-amber, --sb-highlight, --sb-cream, --sb-ink, --sb-muted) and layout classes
-  - sunburst-issue-template.html created — standalone print-to-PDF production tool for newsletter issues
-  - netlify/functions/drive-music.js extended with sunburst-list action
-  - Google Drive Sunburst folder created, shared with service account
-  - GOOGLE_DRIVE_SUNBURST_FOLDER_ID added to Netlify env vars and env.local.js
-  - Sunburst folder ID: 1MWi8I8-702dtX4BNKabApXpCggszIul_
-  - 401 fix: Open/Download buttons now use fetch→blob→synthetic anchor pattern (window.open and `<a download>` cannot carry Authorization headers to Edge Function)
-  - pdt-conventions.md updated with "Authenticated File Downloads" section
-  - pdt-decisions.md updated with Sunburst architecture decision
-
-### Session 14 — 2026-04-25
-
-- ✅ Issue 057: posts_blog_type_check constraint fixed — directors_notes (underscore) was being rejected; constraint only had directors-notes (hyphen). Dropped and recreated with correct values: directors_notes, poohbah, events, sunburst. Chris Gabel now unblocked for Director's Notes posts.
-- ✅ New Event form: "On stage" label → "On-stage at"; both perf-time fields aligned; time validation on blur (not on Save); browser native tooltip suppressed.
-- ✅ Blog post modals: published/draft checkbox inverted — default is now published; checkbox now reads "Save as draft". All five blog files updated.
-- ✅ "Poohbah's Prattlings" → "Poohbahs' Prattlings" (plural possessive) across all 11 member pages and all occurrences in HTML.
-- ✅ members/comms.html retired and deleted. Nav link removed from all member pages. Communications removed from Quick Links. "New Announcement" removed from Admin panel. Documented in pdt-tech-maintainers-guide.md under new "Retired / Suppressed Pages" section.
-- ✅ members/resources.html suppressed from nav (file retained). Documented in maintainers guide.
-- ✅ Member Home dashboard card order: Next Rehearsal → Upcoming Events → Quick Links → Director's Notes → Poohbahs → Admin.
-- ✅ Quick Links updated: Events, Calendar, Director's Notes, Music Library, Poohbahs' Prattlings (5 items; Communications removed).
-- ✅ Public nav brand label: "Portland DayTime Singers" → "PDT Singers" on all 7 public pages.
-- ✅ Public nav hamburger breakpoint raised 768px → 900px — prevents label stacking before hamburger activates.
-- ✅ Member nav hamburger: dark mode contrast fixed (rgba(255,255,255,0.9) !important); dropdown clipped-to-one-item bug fixed (height: auto; overflow: visible in 1100px media query — overflow-x:auto was coercing overflow-y:auto and clipping the dropdown to nav bar height).
-- ✅ Music page "13 SONGS" count: left margin fixed — .music-content > .container rule added mirroring .music-header > .container.
-- ✅ Join Us page: copy updated — teaching tracks parenthetical added, "when" → "whenever", "we go" → "many of us go".
-
-### Session 13 — 2026-04-25
-
-- ✅ Issue 032 (FWI-B): Admin attendance override — complete.
-  admin-attendance.html: override form added (admin-only, sing-outs only).
-  admin-attendance.js: member + event dropdowns, three-way status radio, reason
-  textarea, upsert to event_attendance, fire-and-forget notify-attendance-change
-  with admin_override: true + member_id.
-  Migration: 20260425120000_event_attendance_admin_insert.sql — attendance_insert_admin
-  policy on event_attendance.
-  Edge Function: notify-attendance-change extended — admin_override flag splits changes
-  into adminChanges (director email only, member name noted) vs regularChanges
-  (existing behavior unchanged).
-  ✅ Migration run in Supabase dashboard SQL editor.
-  ✅ supabase functions deploy notify-attendance-change — deployed.
-
-### Session 5 — 2026-04-25
-
-- ✅ Issue 044: Member portal nav links right-aligned (css/members.css: justify-content: flex-end on .member-nav-links desktop; flex-start override on mobile)
-- ✅ Issue 043: Footer home link labels standardized across all 16 pages — member pages: "Members Only Portal Home"; public pages: "PDT Singers Home"; members/index.html destination also corrected (/ → /members/)
-- ✅ Issue 046: Calendar cancellation → Events blog prompt — prevWasCancelled tracker + openBlogPrompt(mode) branch; events.html ?new=1 detection reused unchanged
-- ✅ Issue 052: README.md fully rewritten — stack, local dev, deploy, env vars, file tree, key docs, roles, Music Library architecture
-- ✅ Issue 037: §15 MCP connectors section added to pdt-tech-maintainers-guide.md
-- ✅ Issue 055: Member portal nav "Home" → "Member Home" across all 10 pages
-- ✅ Issue 056: Member portal nav overflow fix — hamburger breakpoint raised 768px → 1100px; redundant 600px display:none removed (css/members.css)
-
-### Session 12 — 2026-04-25
-
-- ✅ pdt-conventions.md auth method corrected — "magic-link-only" replaced with "6-digit email OTP" (via verifyOtp); conventions re-uploaded to Project Memory
-- ✅ Open items audit completed — photo feature, Sunburst on Friends page, Groups.io, WCAG audit, Facebook cross-posting, README rewrite, whats-new.html, second maintainer onboarding all moved to post-launch
-- ✅ Moss Egli onboarding confirmed complete — Supabase account, events_editor role, Facebook group setup done
-- ✅ Deceased member notification confirmed complete
-- ✅ OTP settings confirmed: 6-digit code, 600s (10 min) expiry — both verified working 2026-04-25
-- ✅ Password auth disable confirmed — no discrete toggle in Supabase; signInWithPassword is effectively dead code
-- ✅ pdt-issues.md added to Project Memory (Kevin uploads; end-of-session hygiene)
-- ✅ OTP Send button cooldown — startCooldown()/clearCooldown() added to login.html; 60s countdown starts on successful signInWithOtp(); clears on "Go back" link (Issue 042 closed)
-- ✅ council_member role added — profiles CHECK constraint updated, posts RLS updated (INSERT/UPDATE/DELETE), maintainers guide roles section rewritten with full per-feature permission matrix
-- ✅ posts RLS — non-admin edit/delete scoped to own posts only; poohbah blog now allows council_member
-- ✅ Issue #035 closed — Cancel button fix: .btn-secondary { background: #f0f0f0 } in members.css
-- ✅ Issue #036 closed — call_time and on_stage fields added to event form and detail panel; show time label renamed; performance fields conditional on event_type
-- ✅ Issue #047 closed — new performance/social event prompts Events blog post; pre-populates events.html via URL params; event_id threaded through but deferred to #053
-- ✅ Issue #053 closed — event_id column added to posts table (migration run); submit handler wired; TODO removed
-- ✅ posts table: event_id uuid column added (FK → events on delete set null)
-- ✅ Issue #054 closed — events_editor removed from New Event button visibility; admin and calendar_manager only (Option A); matches RLS
-- ✅ pdt-calendar-spec.md synced to as-built — roles table, form fields, schema columns updated
-- ✅ applyRoleVisibility() fix confirmed — New Event button restricted correctly
-
-### Session 11 — 2026-04-24
-
-- ✅ Attendance Save button bug fixed — startStatus now null when no prior record;
-  isDirty() returns true for null; Save enables on first load (Issue 049 closed)
-- ✅ Music Library left margin fixed — .music-header horizontal padding restored;
-  .container centered with max-width (Issue 050 closed)
-- ✅ The Sunburst newsletter blog added — members/sunburst.html, blog_type='sunburst',
-  gold accent, admin-only posting, nav link added to all 11 member pages (Issue 051 closed)
-- ✅ OTP login implemented — USE_MAGIC_LINKS = false; magic link code preserved behind
-  flag; OTP path: email → 6-digit code → verifyOtp → redirect; TODO comment marks
-  cooldown location
-- ✅ Issues logged: 042 (login cooldown), 043 (footer link labels), 044 (portal nav
-  right-justification), 045 (portal page layout consistency), 046 (cancelled event →
-  Events post), 047 (new performance/social → Events post), 048 (content loading slowness)
-- ✅ pdt-decisions.md updated — auth method entry superseded: OTP replaces magic link
-- ✅ pdt-tech-maintainers-guide.md updated — §10 rewritten for OTP, §7 updated with
-  The Sunburst, §14 retired in favor of pdt-issues.md pointer
-- ✅ CC batching principles documented in claude.ai memory and userMemories
-- ✅ Supabase posts_blog_type_check constraint updated to include sunburst (SQL run manually in Supabase dashboard)
-- ✅ OTP email template updated in Supabase dashboard — Magic Link template replaced with code-display design using {{ .Token }}
-- ✅ OTP expiry confirmed set to 600 seconds (10 minutes) in Supabase Auth settings; 6-digit code length confirmed. Both verified working 2026-04-25.
-- ✅ Attendance page: button groups replaced with dropdowns; dirty flag fixed — only triggers if selection differs from saved state (Issue logged as resolved)
-- ✅ Page layout consistency sweep complete — headline/intro margins aligned to resources.html standard across admin-attendance, calendar, sunburst, comms, events, poohbah, directors-notes (Issues 044, 045 closed)
-- ✅ New Event form moved to modal dialog — mobile-friendly, 480px max-width, guiding text added; "Performance" → "Sing-out" and "Board Meeting" → "High Council" in all UI display contexts (DB values unchanged); button order Save left / Cancel right (Issue 034 closed)
-- ✅ Resources page strategy decided: chorus-facing docs via Drive proxy (same pattern as Music Library); High Council docs via direct Drive share to HC members' Google accounts — no selective portal access needed; selective access requirement dropped
-
-### Session 10 — 2026-04-18
-
-- ✅ Supabase API key navigation clarified — Legacy tab is correct tab; documented in maintainer's guide
-- ✅ Sunday .html reconciliation workflow documented; html-synced marker convention established
-- ✅ Issue 017 (attendance redesign) confirmed already implemented by CC in Session 9
-- ✅ Attendance page: column order swapped (Sing-outs left, Rehearsals right), Save button repositioned
-- ✅ Calendar fixes: + New Event button restored, Today button styled to match, toolbar gap fixed, footer spacing added
-- ✅ Issue 016 (Music Library 403) fully resolved — root cause: downloads bypassed proxy via direct drive.google.com URLs; fixed via streaming Deno Edge Function (drive-music-download.js); no size ceiling, token never leaves function
-- ✅ Google Workspace for Nonprofits approved via Goodstack (2026-04-18)
-- ✅ Music Library fully operational — Workspace Drive populated, Dropbox retired
-- ✅ Goodstack replaces TechSoup as Google Nonprofit vetting partner
-
-### Session 9 — 2026-04-18
-
-- ✅ Workflow efficiency discussion: Obsidian evaluated and rejected (not the right tool)
-- ✅ Issue tracking migrated from §13 of pdt-requirements.md to `pdt-issues.md` (CC-owned, repo root)
-- ✅ `CLAUDE.md` created — CC reads at startup; owns pdt-issues.md; standing rules for issue tracking, commit discipline, project conventions
-- ✅ `pdt-decisions.md` created — 11 decisions sourced from chat history, with full rationale; uploaded to Project Memory; CC never modifies it
-- ✅ `pdt-session-context.md` Key Decisions Log table replaced with pointer to pdt-decisions.md
-- ✅ Session context doc updated and cleaned (auth, Decap CMS, current phase, stale TODOs)
-- ✅ Document production pipelines clarified: Word→PDF for agenda (paragraph borders required); print-optimized HTML→Chromium→PDF for lighter docs
-- ⚠️ Music Library 403 in production noted — not yet diagnosed; added to pdt-issues.md
-
-- ✅ members/comms.html built and deployed
-- ✅ Google Drive Music Library migrated to Workspace Drive (president@pdtsingers.org), folder ID: [REDACTED — see GOOGLE_DRIVE_MUSIC_FOLDER_ID in Netlify env vars]
-- ✅ GOOGLE_DRIVE_MUSIC_FOLDER_ID updated in Netlify env vars
-- ✅ Member portal consistency pass: directors-notes rebuilt, music.html nav fixed, "Home" link fixed across all member pages, Resources dead link removed, Cloudflare email obfuscation fixed via Cache-Control: no-transform in netlify.toml
-- ✅ Six public placeholder pages built: about.html, performances.html, join.html, music.html, friends.html, contact.html
-- ✅ Public nav restructured to full 7-link structure with real URLs
-- ✅ Resend account created, pdtsingers.org domain verified, wired into Supabase SMTP
-- ▶️ IN PROGRESS: Magic link login — login.html needs redesign to magic-link-only using supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } })
-- ▶️ TODO: Customize Supabase magic link email template (subject + body) to be warm and on-brand
-- ▶️ TODO: Test magic link end-to-end with a real email
-- ▶️ TODO: Build Tech Support / Maintainer's Guide document
-- ▶️ TODO: Disable password auth once magic link is confirmed working
-- ▶️ TODO: Check is_active default in profiles table
-- ▶️ TODO: Deploy public pages (commit abea34a pushed but verify live)
-- ▶️ TODO: Populate real content on all public placeholder pages
-
-### Session 3 addendum — 2026-03-31 (Tuesday morning)
-- ✅ Nav logo oversized on music.html — fixed by adding `.nav-logo img { height: 48px; width: auto; }` to main.css; deployed
-- ⚠️ env.local.js console error in production still present — benign but tracked for Wednesday fix
-- 📋 **Backlog additions:**
-  - Cross-posting to Facebook Events and newsletters — requirements TBD with Moss
-  - members/whats-new.html — post-launch member-facing changelog page
-  - Onboard Moss Egli (granddaughter, age 19) as Social Media Manager — prior SMM experience at flower store in Camas WA; create Supabase account, role TBD (events_editor to start or new social_media_manager role); first task: set up PDT Facebook group
-  - About Us highlight for Moss — bio/blurb TBD
-- ▶️ Wednesday: fix env.local.js console error → comms.html → public pages
-- ✅ Reviewed project status and confirmed 2–3 week timeline to full launch
-- ✅ Lodge phone decoupled from website dependencies — Kevin has iPhone 11 + Mint Mobile path
-- ✅ Music Library architecture decision: Netlify Function proxy + Google Drive service account
-  - Option A (public link) rejected: legal liability for licensed music under copyright law
-  - Option B (OAuth) rejected: email mismatch, non-Gmail friction, IT help desk burden
-  - Option B variant (Workspace emails for all members) rejected: adoption problem in practice
-  - Option C (Netlify Function + service account) chosen: invisible to members, secure, free tier
-- ✅ Created `pdtsingers.music@gmail.com` — staging account, not currently used
-- ✅ Created Google Cloud project `pdt-singers-music-library`
-- ✅ Enabled Google Drive API in GCP project
-- ✅ Created API key `GOOGLE_DRIVE_API_KEY` (restricted to Drive API + pdtsingers.org)
-- ✅ Created service account `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
-- ✅ Generated service account JSON key (original exposed in chat → rotated immediately)
-- ✅ Added JSON key pattern to .gitignore
-- ✅ Drive `.PDT` folder set to Restricted (revoked "Anyone with link")
-- ✅ Drive `Music` folder shared with service account (Viewer only)
-- ✅ All 5 Netlify env vars set (Supabase x2 + Drive x3)
-- ✅ Updated `inject-env.js` to inject all 4 window.__PDT_ENV values
-- ✅ Built `netlify/functions/drive-music.js` — serverless Drive proxy with JWT service account auth
-- ✅ Built `members/music.html` — accordion Music Library with:
-  - Song list loaded from Drive (one API call on page load)
-  - Files loaded lazily per song on first open
-  - Voice part detection: member's tracks sorted to top, highlighted in blue
-  - "My Tracks + Sheet Music" button — staggered sequential downloads
-  - "Download All" button
-  - Graceful empty/error states
-  - Local dev: direct Drive API calls; production: Netlify Function proxy
-- ✅ Updated `pdt-requirements.md` with full Music Library architecture rationale (§5g)
-- ✅ Updated `pdt-session-context.md` (this document)
-- ⚠️ Music Library not yet tested in production — needs a deploy
-- ⚠️ Drive Music folders are empty — files need to be copied from Dropbox before Music Library is useful
-- ⚠️ Local dev testing of Music Library requires temporarily setting Music folder to "Anyone with link" — revert after testing
-- ▶️ Next session: comms.html → public pages (About Us, Join Us) → deploy and test Music Library
-
-### Session 2 — 2026-03-29
-- ✅ Hero redesigned: replaced SVG skyline with split-logo design
-- ✅ Dark mode added to variables.css + main.css
-- ✅ Netlify auto-publish disabled
-- ✅ Auth switched from magic link to email + password
-- ✅ Music Fairy test account created and verified
-- ✅ env.local.js local dev solution implemented
-- ✅ Modal overlay fix, role visibility timing fix, blog CSS fixes
-- ✅ Supabase posts RLS policies fixed and verified
-- ✅ Chorus calendar built (members/calendar.html + css/calendar.css)
-- ✅ generate-rehearsals Edge Function deployed and verified
-- ⚠️ Calendar polish TODO (Phase 3):
-  - Move prev/next arrows to flank calendar grid
-  - Detail panel should not show on page load without event selected
-  - "I won't be there" from dashboard Next Rehearsal card
-  - Black button fixes
-
-### Session 1 — 2026-03-28
-- Defined project goals, audiences, site structure, tech stack
-- Created initial pdt-requirements.md and pdt-session-context.md
-- ✅ Placeholder site pushed to GitHub and deployed to Netlify
-- ✅ DNS propagation complete — pdtsingers.org live on Netlify
-- ✅ TechSoup registered — association code 4139-GERS-YP8U
-- ✅ Supabase project created, full DB schema deployed
-- ✅ Three blog pages built
-- ✅ Role model finalized
+- **PDT Singers is NOT BHS** — stated on About page; some visitors assume BHS affiliation
+- **Auth is OTP only** — 6-digit code via Resend; `USE_MAGIC_LINKS = false` in `login.html`;
+  magic link code preserved behind the flag — do not delete it
+- **OTP settings** — 10-minute expiry (600s), 6-digit code; confirmed working April 2026
+- **shouldCreateUser: false** — strangers get no response when entering an email; only
+  admin-created accounts receive codes
+- **Five member blogs** — Director's Notes (`directors_notes`), Poohbahs' Prattlings
+  (`poohbah`), Events (`events`), The Sunburst (`sunburst`), plus retired comms
+- **Blog type constraint** — `posts_blog_type_check` allows: `directors_notes`, `poohbah`,
+  `events`, `sunburst`. Note: `directors_notes` uses underscore (not hyphen) — constraint
+  fixed Session 14
+- **Roles** — `admin` (Kevin), `musical_director` (Chris), `events_editor` (Moss + others),
+  `calendar_manager`, `council_member` (High Council), `member`
+- **Music Library** — Drive is source of truth; no Supabase songs table. Production uses
+  Netlify Function + service account JWT. Local dev uses API key + direct Drive calls
+  (requires Music folder temporarily set to "Anyone with link" — revert after)
+- **Authenticated downloads** — must use fetch → blob → `URL.createObjectURL` → synthetic
+  anchor pattern. `window.open()` and `<a download>` cannot carry Authorization headers
+  to the Edge Function (returns 401). See `pdt-conventions.md`
+- **Sunburst file naming** — `YYYY-MM-DD — Title.pdf` (em dash U+2014, spaces around it);
+  filename is the sole metadata source
+- **Sunburst folder ID** — stored in `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` Netlify env var
+- **inject-env.js** — injects all 6 env vars into `window.__PDT_ENV`; safe to commit
+- **env.local.js** — gitignored local file; mirrors `window.__PDT_ENV`; never commit
+- **Role visibility** — use `applyRoleVisibility()` checking `window.__PDT_USER` directly,
+  falling back to `pdt:profile-loaded` event; direct event listener alone has a timing race
+- **Posts RLS** — insert/update/delete scoped by role+blog_type; three select policies:
+  `posts_select_authenticated` (published, all members), `posts_select_admin` (all posts,
+  admin only), `posts_select_author` (own drafts, any role)
+- **members/comms.html** — retired April 2026; file deleted; posts table rows retained
+- **members/resources.html** — suppressed from nav; file retained; content TBD
+- **Netlify auto-publish** — always locked; Kevin manually triggers deploys
+- **Netlify build credits** — Personal plan; ~65 deploys/month before ceiling
+- **Supabase cold-start** — free tier pauses after ~1 week inactivity; first load may be
+  slow (Issue #048, low priority)
+- **pdtsingers.music@gmail.com** — staging account, not used; may dispose
+- **Kevin is sole owner of all services** — critical single point of failure; second admin
+  needed (Grant Gibson is natural candidate)
+- **WBQA SEO** — lodge list page is nearly empty; PDT SEO work is important

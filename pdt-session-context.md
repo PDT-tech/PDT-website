@@ -1,7 +1,7 @@
 # PDT Singers Website — Session Context
 
 **Project:** PDT Singers website build  
-**Last updated:** 2026-04-25 (Session 13)  
+**Last updated:** 2026-04-25 (Session 14)  
 **Requirements doc:** `pdt-requirements.md`  
 **Site Brief source:** `PDT_Singers_Site_Brief.md` (March 2026)
 
@@ -43,7 +43,7 @@ technical lifting with guidance.
 gold). Fonts: Playfair Display + Source Serif 4. Tone: warm, community-focused,
 first-person plural. Tagline: "Music, Fellowship & Fun."
 
-**Current phase:** Phase 2 active — all public pages live with real content. Member accounts seeded. Issue tracker migrated to pdt-issues.md (CC-owned). Decision log established as pdt-decisions.md.
+**Current phase:** Phase 2 active — all public pages live, member portal fully operational. comms.html retired. OTP login live.
 
 ---
 
@@ -335,15 +335,31 @@ pdtsingers/                  ← repo root
 - Vector logo files from Mercedes Gibson
 - Public page content polish (real copy, real photos)
 - SEO: meta tags, XML sitemap, Google Search Console
-- Footer link label standardization (Issue 043)
-- Member portal nav right-justification (Issue 044)
 - ✅ Issue #053 closed — event_id column wired (posts table, events.html submit handler)
 - Calendar → Events blog automation: cancellation notice for cancelled events (Issue 046)
 - The Sunburst: public-facing version under Friends page (not yet started)
+- **Vacation block feature** — design discussion needed before implementation; member self-service away window that auto-marks attendance for covered events
+- **The Sunburst PDF workflow** — design needed; members/sunburst.html currently has a text editor modal only; need PDF upload/display via Drive proxy
 
 ---
 
 ## Session History
+
+### Session 14 — 2026-04-25
+
+- ✅ Issue 057: posts_blog_type_check constraint fixed — directors_notes (underscore) was being rejected; constraint only had directors-notes (hyphen). Dropped and recreated with correct values: directors_notes, poohbah, events, sunburst. Chris Gabel now unblocked for Director's Notes posts.
+- ✅ New Event form: "On stage" label → "On-stage at"; both perf-time fields aligned; time validation on blur (not on Save); browser native tooltip suppressed.
+- ✅ Blog post modals: published/draft checkbox inverted — default is now published; checkbox now reads "Save as draft". All five blog files updated.
+- ✅ "Poohbah's Prattlings" → "Poohbahs' Prattlings" (plural possessive) across all 11 member pages and all occurrences in HTML.
+- ✅ members/comms.html retired and deleted. Nav link removed from all member pages. Communications removed from Quick Links. "New Announcement" removed from Admin panel. Documented in pdt-tech-maintainers-guide.md under new "Retired / Suppressed Pages" section.
+- ✅ members/resources.html suppressed from nav (file retained). Documented in maintainers guide.
+- ✅ Member Home dashboard card order: Next Rehearsal → Upcoming Events → Quick Links → Director's Notes → Poohbahs → Admin.
+- ✅ Quick Links updated: Events, Calendar, Director's Notes, Music Library, Poohbahs' Prattlings (5 items; Communications removed).
+- ✅ Public nav brand label: "Portland DayTime Singers" → "PDT Singers" on all 7 public pages.
+- ✅ Public nav hamburger breakpoint raised 768px → 900px — prevents label stacking before hamburger activates.
+- ✅ Member nav hamburger: dark mode contrast fixed (rgba(255,255,255,0.9) !important); dropdown clipped-to-one-item bug fixed (height: auto; overflow: visible in 1100px media query — overflow-x:auto was coercing overflow-y:auto and clipping the dropdown to nav bar height).
+- ✅ Music page "13 SONGS" count: left margin fixed — .music-content > .container rule added mirroring .music-header > .container.
+- ✅ Join Us page: copy updated — teaching tracks parenthetical added, "when" → "whenever", "we go" → "many of us go".
 
 ### Session 13 — 2026-04-25
 

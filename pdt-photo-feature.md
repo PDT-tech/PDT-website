@@ -1,8 +1,9 @@
 # PDT Singers — Photo Upload & Gallery Feature
 
-**Status:** Planning  
+**Status:** Design complete — ready for implementation planning  
 **Created:** 2026-04-17 (Session 7)  
-**Next step:** Architecture decisions and UX design before implementation
+**Last updated:** 2026-04-26 (Session 8) — all architecture decisions resolved  
+**Next step:** Write CC build prompts
 
 ---
 
@@ -10,159 +11,237 @@
 
 Members upload event photos from phone or desktop. Photos are stored in Google Drive
 with metadata (uploader, event, caption, timestamp) in Supabase. A gallery viewer
-lets members browse photos. Some photos may be exposed to the Friends of PDT audience.
+lets members browse and download photos by event. Some photos are curated for public
+display on the home page and Friends page carousels.
 
 ---
 
-## Proposed Architecture
+## Resolved Architecture Decisions
 
-**Upload flow:**
-- Member-gated page (`members/photos.html`) — auth-guarded
-- Upload form: image file picker, event selector (dropdown from `events` table),
-  optional caption
-- On submit: POST to new Netlify Function (`netlify/functions/upload-photo.js`)
-- Netlify Function uploads file to Google Drive via service account JWT auth
-  (same pattern as `drive-music.js`)
-- Metadata written to new Supabase table after successful Drive upload
+### Storage
 
-**Storage:**
-- Files: Google Drive `.PDT/Photos/` — organized by event subfolder or flat with
-  metadata-based filtering; TBD
-- Metadata: new Supabase table (schema below)
+- **Files:** Google Workspace Drive (`/Photos/` folder, flat structure)
+  - `/Photos/` — all member-uploaded photos
+  - `/Photos/Mainpage_Carousel/` — curated subset for public carousel display
+- **Metadata:** `photo_uploads` Supabase table (see schema below)
+- **Source of truth for organization:** Supabase metadata, not Drive folder structure
+- **Drive folder IDs:** stored as Netlify env vars (`GOOGLE_DRIVE_PHOTOS_FOLDER_ID`,
+  `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID`) and injected via `inject-env.js`
 
-**Retrieval:**
-- Gallery page fetches metadata from Supabase, then loads thumbnails via Drive
-  proxy (same Netlify Function pattern as music library, or a new
-  `netlify/functions/photo-proxy.js`)
+### Infrastructure
+
+- Same service account (`pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`)
+  already shared on `/Photos/` and `/Photos/Mainpage_Carousel/`
+- Same proxy pattern as Music Library — Netlify Edge Function streams directly,
+  no buffering, no size ceiling (same fix as issue #016)
+- Upload: new Netlify Edge Function (`netlify/edge-functions/upload-photo.js`)
+  streams multipart POST directly to Drive via service account JWT auth
+- Download/retrieval: new Netlify Edge Function (`netlify/edge-functions/photo-proxy.js`)
+  streams Drive file content to browser
+
+### Accepted Upload Formats
+
+**JPEG and HEIC only.** All other formats (PNG, WebP, RAW, DNG, etc.) are rejected
+at upload time with a clear error message: "Please upload JPEG or HEIC photos only."
+
+Rationale: JPEG is the Android camera default and universal browser format. HEIC is
+the iPhone camera default. These two formats cover >95% of real-world phone uploads.
+PNG, WebP, and RAW are excluded to keep the upload pipeline simple and avoid
+encouraging huge files.
+
+### File Size
+
+No enforced cap. RAW files are excluded by format filter; HEIC and JPEG from phone
+cameras realistically max out at 8–12MB. Let the uploader manage their own
+file sizes.
+
+### Filename De-confliction
+
+The upload function timestamps filenames using the photo's EXIF datetime (extracted
+server-side using `exifr`), falling back to upload datetime if EXIF is absent.
+
+Format: `YYYYMMDD-HHmmss-<originalname>.<ext>`
+
+This ensures Drive filenames sort chronologically, enables admins to manually
+disambiguate untagged photos later, and eliminates filename collisions across
+multiple uploaders.
+
+### HEIC Conversion (Post-Process)
+
+HEIC files are stored as-is at upload time. A background job converts them to JPEG
+at maximum quality (quality=100) after the upload completes. Conversion is invisible
+to the uploader.
+
+**Conversion queue:** `photo_uploads` table has a `conversion_status` column
+(`pending` | `processing` | `done` | `failed`). HEIC uploads land with
+`conversion_status = 'pending'`. Non-HEIC uploads land with `conversion_status = 'done'`
+and skip conversion entirely.
+
+**Trigger:** pg_cron job in Supabase, every 15 minutes. Calls a Supabase Edge Function
+(`convert-heic`) that queries for `conversion_status = 'pending'` rows, processes
+them in upload-time order, converts each HEIC to JPEG via `sharp` (with `libheif`
+binding), writes the JPEG to the same Drive folder, verifies the Drive file ID,
+deletes the original HEIC, and updates the Supabase row with the new `drive_file_id`
+and `conversion_status = 'done'`. If conversion fails, sets `conversion_status = 'failed'`
+and records the error in `conversion_error` text column.
+
+**Error reporting:** On failure, the Edge Function sends an email to `tech@pdtsingers.org`
+via Resend. The admin curation UI surfaces rows with `conversion_status = 'failed'`
+with the error text visible inline. Both immediate notification and persistent audit trail.
+
+**HEIC deletion safety:** Write JPEG → verify Drive confirms the file ID → delete HEIC →
+update row. If delete fails, the row already has the JPEG file ID so the app is never
+broken; stale HEIC in Drive is cleaned up manually.
+
+### Upload UX
+
+- Auth-gated member page (`members/photos.html`)
+- Upload triggered by "+ Upload Photos" button opening a modal (consistent with
+  calendar New Event pattern)
+- File picker: `accept="image/jpeg,image/heic"` — triggers native photo picker on mobile
+- **Multi-select:** up to 8 photos per upload operation. Attempting more than 8
+  shows a clear error before upload starts.
+- **Progress:** "Uploading 3 of 8…" counter displayed during upload. Files uploaded
+  sequentially; progress updates after each file completes.
+- **Camera roll permission:** handled by browser/OS natively. If user denies
+  permission, file picker returns empty — no special handling needed.
+- **Event association:** uploader selects event from dropdown (see Event Tagging below)
+- No per-photo captions in V1. Event association is the only metadata the uploader
+  provides beyond the photos themselves.
+
+### Event Tagging at Upload
+
+- Dropdown populated from `events` table, filtered to events within the last 90 days
+- Default selection: "General / No specific event" (top of list, pre-selected)
+- Event selection is not required — uploading without changing the default is valid
+- Photos with no event: `event_id = null` in Supabase; stored flat in `/Photos/`
+- EXIF datetime in filename gives admins enough to manually sort untagged photos later
+
+### Curation Model
+
+- All uploads land with `is_public = false`
+- Admin and events_editor roles see a "Make public" toggle per photo in the member
+  gallery view (inline, role-gated — no separate curation page)
+- Checking "Make public" triggers a Netlify Function call that:
+  1. Copies the Drive file to `/Photos/Mainpage_Carousel/`
+  2. Sets `is_public = true` in Supabase
+- Unchecking reverses: deletes the copy from `Mainpage_Carousel/`, sets `is_public = false`
+- Curation event dropdown: "All recent events with photos" (silently 90-day filtered)
+  plus "All events with photos" option to expand beyond 90 days
+
+### Home Page Carousel
+
+- Source: `/Photos/Mainpage_Carousel/` Drive folder — all files in that folder
+- Display order: randomized client-side on each page load
+- Page load behavior: logo placeholder image displayed immediately; carousel begins
+  swapping in Drive photos as they load. Initial render is never blocked on Drive.
+- Lazy-load: preload next image while current is displayed
+- Auto-advance with configurable interval (TBD at build time — suggest 5 seconds)
+- Pause on hover; navigation arrows
+- No download buttons on public carousel — right-click is sufficient
+
+### Friends Page Carousel
+
+- V1: replicate home page carousel exactly (same source folder, same behavior)
+- No auth gating in V1
+- Future: expand to event-grouped browsing and/or auth-gated Friend accounts based
+  on observed engagement (post-V1 work item — see below)
+
+### Member Gallery (`members/photos.html`)
+
+- Gallery view: event-grouped, fixed-aspect thumbnails, CSS grid
+- Event picker dropdown: recent events with photos (90-day default, expandable)
+- Lightbox: click thumbnail → full-size overlay with prev/next navigation within
+  the event group, caption display (event name + upload date), download button
+  (single photo only in V1)
+- Admin/events_editor: inline "Make public" toggle visible per photo
+
+### Public Downloads
+
+- Right-click only from carousel — no download buttons on public surfaces
+- Members can download individual photos from the lightbox (download button)
+- Batch "download all event photos" deferred to V2 if demand warrants
 
 ---
 
-## Proposed Supabase Schema
+## Supabase Schema
 
 ```sql
 CREATE TABLE photo_uploads (
-  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  uploader_id  uuid REFERENCES profiles(id),
-  event_id     uuid REFERENCES events(id),
-  drive_file_id text NOT NULL,
-  filename     text NOT NULL,
-  caption      text,
-  uploaded_at  timestamptz DEFAULT now()
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  uploader_id       uuid REFERENCES profiles(id),
+  event_id          uuid REFERENCES events(id) ON DELETE SET NULL,
+  drive_file_id     text NOT NULL,
+  filename          text NOT NULL,
+  original_format   text NOT NULL,          -- 'jpeg' | 'heic'
+  conversion_status text NOT NULL DEFAULT 'done',
+                                            -- 'pending' | 'processing' | 'done' | 'failed'
+  conversion_error  text,                   -- populated on failure
+  is_public         boolean NOT NULL DEFAULT false,
+  carousel_file_id  text,                   -- Drive file ID of copy in Mainpage_Carousel
+  uploaded_at       timestamptz DEFAULT now()
 );
 ```
 
-RLS: all authenticated members can SELECT; insert restricted to own uploads;
-delete restricted to uploader or admin.
+**RLS:**
+- SELECT: all authenticated members
+- INSERT: own uploads only (uploader_id = auth.uid())
+- UPDATE is_public / carousel_file_id: admin and events_editor only
+- DELETE: uploader or admin
 
 ---
 
-## Open UX Questions
+## New Environment Variables Required
 
-### 1. Upload and gallery: together or separate?
+| Variable | What it is |
+|----------|-----------|
+| `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of `/Photos/` folder in Workspace Drive |
+| `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of `/Photos/Mainpage_Carousel/` subfolder |
 
-**Option A — Combined page**
-Single `members/photos.html` with upload form at top, gallery below.
-- Pro: one destination for everything photo-related
-- Con: page gets long; upload UI competes with gallery for attention
+Both go in Netlify env vars and `env.local.js`. Both injected via `inject-env.js`.
 
-**Option B — Separate pages**
-`members/photos.html` = gallery viewer
-`members/upload-photo.html` = upload form (linked from gallery)
-- Pro: clean separation of concerns; gallery is the primary experience
-- Con: one more nav item or buried link
-
-**Option C — Upload is a modal on the gallery page**
-Gallery is the page; "+ Upload Photos" button opens a modal form.
-- Pro: cleanest UX; gallery-first; upload is a secondary action
-- Con: slightly more JS complexity
-
-Recommendation: **Option C** — modal upload on gallery page. Consistent with
-how we handle New Event on the calendar. Familiar pattern for the codebase.
-
-### 2. Gallery layout
-
-Options:
-- **Masonry grid** — Pinterest-style, variable height. Visually rich but
-  complex to implement in vanilla JS without a library.
-- **Fixed-aspect grid** — uniform thumbnails, CSS grid. Simple, clean,
-  works well for mixed portrait/landscape.
-- **Event-grouped list** — photos grouped by event with a header for each.
-  More navigable; easier to find "photos from the April sing-out."
-
-Recommendation: **Event-grouped** with fixed-aspect thumbnails. Navigable
-for older users; no library dependency; fits our stack.
-
-### 3. Lightbox / full-size view
-
-Click a thumbnail → full-size view. Options:
-- Simple: open Drive file URL in new tab
-- Better: overlay lightbox with prev/next navigation, caption display
-- Vanilla JS lightbox is ~50 lines; worth doing properly
-
-### 4. Friends of PDT exposure
-
-Some photos should be visible to non-members (Friends of PDT page or a
-public `/photos` page). Questions:
-- Who decides which photos are public? Uploader at upload time? Admin
-  curation after the fact? Both?
-- Suggest: add `is_public boolean DEFAULT false` to `photo_uploads` table.
-  Admin can flip to true. Public gallery only shows `is_public = true`.
-- Public photos served via same proxy pattern — no Drive link exposure.
-
-### 5. Drive organization
-
-Options:
-- Flat folder (`.PDT/Photos/`) — all files in one place, metadata in Supabase
-- Event subfolders (`.PDT/Photos/2026-04-06-Monday-Rehearsal/`) — browsable
-  in Drive without Supabase, but harder to manage programmatically
-
-Recommendation: **Flat folder** — Supabase is the source of truth for
-organization. Drive is just blob storage.
-
-### 6. File size / format handling
-
-- Accept: JPEG, PNG, HEIC (iPhone default), WebP
-- HEIC is a problem — browsers can't display it natively. Options:
-  - Reject HEIC at upload, prompt user to convert
-  - Convert server-side in Netlify Function (requires sharp or similar —
-    adds npm dependency to function)
-  - Accept and store as-is; display fallback thumbnail for unsupported formats
-- Recommendation: reject HEIC at upload with a friendly message. iPhone
-  users can set Camera → Format → Most Compatible to shoot JPEG.
-- Max file size: Netlify Functions have a 6MB request body limit on free tier.
-  Enforce client-side with a clear error message.
-
-### 7. Nav placement
-
-Where does "Photos" live in the member nav?
-- Add as 8th item: Home / Director's Notes / Poohbah's Prattlings / Events /
-  Comms / Calendar / Music / **Photos**
-- Nav is getting long — worth a look at whether Comms and Resources could
-  consolidate, or whether Photos belongs under a future "Community" section
-- For now: add Photos to end of nav, revisit nav structure separately
+**Work item for Kevin:** Create `/Photos/Mainpage_Carousel/` subfolder in Drive,
+confirm service account has write access (it's inherited from `/Photos/` share),
+grab the folder ID, add both folder IDs to Netlify env vars and `env.local.js`.
 
 ---
 
-## Implementation Order (suggested)
+## Implementation Order
 
-1. Create Drive `.PDT/Photos/` folder, share with service account
-2. Add `photo_uploads` table + RLS to Supabase
-3. Build `netlify/functions/upload-photo.js` — accepts multipart POST,
-   uploads to Drive, returns Drive file ID
-4. Build `members/photos.html` — gallery view + upload modal
-5. Add `is_public` flag + admin toggle UI
-6. Build public-facing gallery (Friends page or `/photos.html`) — Phase 2
+1. **Kevin (manual):** Create `/Photos/Mainpage_Carousel/` in Drive, grab folder IDs,
+   set `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` in
+   Netlify env vars and `env.local.js`
+2. **Schema:** Add `photo_uploads` table + RLS to Supabase
+3. **Upload function:** `netlify/edge-functions/upload-photo.js` — multipart POST,
+   EXIF extraction, Drive upload, Supabase row insert
+4. **Photo proxy:** `netlify/edge-functions/photo-proxy.js` — streams Drive file
+   to browser (auth-gated and public variants)
+5. **Member gallery page:** `members/photos.html` — event picker, grid, upload modal,
+   lightbox, admin curation toggle
+6. **Carousel component:** home page and Friends page carousel (shared JS module)
+7. **HEIC conversion:** `convert-heic` Supabase Edge Function + pg_cron job
+8. **inject-env.js update:** add `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and
+   `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` to injected vars
 
 ---
 
-## Questions Still Needing Answers
+## Post-V1 Work Items
 
-- [ ] Do we want a lightbox or open-in-new-tab for full-size?
-- [ ] Who curates public photos — uploader self-selects, admin approves, or both?
-- [ ] HEIC: reject at upload or convert server-side?
-- [ ] Nav: add Photos as 8th item or restructure nav first?
-- [ ] Should the public gallery be its own page or a section of Friends of PDT?
-- [ ] Do we want download capability for members (e.g. "Download all photos
-  from this event")?
-- [ ] Storage cost check: Google Drive Workspace for Nonprofits quota is 
-  generous but confirm before assuming unlimited.
+- **Friend auth / broader gallery access:** If Friends engagement warrants it,
+  add Supabase auth for Friends so they can browse event-grouped photos beyond
+  the carousel. Decision deferred — collect engagement data first.
+- **Batch download:** "Download all photos from this event" for members.
+  Deferred — add if demand is clear.
+- **Video upload:** Deliberately deferred. See maintainers guide §17 for
+  the deferred-video rationale and open questions.
+- **Friend photo uploads:** Any authenticated user (Supabase `authenticated` role)
+  can upload — schema and RLS already support this. No UI work needed beyond
+  adding Friend auth.
+
+---
+
+## Issues
+
+- **#014** — Home page animated carousel (feeds from `/Photos/Mainpage_Carousel/`)
+- **#015** — Full photo upload, gallery, curation, and carousel system (this doc)
+- **#059** — Donation page with Stripe (future feature, no due date — see issues list)

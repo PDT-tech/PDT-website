@@ -190,6 +190,34 @@ When testing the Music Library locally:
 
 ---
 
+## Authenticated File Downloads
+
+Authenticated downloads from Netlify Edge Functions must use the
+**fetch → blob → `URL.createObjectURL` → synthetic anchor** pattern.
+`window.open(url)` and `<a href download>` are plain browser navigations
+that cannot carry `Authorization` headers — the Edge Function will return 401.
+
+```js
+async function proxyDownload (fileId, filename, download = false) {
+  const res = await fetch(
+    `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
+    { headers: { Authorization: `Bearer ${await getToken()}` } }
+  )
+  if (!res.ok) { alert('Download failed — please try again.'); return }
+  const blobUrl = URL.createObjectURL(await res.blob())
+  const a = document.createElement('a')
+  a.href = blobUrl
+  if (download) { a.download = filename } else { a.target = '_blank'; a.rel = 'noopener' }
+  document.body.appendChild(a); a.click(); document.body.removeChild(a)
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+}
+```
+
+See `members/music.html` (`getToken()` + `proxyDownload()`) and
+`members/sunburst.html` (`getToken()` + `proxyIssue()`) for the reference implementations.
+
+---
+
 ## Hero Layout (index.html)
 
 The cityscape image (`hero-cityscape`) has a white background by design — this

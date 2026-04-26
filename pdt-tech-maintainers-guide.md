@@ -42,7 +42,7 @@ failure for a functioning chorus.
 - [ ] Google Workspace admin — add second admin (admin.google.com)
 - [ ] Resend — add second owner (Team settings)
 - [ ] Helping Hosting (domain registrar) — add second account or document recovery path
-- [ ] TechSoup (soon to be Goodstack) — add second contact
+- [ ] Goodstack (formerly TechSoup) — add second contact
 
 The backup admin should be a board member (Grant Gibson is the natural candidate as
 Secretary-Treasurer) or a trusted technical contact. They do not need to know how to
@@ -107,6 +107,7 @@ Never hardcode credentials in committed files.
 | `SUPABASE_ANON_KEY` | Supabase publishable anon key |
 | `GOOGLE_DRIVE_API_KEY` | Drive API key (local dev only) |
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | Music folder ID in Drive |
+| `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Drive |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Service account JSON (secret) |
 
 **Supabase Edge Function secrets** (set in Supabase → Edge Functions → Manage secrets):
@@ -142,8 +143,8 @@ All accounts are admin-created. Members cannot self-register.
 2. Click **Invite user**
 3. Enter the member's email address and click **Send invitation**
 
-Supabase sends a magic link invitation email. The member clicks it, lands on the
-member portal, and is authenticated. No password required.
+Supabase sends an invitation email. The member uses it to set up access, then logs
+in via the OTP flow (email → 6-digit code). No password required.
 
 **Step 2 — Set role and profile fields**
 
@@ -376,7 +377,7 @@ Login codes (6-digit OTP) are sent via Resend (resend.com), wired into Supabase 
 
 **From address:** noreply@pdtsingers.org  
 **Resend domain:** pdtsingers.org — verified April 2026  
-**OTP expiry:** 15 minutes (set in Supabase → Authentication → Settings → OTP Expiry)  
+**OTP expiry:** 10 minutes / 600 seconds (confirmed in Supabase → Authentication → Settings)  
 **Template:** Supabase dashboard → Authentication → Email Templates → Magic Link (code display template)
 
 **Login flow:**
@@ -432,7 +433,7 @@ Netlify → Forms → [form name] → Form notifications.
 | Check Edge Function logs | Supabase → Edge Functions → [function name] → logs |
 | View form submissions | Netlify → Forms |
 | Update env variables | Netlify → Site configuration → Environment variables |
-| Edit magic link email template | Supabase → Authentication → Email Templates |
+| Edit OTP login email template | Supabase → Authentication → Email Templates |
 | Trigger a deploy | Netlify → Deploys → Trigger deploy |
 | View Music Library logs | Netlify → Functions → drive-music (listings) or Edge Functions → drive-music-download (downloads) |
 

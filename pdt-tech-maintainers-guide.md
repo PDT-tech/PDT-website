@@ -326,7 +326,51 @@ Do not construct direct `drive.google.com` download URLs in client code — they
 
 ---
 
-## 10. Email (OTP Login)
+## 10. The Sunburst Newsletter
+
+The Sunburst is a PDF newsletter produced by Kevin from member-submitted content.
+Issues are stored as PDFs in Google Drive and served directly to the member portal —
+no database rows, no CMS.
+
+### Storage
+
+**Drive location:** `Sunburst/` folder in president@pdtsingers.org Workspace Drive  
+**Folder ID:** set in Netlify — Site configuration → Environment variables → `GOOGLE_DRIVE_SUNBURST_FOLDER_ID`  
+**Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com` (Viewer) — same account used by the Music Library
+
+### File naming convention
+
+```
+YYYY-MM-DD — Title.pdf
+```
+
+The separator is an em dash (U+2014) with a space on each side. The member portal
+listing parses filenames to extract the date and title — there is no metadata sidecar.
+
+**Example:** `2026-05-01 — Spring Sing-Out Edition.pdf`
+
+Files that do not match the pattern (no em dash) are still listed; they display the
+raw filename (minus the `.pdf` extension) with no date.
+
+### Adding a new issue
+
+1. Ray sends Kevin the article content (usually as a `.docx`)
+2. Open `sunburst-issue-template.html` (repo root) in a text editor — paste the content into the `<!-- BODY CONTENT -->` area and fill in the issue date and title placeholders in the masthead
+3. Open the file in Chromium. Print: **Cmd+P → Save as PDF → Margins: None → Background graphics: checked**
+4. Rename the downloaded PDF to match the naming convention above
+5. Upload the PDF to the `Sunburst/` folder in Google Drive
+
+The member portal page (`/members/sunburst.html`) reflects new files automatically
+on next load — no code changes, no deploy needed.
+
+### API
+
+- **Issue listing** — `netlify/functions/drive-music.js` with `action=sunburst-list`. Returns `[{ id, date, title }]` sorted newest-first.
+- **File delivery** — `netlify/edge-functions/drive-music-download.js` at `/api/music-download`. Same streaming infrastructure as the Music Library — no buffering, no size ceiling, service account token stays server-side.
+
+---
+
+## 11. Email (OTP Login)
 
 Login codes (6-digit OTP) are sent via Resend (resend.com), wired into Supabase SMTP.
 
@@ -363,7 +407,7 @@ in Supabase Edge Function secrets, not Netlify env vars.
 
 ---
 
-## 11. Forms
+## 12. Forms
 
 Public forms (Join Us, Contact, Performances booking inquiry) are handled by
 Netlify Forms. Submissions appear in: Netlify dashboard → Forms.
@@ -375,7 +419,7 @@ Netlify → Forms → [form name] → Form notifications.
 
 ---
 
-## 12. Common Tasks Quick Reference
+## 13. Common Tasks Quick Reference
 
 | Task | Where |
 |------|-------|
@@ -394,7 +438,7 @@ Netlify → Forms → [form name] → Form notifications.
 
 ---
 
-## 13. Architecture Summary
+## 14. Architecture Summary
 
 ```
 Browser
@@ -427,7 +471,7 @@ GCP project: pdt-singers-music-library (service account for Drive proxy)
 
 ---
 
-## 14. Known Issues & Backlog
+## 15. Known Issues & Backlog
 
 Issues are tracked in `pdt-issues.md` in the repo root, maintained by CC.
 Run `cat pdt-issues.md` to see the current list.
@@ -459,7 +503,7 @@ link when the page has content worth surfacing.
 
 ---
 
-## 15. Claude.ai MCP Connectors
+## 16. Claude.ai MCP Connectors
 
 Claude.ai (the chat interface used for all PDT website work) supports MCP connectors that give Claude direct access to external services — Google Drive, Gmail, Stripe, and others. The PDT project has evaluated the available connectors.
 

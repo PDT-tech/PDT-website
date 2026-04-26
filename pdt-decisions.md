@@ -134,33 +134,28 @@ Service account is invisible to members, secure, free tier, and requires no Goog
 
 ---
 
-## 2026-04-18 — Music Library: all Drive access proxied through Netlify Function
+## 2026-04-18 — Music Library: download routing via Netlify Edge Function
 
-**Question:** Can file download URLs point directly to Google Drive?
+**Question:** How do we serve large Drive files to authenticated members without
+a size ceiling or token exposure?
 
-**Decision:** No. All Drive interactions — folder listing, file listing, and file
-download — must go through `netlify/functions/drive-music.js`. Direct
-`drive.google.com` URLs are never used in client code.
+**Decision:** Netlify Edge Function (`netlify/edge-functions/drive-music-download.js`)
+as terminal handler on `/api/music-download`. Streams `driveRes.body` directly to
+the browser — no buffering, no base64, no size ceiling. Service account token never
+leaves the function. Declared before `inject-env` in `netlify.toml`. All client
+download requests use the `fetch → blob → URL.createObjectURL → synthetic anchor`
+pattern (documented in `pdt-conventions.md`). `drive-music.js` (Netlify Function)
+handles folder and file listing only — no download logic.
 
-**Rationale:** Direct Drive URLs bypass the service account token entirely.
-Google rejects unauthenticated requests with 403. Discovered in production
-2026-04-18 when `dlUrl()` in `music.html` was building direct `drive.google.com`
-download URLs while the listing calls correctly proxied through the function.
-Fix: added `type=download` endpoint to `drive-music.js` that fetches file content
-server-side using the service account token and returns it base64-encoded.
-`validateSession()` added to all three endpoints — unauthenticated requests
-return 401. Client updated to route all downloads through `proxyDownload()` with
-Bearer token auth. Known constraint: Netlify Functions have a 6MB response limit
-(~4.5MB file ceiling before base64 expansion) — monitor when Music Library is
-populated from Dropbox.
+**Rationale:** Initial fix used base64 encoding in a serverless function, which hit
+Netlify's 6MB response ceiling immediately (6.5MB MP3 → 413). Google Drive has no
+signed URL equivalent to GCS — a token-in-URL approach would expose the service
+account token in browser history, server logs, and referrer headers. Edge Function
+streaming eliminates both problems. GCS migration remains the cleaner long-term
+architecture if Drive becomes a pain point.
 
-**Superseded 2026-04-18:** The base64 approach hit the 6MB ceiling immediately
-in practice (6.5MB MP3 confirmed 413 in Netlify logs). Download handling moved
-to a Netlify Edge Function (`netlify/edge-functions/drive-music-download.js`)
-that streams `driveRes.body` directly to the browser — no buffering, no size
-ceiling, service account token stays server-side. `drive-music.js` now handles
-folder and file listing only. Edge Function declared before `inject-env` in
-`netlify.toml` so inject-env never runs on `/api/music-download` requests.
+**Applies to:** Music Library and The Sunburst newsletter (same Edge Function,
+same pattern, different folder IDs).
 
 ---
 

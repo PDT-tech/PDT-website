@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-04-26 (Session 15)
+**Last updated:** 2026-04-26 (Session 15 — doc consistency audit + close-out)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -118,11 +118,10 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
 |---|------|
 | 014 | Main page: animated photo carousel (reconcile with #015 first) |
 | 015 | Photo upload, gallery, and animated carousel — full feature (see `pdt-photo-feature.md`) |
-| 048 | Member portal: slow first load after project idle (Supabase cold-start) — low priority |
 
 **Deferred (not abandoned):**
-- `members/whats-new.html` — member-facing changelog, hand-maintained, no DB
 - `env.local.js` console error in production (nosniff header) — benign, tracked
+- #048 — Supabase cold-start slow load — accepted as known behavior, closed
 
 **Standing backlog:**
 - Add second admin account owner to all services (Netlify, Supabase, GitHub, GCP, GWS, Resend, Helping Hosting, Goodstack) — Grant Gibson is the natural candidate
@@ -135,7 +134,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
 - The Sunburst: public-facing version under Friends page (not yet started)
 - Vacation block feature — member self-service away window (design discussion needed)
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
-- Moss Egli bio/blurb on About Us page
+- Public page content review — HC feedback requested 2026-04-26; declare v1.0 done if no corrections by May 1
 
 ---
 

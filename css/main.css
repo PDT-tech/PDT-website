@@ -116,7 +116,7 @@ body {
   transform: translateY(-9px) rotate(-45deg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav-hamburger {
     display: flex;
   }

@@ -147,9 +147,7 @@
               <input type="time" id="event-call-time" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label" for="event-on-stage">
-                On stage <span class="form-hint">Leave blank to use show time</span>
-              </label>
+              <label class="form-label" for="event-on-stage">On-stage at</label>
               <input type="time" id="event-on-stage" class="form-input">
             </div>
           </div>
@@ -660,6 +658,21 @@
   document.getElementById('event-type').addEventListener('change', () => {
     const isPerf = document.getElementById('event-type').value === 'performance'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
+  })
+
+  ;['event-call-time', 'event-on-stage'].forEach(id => {
+    const el = document.getElementById(id)
+    el.addEventListener('blur', () => {
+      el.parentElement.querySelector('.form-error')?.remove()
+      if (el.value && !/^\d{2}:\d{2}$/.test(el.value)) {
+        const err = document.createElement('span')
+        err.className = 'form-error'
+        err.textContent = 'Enter a valid time'
+        el.after(err)
+      }
+    })
+    el.addEventListener('focus', () => el.parentElement.querySelector('.form-error')?.remove())
+    el.addEventListener('invalid', e => e.preventDefault())
   })
 
   document.getElementById('event-form').addEventListener('submit', async (e) => {

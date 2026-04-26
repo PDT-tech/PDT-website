@@ -522,6 +522,57 @@ Claude.ai (the chat interface used for all PDT website work) supports MCP connec
 
 ---
 
+## 17. Deferred Features — Video Upload
+
+Video upload to the photo system was explicitly deferred during initial design
+(April 2026). This section documents what was decided and why, so future
+maintainers have the context.
+
+### What was considered
+
+Member-uploaded videos (sing-out clips, rehearsal highlights, etc.) were
+discussed as a natural companion to photo uploads. The proposed flow would
+mirror the photo upload pipeline: member selects video file on phone, uploads
+via Netlify Edge Function to Google Drive, metadata in Supabase, playback or
+download from a member gallery page.
+
+### Why it was deferred
+
+Videos introduce complexity that photos don't have:
+
+- **File sizes are large.** A 1-minute iPhone video at 1080p is 60–150MB;
+  4K clips run 300–500MB. Upload times on a phone connection are painful,
+  and Drive storage adds up quickly.
+- **Format fragmentation.** iPhone shoots `.mov` (H.264 or HEVC). Android
+  shoots `.mp4`. HEVC (H.265) is not universally browser-supported.
+  A transcoding step (like the HEIC→JPEG conversion for photos) would be
+  needed for consistent playback.
+- **Playback is different from photos.** Thumbnails, inline `<video>` players,
+  buffering, and mobile autoplay restrictions make the gallery UX substantially
+  more complex than a photo lightbox.
+- **Low near-term demand.** The chorus doesn't yet have a library of videos to
+  show, and the photo system is higher priority for launch.
+
+### What was decided
+
+- V1 of the photo system supports JPEG and HEIC only. Videos are not accepted.
+- If a member wants to share a video, Kevin uploads it manually to a designated
+  Drive folder and links it from a blog post or the Comms page.
+- Video upload will be revisited if member demand is clear and sustained.
+
+### Open questions if video is ever built
+
+- Accepted formats: `.mp4` only? Or also `.mov`?
+- Transcoding: server-side (Supabase Edge Function + ffmpeg?) or accept as-is
+  and rely on browser H.264 support?
+- Storage: same `/Photos/` folder in Drive, or a separate `/Videos/` folder?
+- Playback: inline `<video>` player in gallery, or download-to-watch?
+- File size cap: a hard limit (e.g., 100MB) enforced client-side before upload?
+- Public video access: same `is_public` flag + carousel pattern, or a separate
+  public video page?
+
+---
+
 *PDT Singers · pdtsingers.org · Lodge #18, WBQA · Music, Fellowship & Fun*
 
 <!-- html-synced: 2026-04-26 — §10 OTP expiry TODO resolved -->

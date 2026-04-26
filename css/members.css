@@ -394,9 +394,9 @@ body .pdt-events-editor-only {
 
 .nav-logout:hover { color: #ffffff; }
 
-/* Hamburger spans are white on the dark member nav */
+/* Hamburger spans are white on the dark member nav — !important beats dark-mode overrides */
 .member-nav .nav-hamburger span {
-  background: #ffffff;
+  background: rgba(255,255,255,0.9) !important;
 }
 
 @media (max-width: 1100px) {
@@ -406,6 +406,8 @@ body .pdt-events-editor-only {
 
   .member-nav {
     flex-wrap: wrap;
+    height: auto;
+    overflow: visible;
   }
 
   .member-nav-links {

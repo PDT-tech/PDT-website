@@ -289,7 +289,7 @@ served via the existing service account proxy. No new storage service.
 
 **Question:** How and when are HEIC files converted to browser-displayable JPEG?
 
-**Decision:** Post-process only — upload stores HEIC as-is, conversion happens via a pg_cron job (15-minute interval) calling a Supabase Edge Function. Max JPEG quality (quality=100). HEIC deleted from Drive after confirmed JPEG write. Errors reported to tech@pdtsingers.org via Resend and surfaced inline in the curation UI via `conversion_status = 'failed'` rows.
+**Decision:** Post-process only — upload stores HEIC as-is, conversion happens via GCP Cloud Scheduler (free tier, existing GCP project `pdt-singers-music-library`) calling a Supabase Edge Function every 15 minutes. Max JPEG quality (quality=100). HEIC deleted from Drive after confirmed JPEG write. Errors reported to tech@pdtsingers.org via Resend and surfaced inline in the curation UI via `conversion_status = 'failed'` rows.
 
 **Rationale:** Keeping conversion out of the upload path keeps upload UX fast. Uploading is already friction for members on phones — adding a blocking server-side codec step would make it worse. Post-process is invisible to the uploader and recoverable on failure.
 

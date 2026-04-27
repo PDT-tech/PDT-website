@@ -77,8 +77,14 @@ to the uploader.
 `conversion_status = 'pending'`. Non-HEIC uploads land with `conversion_status = 'done'`
 and skip conversion entirely.
 
-**Trigger:** pg_cron job in Supabase, every 15 minutes. Calls a Supabase Edge Function
-(`convert-heic`) that queries for `conversion_status = 'pending'` rows, processes
+**Trigger:** GCP Cloud Scheduler (free tier) calls the `convert-heic` Supabase Edge
+Function via HTTP POST every 15 minutes. Cloud Scheduler is configured in the
+existing GCP project (`pdt-singers-music-library`). The Edge Function URL is
+`https://<project-ref>.supabase.co/functions/v1/convert-heic` with an `Authorization`
+header carrying the service role key. No pg_cron, no Netlify scheduled function —
+both require paid plan upgrades.
+
+The function queries for `conversion_status = 'pending'` rows, processes
 them in upload-time order, converts each HEIC to JPEG via `@jsquash/heic` + `@jsquash/jpeg` (WASM-based, via esm.sh),
 writes the JPEG to the same Drive folder, verifies the Drive file ID,
 deletes the original HEIC, and updates the Supabase row with the new `drive_file_id`

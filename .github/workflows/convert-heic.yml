@@ -16,7 +16,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{}' \
-            https://odwkyofizkqfzxprpmbg.supabase.co/functions/v1/convert-heic)
+            ${{ secrets.SUPABASE_URL }}/functions/v1/convert-heic)
           echo "HTTP status: $response"
           echo "Response body:"
           cat /tmp/response.json

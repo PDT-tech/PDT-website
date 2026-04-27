@@ -3,9 +3,9 @@
 // photo_uploads rows per invocation (HEIC → JPEG via jsquash WASM).
 // Deploy: supabase functions deploy convert-heic
 
-import { createClient }  from 'https://esm.sh/@supabase/supabase-js@2'
-import decode             from 'https://esm.sh/@jsquash/heic@1.3.0'
-import encode             from 'https://esm.sh/@jsquash/jpeg@1.5.0'
+import { createClient }  from 'npm:@supabase/supabase-js@2'
+import decode             from 'npm:@jsquash/heic@1.3.0'
+import encode             from 'npm:@jsquash/jpeg@1.5.0'
 
 const TOKEN_URL    = 'https://oauth2.googleapis.com/token'
 const DRIVE_BASE   = 'https://www.googleapis.com/drive/v3/files'

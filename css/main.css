@@ -764,3 +764,31 @@ body {
 @media (prefers-color-scheme: light) {
   .hero-eyebrow { color: rgba(26,26,26,0.6); }
 }
+
+/* ── Carousel ───────────────────────────────────────────────── */
+.carousel-section {
+  margin: 0;  /* spacing handled by hero-spacer above and coming-soon-band below */
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  background: var(--forest);
+}
+
+.carousel-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.carousel-img.carousel-active {
+  opacity: 1;
+}

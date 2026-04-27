@@ -14,6 +14,14 @@
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/main.css">
+
+  <script>
+    window.PDT_CAROUSEL_CONFIG = {
+      containerId: 'carousel',
+      folderEnvKey: 'GOOGLE_DRIVE_CAROUSEL_FOLDER_ID',
+      placeholderSrc: '/assets/images/PDT_logo_color_2.jpeg'
+    };
+  </script>
   <script src="/env.local.js" onerror="void 0"></script>
 </head>
 <body>
@@ -62,6 +70,13 @@
     <p class="info-body">
       If that sounds like you, we'd love to stay connected.
     </p>
+  </div>
+</section>
+
+<section class="carousel-section">
+  <div id="carousel" class="carousel-container">
+    <img class="carousel-img carousel-active" id="carousel-placeholder"
+         src="/assets/images/PDT_logo_color_2.jpeg" alt="Portland DayTime Singers">
   </div>
 </section>
 
@@ -138,5 +153,6 @@
 </footer>
 
 <script src="/js/nav.js"></script>
+<script src="/js/carousel.js"></script>
 </body>
 </html>

@@ -132,16 +132,41 @@ export const handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: 'Invalid service account JSON' }) }
   }
 
+  const params   = event.queryStringParameters || {}
+  const action   = params.action
+  const type     = params.type
+  const folderId = params.folderId
+
+  // ── carousel-list action (public — no session required) ──────
+  if (action === 'carousel-list') {
+    const carouselFolderId = process.env.GOOGLE_DRIVE_CAROUSEL_FOLDER_ID
+    if (!carouselFolderId) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Carousel folder not configured' }) }
+    }
+    try {
+      const token = await getAccessToken(serviceAccount)
+      const q   = `'${carouselFolderId}' in parents and trashed=false`
+      const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name)`
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      if (!res.ok) throw new Error(`Drive carousel fetch failed: ${res.status}`)
+      const data  = await res.json()
+      const files = (data.files || []).map(f => ({ fileId: f.id, filename: f.name }))
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
+        body: JSON.stringify(files)
+      }
+    } catch (err) {
+      console.error('drive-music carousel-list error:', err)
+      return { statusCode: 500, body: JSON.stringify({ error: 'Drive API error', detail: err.message }) }
+    }
+  }
+
   // Reject unauthenticated requests
   const authed = await validateSession(event)
   if (!authed) {
     return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) }
   }
-
-  const params   = event.queryStringParameters || {}
-  const action   = params.action
-  const type     = params.type
-  const folderId = params.folderId
 
   // ── sunburst-list action ─────────────────────────────────────
   if (action === 'sunburst-list') {

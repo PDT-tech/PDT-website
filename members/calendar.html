@@ -249,6 +249,23 @@
         <button class="btn-secondary cal-present-btn modal-hidden" id="dm-mark-present-btn">I'll be there after all</button>
       </div>
 
+      <!-- Three-state attendance CTA for sing-outs and other non-rehearsal events -->
+      <div class="cal-detail-absence-cta modal-hidden" id="dm-attendance-cta">
+        <select id="dm-attendance-status" class="form-input">
+          <option value="attending">I'll be there</option>
+          <option value="not_sure">I'm not sure</option>
+          <option value="not_attending">I can't make it</option>
+        </select>
+        <div id="dm-attendance-reason-wrap" style="display:none;margin-top:var(--space-sm)">
+          <label class="form-label" for="dm-attendance-reason">Reason (optional)</label>
+          <input type="text" id="dm-attendance-reason" class="form-input" placeholder="">
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-sm);margin-top:var(--space-sm)">
+          <button class="btn-primary btn-forest" id="dm-attendance-save">Save</button>
+          <span id="dm-attendance-saved" style="display:none;color:#2d6a4f;font-size:var(--text-sm)">Saved ✓</span>
+        </div>
+      </div>
+
       <div class="cal-detail-admin-actions pdt-cal-manager-only" id="dm-admin-actions">
         <button class="btn-secondary btn-sm" id="dm-edit-btn">Edit</button>
         <button class="btn-danger btn-sm" id="dm-delete-btn">Delete</button>
@@ -532,22 +549,31 @@
       ).join('')
     }
 
-    // Absence CTA
-    const ctaEl = document.getElementById('dm-absence-cta')
-    const absentBtn = document.getElementById('dm-mark-absent-btn')
-    const presentBtn = document.getElementById('dm-mark-present-btn')
-    const eventDate = new Date(ev.event_date + 'T23:59:59')
+    // Absence / attendance CTA
+    const ctaEl          = document.getElementById('dm-absence-cta')
+    const attendanceCta  = document.getElementById('dm-attendance-cta')
+    const absentBtn      = document.getElementById('dm-mark-absent-btn')
+    const presentBtn     = document.getElementById('dm-mark-present-btn')
+    const eventDate      = new Date(ev.event_date + 'T23:59:59')
     if (eventDate >= new Date() && !ev.is_cancelled) {
-      ctaEl.classList.remove('modal-hidden')
-      if (myAbsences.has(ev.id)) {
-        absentBtn.classList.add('modal-hidden')
-        presentBtn.classList.remove('modal-hidden')
+      if (ev.event_type === 'rehearsal') {
+        ctaEl.classList.remove('modal-hidden')
+        attendanceCta.classList.add('modal-hidden')
+        if (myAbsences.has(ev.id)) {
+          absentBtn.classList.add('modal-hidden')
+          presentBtn.classList.remove('modal-hidden')
+        } else {
+          absentBtn.classList.remove('modal-hidden')
+          presentBtn.classList.add('modal-hidden')
+        }
       } else {
-        absentBtn.classList.remove('modal-hidden')
-        presentBtn.classList.add('modal-hidden')
+        ctaEl.classList.add('modal-hidden')
+        attendanceCta.classList.remove('modal-hidden')
+        await loadAttendanceRecord(ev.id)
       }
     } else {
       ctaEl.classList.add('modal-hidden')
+      attendanceCta.classList.add('modal-hidden')
     }
 
     // Admin actions
@@ -580,6 +606,52 @@
     document.getElementById('event-detail-modal').classList.add('modal-hidden')
     selectedEvent = null
   }
+
+  // ── Three-state attendance (sing-outs / non-rehearsals) ────
+  async function loadAttendanceRecord (eventId) {
+    const profile = window.__PDT_USER
+    const statusEl     = document.getElementById('dm-attendance-status')
+    const reasonEl     = document.getElementById('dm-attendance-reason')
+    const reasonWrap   = document.getElementById('dm-attendance-reason-wrap')
+    const savedMsg     = document.getElementById('dm-attendance-saved')
+    savedMsg.style.display = 'none'
+    if (!profile) { statusEl.value = 'attending'; reasonEl.value = ''; reasonWrap.style.display = 'none'; return }
+    const { data } = await supabase
+      .from('event_attendance')
+      .select('status, reason')
+      .eq('event_id', eventId)
+      .eq('member_id', profile.id)
+      .maybeSingle()
+    statusEl.value = data?.status || 'attending'
+    reasonEl.value = data?.reason || ''
+    reasonWrap.style.display = statusEl.value !== 'attending' ? 'block' : 'none'
+  }
+
+  document.getElementById('dm-attendance-status').addEventListener('change', () => {
+    const val = document.getElementById('dm-attendance-status').value
+    document.getElementById('dm-attendance-reason-wrap').style.display =
+      val !== 'attending' ? 'block' : 'none'
+  })
+
+  document.getElementById('dm-attendance-save').addEventListener('click', async () => {
+    const profile = window.__PDT_USER
+    if (!profile || !selectedEvent) return
+    const status = document.getElementById('dm-attendance-status').value
+    const reason = document.getElementById('dm-attendance-reason').value.trim() || null
+    const { error } = await supabase
+      .from('event_attendance')
+      .upsert(
+        { event_id: selectedEvent.id, member_id: profile.id, status, reason },
+        { onConflict: 'event_id,member_id' }
+      )
+    if (!error) {
+      const savedMsg = document.getElementById('dm-attendance-saved')
+      savedMsg.style.display = 'inline'
+      setTimeout(() => { savedMsg.style.display = 'none' }, 2000)
+    } else {
+      alert('Error saving attendance — please try again.')
+    }
+  })
 
   // ── Absence mark/unmark ────────────────────────────────────
   document.getElementById('dm-mark-absent-btn').addEventListener('click', () => {

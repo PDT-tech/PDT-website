@@ -1,7 +1,7 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-04-24
+# Last updated: 2026-04-26
 
 ---
 
@@ -262,3 +262,53 @@ served via the existing service account proxy. No new storage service.
 
 **Env var:** `GOOGLE_DRIVE_SUNBURST_FOLDER_ID`  
 **Folder ID:** `1MWi8I8-702dtX4BNKabApXpCggszIul_`
+
+---
+
+## 2026-04-26 — Photo storage architecture
+
+**Question:** Where do member-uploaded photos live, and what is the source of truth for organization?
+
+**Decision:** Google Workspace Drive `/Photos/` flat folder for file storage. `photo_uploads` Supabase table as metadata source of truth (uploader, event association, EXIF datetime, conversion status, public flag). Same service account and proxy pattern as Music Library. Two subfolders: `/Photos/` (all uploads) and `/Photos/Mainpage_Carousel/` (curated public subset).
+
+**Rationale:** Reuses infrastructure already built and proven for the Music Library. No new accounts, no new GCP projects, no new proxy patterns. Drive is blob storage; Supabase owns the organization logic.
+
+---
+
+## 2026-04-26 — Photo upload format restriction
+
+**Question:** Which file formats does the photo upload system accept?
+
+**Decision:** JPEG and HEIC only. All other formats rejected at upload time with a clear error message. No exceptions in V1.
+
+**Rationale:** JPEG is the Android camera default and universal browser format. HEIC is the iPhone camera default. Together they cover >95% of real-world phone uploads. Excluding PNG, WebP, RAW, and DNG keeps the upload pipeline simple and avoids encouraging large files.
+
+---
+
+## 2026-04-26 — HEIC conversion: post-process, max quality
+
+**Question:** How and when are HEIC files converted to browser-displayable JPEG?
+
+**Decision:** Post-process only — upload stores HEIC as-is, conversion happens via a pg_cron job (15-minute interval) calling a Supabase Edge Function. Max JPEG quality (quality=100). HEIC deleted from Drive after confirmed JPEG write. Errors reported to tech@pdtsingers.org via Resend and surfaced inline in the curation UI via `conversion_status = 'failed'` rows.
+
+**Rationale:** Keeping conversion out of the upload path keeps upload UX fast. Uploading is already friction for members on phones — adding a blocking server-side codec step would make it worse. Post-process is invisible to the uploader and recoverable on failure.
+
+---
+
+## 2026-04-26 — Video upload deliberately deferred
+
+**Question:** Should the photo system also accept video uploads?
+
+**Decision:** No. Video upload is explicitly out of scope for V1. Members wanting to share video contact Kevin for manual upload. Revisit if member demand is clear and sustained.
+
+**Rationale:** Videos introduce file size, transcoding, format fragmentation, and playback complexity that photos don't have. Low near-term demand. Rationale and open questions for a future video feature are documented in pdt-tech-maintainers-guide.md §17.
+
+---
+
+## 2026-04-26 — Stripe donation page: future feature
+
+**Question:** Should PDT add a member portal donation page powered by Stripe?
+
+**Decision:** Yes, eventually. Logged as issue #059. No due date, no design yet. Features when built: donation form, Stripe payment processing, automatic deposit to OnPoint Credit Union operating account, 501(c)(3) tax receipt email to donor via Resend.
+
+**Rationale:** PDT is a confirmed 501(c)(3). Donation capability is a natural fit. Deferred because photo system and public page polish are higher priority.

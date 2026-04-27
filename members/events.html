@@ -292,7 +292,7 @@
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.get('new') === '1') {
     const parts = []
-    if (urlParams.get('start_time')) parts.push(`Show time: ${urlParams.get('start_time')}`)
+    if (urlParams.get('start_time')) parts.push(`Show time: ${urlParams.get('start_time').slice(0, 5)}`)
     if (urlParams.get('location'))   parts.push(`Location: ${urlParams.get('location')}`)
     if (urlParams.get('notes'))      parts.push(urlParams.get('notes'))
     openModal({

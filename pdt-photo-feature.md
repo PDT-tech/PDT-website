@@ -79,8 +79,8 @@ and skip conversion entirely.
 
 **Trigger:** pg_cron job in Supabase, every 15 minutes. Calls a Supabase Edge Function
 (`convert-heic`) that queries for `conversion_status = 'pending'` rows, processes
-them in upload-time order, converts each HEIC to JPEG via `sharp` (with `libheif`
-binding), writes the JPEG to the same Drive folder, verifies the Drive file ID,
+them in upload-time order, converts each HEIC to JPEG via `@jsquash/heic` + `@jsquash/jpeg` (WASM-based, via esm.sh),
+writes the JPEG to the same Drive folder, verifies the Drive file ID,
 deletes the original HEIC, and updates the Supabase row with the new `drive_file_id`
 and `conversion_status = 'done'`. If conversion fails, sets `conversion_status = 'failed'`
 and records the error in `conversion_error` text column.

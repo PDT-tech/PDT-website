@@ -312,3 +312,17 @@ served via the existing service account proxy. No new storage service.
 **Decision:** Yes, eventually. Logged as issue #059. No due date, no design yet. Features when built: donation form, Stripe payment processing, automatic deposit to OnPoint Credit Union operating account, 501(c)(3) tax receipt email to donor via Resend.
 
 **Rationale:** PDT is a confirmed 501(c)(3). Donation capability is a natural fit. Deferred because photo system and public page polish are higher priority.
+
+---
+
+## 2026-04-26 — HEIC conversion: jsquash WASM library
+
+**Question:** What library implements HEIC→JPEG conversion in the Supabase Edge Function?
+
+**Decision:** `@jsquash/heic` (WASM-based HEIC decoder) + `@jsquash/jpeg` (WASM encoder),
+imported via `esm.sh`. Quality=100. Replaces "sharp with libheif" from original spec.
+
+**Rationale:** Supabase Edge Functions run on Deno, which cannot load native Node.js addons.
+`sharp` relies on `libvips` native bindings and is incompatible with the Supabase Edge runtime.
+jsquash uses WASM exclusively — no native binaries — and is fully Deno-compatible via esm.sh.
+Behavioral spec is unchanged: max-quality JPEG, same post-process pipeline.

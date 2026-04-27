@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Photos — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/members.css">
+  <link rel="stylesheet" href="../css/blog.css">
+  <link rel="stylesheet" href="photos.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+</head>
+<body class="members-page">
+
+<!-- MEMBER NAV -->
+<nav class="member-nav">
+  <a href="/members/" class="member-nav-brand">
+    Portland <span class="accent">DayTime</span> Singers
+    <span class="member-badge">Members</span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="member-nav-links">
+    <li><a href="/members/">Member Home</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+    <li><a href="/members/poohbah.html">Poohbahs' Prattlings</a></li>
+    <li><a href="/members/events.html">Events</a></li>
+    <li><a href="/members/sunburst.html">The Sunburst</a></li>
+    <li><a href="/members/calendar.html">Calendar</a></li>
+    <li><a href="/members/attendance.html">Can You Be There?</a></li>
+    <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html">Attendance Report</a></li>
+    <li><a href="/members/music.html">Music</a></li>
+    <li><a href="/members/photos.html" class="active">Photos</a></li>
+  </ul>
+  <div class="member-nav-right">
+    <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
+    <a href="#" class="pdt-logout-btn nav-logout">Sign out</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="members-main">
+
+  <!-- PAGE HERO -->
+  <div class="blog-header" style="--blog-color: #6a9ab8;">
+    <div class="blog-header-inner">
+      <p class="blog-eyebrow">Member Portal</p>
+      <h1 class="blog-title">Member Photos</h1>
+      <p class="blog-byline">Browse and share chorus memories.</p>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="cal-toolbar">
+    <div class="cal-toolbar-inner">
+      <button id="upload-btn" class="btn-primary btn-forest">+ Upload Photos</button>
+    </div>
+  </div>
+
+  <!-- EVENT FILTER -->
+  <div class="photos-filter-bar">
+    <div class="photos-filter">
+      <label for="event-filter">Filter by event:</label>
+      <select id="event-filter" class="form-input">
+        <option value="">All events</option>
+      </select>
+      <button id="show-all-events" class="btn-text">Show all events with photos</button>
+    </div>
+  </div>
+
+  <!-- PHOTO GRID -->
+  <div class="photos-main">
+    <div id="photos-grid" class="photos-grid"></div>
+    <p id="photos-empty" class="photos-empty modal-hidden">No photos yet.</p>
+  </div>
+
+  <!-- UPLOAD MODAL -->
+  <div class="post-modal-overlay modal-hidden" id="upload-modal">
+    <div class="post-modal" style="max-width: 520px;">
+      <div class="post-modal-header">
+        <h2 class="post-modal-title">Upload Photos</h2>
+        <button class="post-modal-close" id="upload-modal-close">&times;</button>
+      </div>
+      <form id="upload-form">
+        <div class="form-group">
+          <label class="form-label" for="upload-event-select">Event</label>
+          <select id="upload-event-select" class="form-input">
+            <option value="">General / No specific event</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="upload-file-input">
+            Photos <span class="form-hint">(JPEG or HEIC, up to 8)</span>
+          </label>
+          <input type="file" id="upload-file-input" class="form-input"
+                 accept="image/jpeg,image/heic" multiple>
+        </div>
+        <p id="upload-error" class="form-error modal-hidden" style="margin-top: var(--space-xs);"></p>
+        <p id="upload-progress" class="form-hint modal-hidden" style="margin-top: var(--space-xs);"></p>
+        <div class="post-modal-actions">
+          <button type="submit" class="btn-primary btn-forest" id="upload-submit">Upload</button>
+          <button type="button" class="btn-secondary" id="upload-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox-overlay modal-hidden" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Previous">&#8249;</button>
+    <div class="lightbox-img-wrap">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="Chorus photo">
+    </div>
+    <button class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Next">&#8250;</button>
+    <div class="lightbox-footer">
+      <span class="lightbox-caption" id="lightbox-caption"></span>
+      <button class="btn-secondary lightbox-download" id="lightbox-download">Download</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="members-footer">
+  <div class="members-footer-inner">
+    <span>&copy; 2026 <a href="/">Portland DayTime Singers</a> &nbsp;&middot;&nbsp; Members Only</span>
+    <a href="/members/">Members Only Portal Home</a>
+    <a href="/">PDT Singers Home</a>
+  </div>
+</footer>
+
+<script type="module">
+  import '../js/auth-guard.js'
+  import { supabase } from '../js/supabase.js'
+
+  // ── State ──────────────────────────────────────────────────
+  let allEventsLoaded = false
+  let currentPhotos   = []
+  let lightboxIndex   = 0
+  let eventsMap       = {}  // id → event row
+
+  // ── Token helper (cached) ─────────────────────────────────
+  let _token = null
+  async function getToken () {
+    if (_token) return _token
+    const { data } = await supabase.auth.getSession()
+    _token = data.session?.access_token ?? ''
+    return _token
+  }
+
+  // ── Role visibility ────────────────────────────────────────
+  function applyRoleVisibility (profile) {
+    profile = profile ?? window.__PDT_USER
+    if (!profile) {
+      document.addEventListener('pdt:profile-loaded', e => applyRoleVisibility(e.detail), { once: true })
+      return
+    }
+    const role      = profile.role
+    const isCurator = role === 'admin' || role === 'events_editor'
+    const isAdmin   = role === 'admin'
+    document.querySelectorAll('.pdt-curator-only').forEach(el => {
+      el.style.display = isCurator ? '' : 'none'
+    })
+    document.querySelectorAll('.pdt-admin-only').forEach(el => {
+      el.style.display = isAdmin ? '' : 'none'
+    })
+  }
+  applyRoleVisibility()
+
+  // ── Load events ────────────────────────────────────────────
+  async function loadEvents () {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - 90)
+    const cutoffStr = cutoff.toISOString().split('T')[0]
+
+    const { data, error } = await supabase
+      .from('events')
+      .select('id, title, event_date, event_type')
+      .gte('event_date', cutoffStr)
+      .order('event_date', { ascending: false })
+
+    if (error || !data) return
+
+    eventsMap = {}
+    data.forEach(ev => { eventsMap[ev.id] = ev })
+
+    const filterSel = document.getElementById('event-filter')
+    const uploadSel = document.getElementById('upload-event-select')
+    while (filterSel.options.length > 1) filterSel.remove(1)
+    while (uploadSel.options.length > 1) uploadSel.remove(1)
+
+    data.forEach(ev => {
+      const label = `${ev.title} (${ev.event_date})`
+      filterSel.add(new Option(label, ev.id))
+      uploadSel.add(new Option(label, ev.id))
+    })
+  }
+
+  // ── Load photos ────────────────────────────────────────────
+  async function loadPhotos (eventId = null, allEvents = false) {
+    let query = supabase.from('photo_uploads').select('*')
+
+    if (eventId) {
+      query = query.eq('event_id', eventId)
+    } else if (!allEvents) {
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - 90)
+      query = query.gte('uploaded_at', cutoff.toISOString())
+    }
+
+    query = query.order('uploaded_at', { ascending: false })
+
+    const { data, error } = await query
+    if (error) { console.error('photos: load error:', error); return }
+
+    currentPhotos = data || []
+    renderPhotos(currentPhotos)
+  }
+
+  // ── Render grid ────────────────────────────────────────────
+  function renderPhotos (photos) {
+    const grid  = document.getElementById('photos-grid')
+    const empty = document.getElementById('photos-empty')
+    grid.innerHTML = ''
+
+    if (!photos.length) {
+      empty.classList.remove('modal-hidden')
+      return
+    }
+    empty.classList.add('modal-hidden')
+
+    const role      = window.__PDT_USER?.role || ''
+    const isCurator = role === 'admin' || role === 'events_editor'
+    const isAdmin   = role === 'admin'
+
+    photos.forEach((photo, idx) => {
+      const card = document.createElement('div')
+      card.className = 'photo-card'
+
+      // Public proxy URL for <img> tags — page-level auth guard protects access.
+      const src = `/api/photo?fileId=${encodeURIComponent(photo.drive_file_id)}&filename=${encodeURIComponent(photo.drive_filename)}`
+
+      // Conversion status badge
+      let badge = ''
+      if (photo.conversion_status === 'pending' || photo.conversion_status === 'processing') {
+        badge = '<span class="photo-badge photo-badge--pending">Converting…</span>'
+      } else if (photo.conversion_status === 'failed') {
+        const display = isAdmin ? '' : 'display:none'
+        badge = `<span class="photo-badge photo-badge--failed pdt-admin-only" style="${display}">Conversion failed</span>`
+      }
+
+      const eventLabel = photo.event_id && eventsMap[photo.event_id]
+        ? eventsMap[photo.event_id].title : ''
+
+      const curationToggle = isCurator
+        ? `<label class="photo-curation-label pdt-curator-only">
+             <input type="checkbox" class="photo-public-toggle"
+                    data-file-id="${photo.drive_file_id}"
+                    data-filename="${photo.drive_filename}"
+                    ${photo.is_public ? 'checked' : ''}>
+             Public
+           </label>`
+        : ''
+
+      card.innerHTML = `
+        ${badge}
+        <img src="${src}" alt="${eventLabel || 'Chorus photo'}" loading="lazy">
+        <div class="photo-card-meta">
+          ${eventLabel ? `<span class="photo-event-label">${eventLabel}</span>` : '<span></span>'}
+          ${curationToggle}
+        </div>`
+
+      // Click → lightbox (only when conversion complete)
+      if (photo.conversion_status === 'done') {
+        card.querySelector('img').addEventListener('click', () => openLightbox(idx))
+      }
+
+      // Curation toggle
+      const toggle = card.querySelector('.photo-public-toggle')
+      if (toggle) {
+        toggle.addEventListener('change', async (e) => {
+          const makePublic = e.target.checked
+          toggle.disabled = true
+          try {
+            await setCuration(photo.drive_file_id, photo.drive_filename, makePublic)
+            photo.is_public = makePublic
+          } catch {
+            toggle.checked = !makePublic
+            alert('Could not update public status — please try again.')
+          } finally {
+            toggle.disabled = false
+          }
+        })
+      }
+
+      grid.appendChild(card)
+    })
+  }
+
+  // ── Lightbox ───────────────────────────────────────────────
+  function openLightbox (idx) {
+    lightboxIndex = idx
+    renderLightbox()
+    document.getElementById('lightbox').classList.remove('modal-hidden')
+    document.body.style.overflow = 'hidden'
+  }
+
+  function closeLightbox () {
+    document.getElementById('lightbox').classList.add('modal-hidden')
+    document.body.style.overflow = ''
+  }
+
+  function renderLightbox () {
+    const photo = currentPhotos[lightboxIndex]
+    if (!photo) return
+
+    // Public proxy for inline display — page auth guard is the access control.
+    const src = `/api/photo?fileId=${encodeURIComponent(photo.drive_file_id)}&filename=${encodeURIComponent(photo.drive_filename)}`
+    document.getElementById('lightbox-img').src = src
+
+    const eventLabel = photo.event_id && eventsMap[photo.event_id]
+      ? eventsMap[photo.event_id].title : ''
+    const date = new Date(photo.uploaded_at).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric'
+    })
+    document.getElementById('lightbox-caption').textContent =
+      [eventLabel, date].filter(Boolean).join(' · ')
+
+    document.getElementById('lightbox-prev').style.visibility =
+      lightboxIndex > 0 ? '' : 'hidden'
+    document.getElementById('lightbox-next').style.visibility =
+      lightboxIndex < currentPhotos.length - 1 ? '' : 'hidden'
+
+    document.getElementById('lightbox-download').onclick = () =>
+      downloadPhoto(photo.drive_file_id, photo.drive_filename)
+  }
+
+  // fetch → blob → objectURL — the only pattern that carries auth headers for a download
+  async function downloadPhoto (fileId, filename) {
+    const res = await fetch(
+      `/api/photo?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}&auth=1`,
+      { headers: { Authorization: `Bearer ${await getToken()}` } }
+    )
+    if (!res.ok) { alert('Download failed — please try again.'); return }
+    const blobUrl = URL.createObjectURL(await res.blob())
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = filename
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
+  }
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox)
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox')) closeLightbox()
+  })
+  document.getElementById('lightbox-prev').addEventListener('click', () => {
+    if (lightboxIndex > 0) { lightboxIndex--; renderLightbox() }
+  })
+  document.getElementById('lightbox-next').addEventListener('click', () => {
+    if (lightboxIndex < currentPhotos.length - 1) { lightboxIndex++; renderLightbox() }
+  })
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('lightbox').classList.contains('modal-hidden')) return
+    if (e.key === 'Escape') closeLightbox()
+    if (e.key === 'ArrowLeft' && lightboxIndex > 0)                              { lightboxIndex--; renderLightbox() }
+    if (e.key === 'ArrowRight' && lightboxIndex < currentPhotos.length - 1)      { lightboxIndex++; renderLightbox() }
+  })
+
+  // ── Upload modal ───────────────────────────────────────────
+  function openUploadModal () {
+    document.getElementById('upload-form').reset()
+    document.getElementById('upload-error').classList.add('modal-hidden')
+    document.getElementById('upload-progress').classList.add('modal-hidden')
+    document.getElementById('upload-modal').classList.remove('modal-hidden')
+  }
+
+  function closeUploadModal () {
+    document.getElementById('upload-modal').classList.add('modal-hidden')
+  }
+
+  document.getElementById('upload-btn').addEventListener('click', openUploadModal)
+  document.getElementById('upload-modal-close').addEventListener('click', closeUploadModal)
+  document.getElementById('upload-cancel').addEventListener('click', closeUploadModal)
+  document.getElementById('upload-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('upload-modal')) closeUploadModal()
+  })
+
+  // File picker: validate count and types on change
+  document.getElementById('upload-file-input').addEventListener('change', e => {
+    const errEl = document.getElementById('upload-error')
+    const files = Array.from(e.target.files || [])
+    if (files.length > 8) {
+      errEl.textContent = 'Please select up to 8 photos at a time.'
+      errEl.classList.remove('modal-hidden')
+      e.target.value = ''
+      return
+    }
+    const invalid = files.filter(f => f.type !== 'image/jpeg' && f.type !== 'image/heic')
+    if (invalid.length) {
+      errEl.textContent = 'Please upload JPEG or HEIC photos only.'
+      errEl.classList.remove('modal-hidden')
+      e.target.value = ''
+      return
+    }
+    errEl.classList.add('modal-hidden')
+  })
+
+  // Upload: send files sequentially, update progress counter
+  document.getElementById('upload-form').addEventListener('submit', async e => {
+    e.preventDefault()
+    const files    = Array.from(document.getElementById('upload-file-input').files || [])
+    const eventId  = document.getElementById('upload-event-select').value
+    const errEl    = document.getElementById('upload-error')
+    const progEl   = document.getElementById('upload-progress')
+    const submitBtn = document.getElementById('upload-submit')
+
+    if (!files.length) {
+      errEl.textContent = 'Please select at least one photo.'
+      errEl.classList.remove('modal-hidden')
+      return
+    }
+
+    errEl.classList.add('modal-hidden')
+    progEl.classList.remove('modal-hidden')
+    submitBtn.disabled = true
+
+    const token = await getToken()
+    let i = 0
+
+    for (const file of files) {
+      i++
+      progEl.textContent = `Uploading ${i} of ${files.length}…`
+
+      const form = new FormData()
+      form.append('file', file, file.name)
+      form.append('event_id', eventId)
+      form.append('original_filename', file.name)
+
+      const res = await fetch('/api/upload-photo', {
+        method : 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body   : form
+      })
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        errEl.textContent = `Upload failed on photo ${i}: ${body.error || 'Unknown error'}`
+        errEl.classList.remove('modal-hidden')
+        progEl.classList.add('modal-hidden')
+        submitBtn.disabled = false
+        return
+      }
+    }
+
+    progEl.classList.add('modal-hidden')
+    submitBtn.disabled = false
+    closeUploadModal()
+    await loadPhotos(
+      document.getElementById('event-filter').value || null,
+      allEventsLoaded
+    )
+  })
+
+  // ── Filter controls ────────────────────────────────────────
+  document.getElementById('event-filter').addEventListener('change', e => {
+    loadPhotos(e.target.value || null, allEventsLoaded)
+  })
+
+  document.getElementById('show-all-events').addEventListener('click', () => {
+    allEventsLoaded = true
+    const btn = document.getElementById('show-all-events')
+    btn.textContent = 'Showing all events'
+    btn.disabled = true
+    loadPhotos(document.getElementById('event-filter').value || null, true)
+  })
+
+  // ── Curation stub (replaced in Prompt 9) ──────────────────
+  async function setCuration (driveFileId, filename, makePublic) {
+    // TODO: implement /api/curate-photo (Prompt 9)
+    console.log('setCuration stub:', driveFileId, makePublic)
+  }
+
+  // ── Re-render after profile loads (role-gated elements) ────
+  document.addEventListener('pdt:profile-loaded', () => {
+    applyRoleVisibility(window.__PDT_USER)
+    renderPhotos(currentPhotos)
+  })
+
+  // ── Init ───────────────────────────────────────────────────
+  await loadEvents()
+  await loadPhotos()
+</script>
+
+<script src="/js/nav-member.js"></script>
+</body>
+</html>

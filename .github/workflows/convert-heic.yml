@@ -1,0 +1,26 @@
+name: Convert HEIC Photos
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:  # allows manual trigger from GitHub Actions UI
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger convert-heic Edge Function
+        run: |
+          response=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            https://odwkyofizkqfzxprpmbg.supabase.co/functions/v1/convert-heic)
+          echo "HTTP status: $response"
+          echo "Response body:"
+          cat /tmp/response.json
+          if [ "$response" != "200" ]; then
+            echo "Edge Function returned non-200 status"
+            exit 1
+          fi

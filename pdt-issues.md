@@ -67,3 +67,8 @@ Post-release. pdtsingers.music@gmail.com (a recovered deleted account) is curren
 co-Owner of pdt-singers-music-library GCP project. tech@pdtsingers.org is now the
 primary Owner. Remove pdtsingers.music@gmail.com from IAM once confirmed everything
 works under tech@pdtsingers.org. Do not remove until post-release verification complete.
+
+## #061 — Transfer GitHub repo to org account
+Post-release. Repository currently lives under kevin36v personal GitHub account.
+Transfer to tech@pdtsingers.org GitHub account or a PDT GitHub Organization.
+Coordinate with Netlify re-link after transfer. No urgency until post-release.

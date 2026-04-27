@@ -61,3 +61,9 @@
 057 | DONE   | directors-notes blog_type constraint mismatch. directors-notes.html was posting blog_type='directors_notes' (underscore) but posts_blog_type_check constraint only allowed 'directors-notes' (hyphen). Fixed by dropping and recreating constraint with correct values: directors_notes, poohbah, events, sunburst. No data migration needed — no rows existed with the hyphen form. Fixed 2026-04-25.
 058 | CLOSED | members/whats-new.html member changelog — retired as a planned feature. Not needed. Closed 2026-04-26.
 059 | FUTURE  | Donation page: Add a member portal donation page powered by Stripe. Features: donation form (amount, donor info), Stripe payment processing, automatic deposit to PDT credit union operating account, confirmation email to donor suitable for 501(c)(3) tax purposes (PDT is a confirmed 501(c)(3)). No due date — idea-stage only. Design TBD. Note: update §16 of pdt-tech-maintainers-guide.md to change Stripe connector status from "Not relevant" to "Reserved for future donation feature" when implementation begins.
+
+## #060 — Clean up pdtsingers.music@gmail.com GCP ownership
+Post-release. pdtsingers.music@gmail.com (a recovered deleted account) is currently
+co-Owner of pdt-singers-music-library GCP project. tech@pdtsingers.org is now the
+primary Owner. Remove pdtsingers.music@gmail.com from IAM once confirmed everything
+works under tech@pdtsingers.org. Do not remove until post-release verification complete.

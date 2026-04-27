@@ -2,7 +2,27 @@
 
 **Archive of completed session logs.**
 **Current state is in `pdt-session-context.md`.**
-**Last entry: Session 14 — 2026-04-25**
+**Last entry: Session 16 — 2026-04-26**
+
+---
+
+## Session 16 — 2026-04-26
+
+- ✅ Photo feature design complete — all architecture decisions resolved
+- ✅ pdt-photo-feature.md fully rewritten (Session 8 draft → Session 16 design-complete)
+- ✅ Accepted upload formats: JPEG and HEIC only; all others rejected with clear error message
+- ✅ HEIC conversion: post-process via pg_cron (15-min) + Supabase Edge Function; max JPEG quality; HEIC deleted after confirmed JPEG write; errors reported to tech@pdtsingers.org via Resend + surfaced in curation UI
+- ✅ Filename de-confliction: EXIF datetime extracted server-side (exifr), prefixed to Drive filename; upload datetime fallback
+- ✅ Upload UX: modal on members/photos.html; up to 8 files per operation; progress counter; event association via dropdown (last 90 days, not required); "General / No specific event" default
+- ✅ All uploads private by default (is_public = false); admin/events_editor curates via inline toggle; "Make public" copies file to /Photos/Mainpage_Carousel/ in Drive
+- ✅ Home page carousel: feeds from /Photos/Mainpage_Carousel/; random order client-side; logo placeholder on load, swaps in as Drive photos load; lazy-load next image
+- ✅ Friends page carousel V1: replicates home page carousel; no auth gating; broader access deferred post-V1
+- ✅ Member gallery: event-grouped fixed-aspect grid; lightbox with prev/next + single download; event picker (90-day default, expandable to all events with photos)
+- ✅ Videos: deliberately deferred; rationale captured in pdt-tech-maintainers-guide.md §17
+- ✅ Issue #059 added: Stripe donation page (future feature, no due date)
+- ✅ §17 video deferral added to pdt-tech-maintainers-guide.md
+- ✅ New env vars set in Netlify and env.local.js: GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID
+- ▶️ TODO: Write CC build prompts for photo feature implementation (next session)
 
 ---
 

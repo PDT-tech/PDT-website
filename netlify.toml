@@ -22,6 +22,10 @@
   function = "photo-proxy"
 
 [[edge_functions]]
+  path = "/api/curate-photo"
+  function = "curate-photo"
+
+[[edge_functions]]
   path = "/*"
   function = "inject-env"
 

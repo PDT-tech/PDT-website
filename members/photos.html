@@ -485,10 +485,18 @@
     loadPhotos(document.getElementById('event-filter').value || null, true)
   })
 
-  // ── Curation stub (replaced in Prompt 9) ──────────────────
+  // ── Curation ─────────────────────────────────────────────
   async function setCuration (driveFileId, filename, makePublic) {
-    // TODO: implement /api/curate-photo (Prompt 9)
-    console.log('setCuration stub:', driveFileId, makePublic)
+    const token = await getToken()
+    const res = await fetch('/api/curate-photo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ fileId: driveFileId, filename, makePublic })
+    })
+    if (!res.ok) throw new Error('Curation failed')
   }
 
   // ── Re-render after profile loads (role-gated elements) ────

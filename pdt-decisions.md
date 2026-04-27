@@ -315,14 +315,16 @@ served via the existing service account proxy. No new storage service.
 
 ---
 
-## 2026-04-26 — HEIC conversion: jsquash WASM library
+## 2026-04-26 — HEIC conversion: heic-to library
 
 **Question:** What library implements HEIC→JPEG conversion in the Supabase Edge Function?
 
-**Decision:** `@jsquash/heic` (WASM-based HEIC decoder) + `@jsquash/jpeg` (WASM encoder),
-imported via `esm.sh`. Quality=100. Replaces "sharp with libheif" from original spec.
+**Decision:** `heic-to (npm:heic-to@1.4.2)` — WASM-based HEIC decoder built on libheif via
+Emscripten. Replaces the originally specced "sharp with libheif" and the incorrectly named
+`@jsquash/heic` (which does not exist on npm). heic-to confirmed deployable in Supabase Edge
+Runtime. Quality parameter is 0–1 scale; quality: 1 = maximum quality.
 
 **Rationale:** Supabase Edge Functions run on Deno, which cannot load native Node.js addons.
 `sharp` relies on `libvips` native bindings and is incompatible with the Supabase Edge runtime.
-jsquash uses WASM exclusively — no native binaries — and is fully Deno-compatible via esm.sh.
+heic-to uses WASM exclusively — no native binaries — and is deployable via npm: specifiers.
 Behavioral spec is unchanged: max-quality JPEG, same post-process pipeline.

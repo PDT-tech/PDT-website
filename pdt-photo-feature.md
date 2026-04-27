@@ -85,7 +85,7 @@ header carrying the service role key. No pg_cron, no Netlify scheduled function 
 both require paid plan upgrades.
 
 The function queries for `conversion_status = 'pending'` rows, processes
-them in upload-time order, converts each HEIC to JPEG via `@jsquash/heic` + `@jsquash/jpeg` (WASM-based, via esm.sh),
+them in upload-time order, converts each HEIC to JPEG via `heic-to (npm:heic-to@1.4.2, WASM-based via Emscripten/libheif)`,
 writes the JPEG to the same Drive folder, verifies the Drive file ID,
 deletes the original HEIC, and updates the Supabase row with the new `drive_file_id`
 and `conversion_status = 'done'`. If conversion fails, sets `conversion_status = 'failed'`
@@ -225,7 +225,7 @@ grab the folder ID, add both folder IDs to Netlify env vars and `env.local.js`.
 5. **Member gallery page:** `members/photos.html` — event picker, grid, upload modal,
    lightbox, admin curation toggle
 6. **Carousel component:** home page and Friends page carousel (shared JS module)
-7. **HEIC conversion:** `convert-heic` Supabase Edge Function + pg_cron job
+7. **HEIC conversion:** `convert-heic` Supabase Edge Function + GCP Cloud Scheduler
 8. **inject-env.js update:** add `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and
    `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` to injected vars
 

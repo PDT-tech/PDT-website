@@ -1,6 +1,7 @@
 // PDT Singers — HEIC → JPEG Conversion
-// Triggered every 15 minutes via pg_cron. Processes up to 10 pending
-// photo_uploads rows per invocation (HEIC → JPEG via jsquash WASM).
+// Triggered every 15 minutes via GCP Cloud Scheduler → Cloud Function
+// (trigger-convert-heic). Processes up to 10 pending
+// photo_uploads rows per invocation (HEIC → JPEG via heic-to).
 // Deploy: supabase functions deploy convert-heic
 
 import { createClient }  from 'npm:@supabase/supabase-js@2'
@@ -202,9 +203,13 @@ Deno.serve(async (req) => {
       // Fetch HEIC bytes from Drive
       const heicBytes = await fetchHeicBytes(row.drive_file_id, token)
 
-      // Decode HEIC → ImageData, encode → JPEG at max quality
-      const imageData = await decode(heicBytes)
-      const jpegBytes = await encode(imageData, { quality: 100 })
+      // Convert HEIC → JPEG at max quality via heic-to
+      const jpegBlob = await heicTo({
+        blob   : new Blob([heicBytes], { type: 'image/heic' }),
+        type   : 'image/jpeg',
+        quality: 1
+      })
+      const jpegBytes = await jpegBlob.arrayBuffer()
 
       // Build new filename (.jpg extension)
       const jpegFilename = row.drive_filename.replace(/\.heic$/i, '.jpg')

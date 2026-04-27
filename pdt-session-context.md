@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-04-26 (Session 15 — doc consistency audit + close-out)
+**Last updated:** 2026-04-26 (Session 16 — photo feature implementation + close-out)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -116,8 +116,14 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
 
 | # | Item |
 |---|------|
-| 014 | Main page: animated photo carousel (reconcile with #015 first) |
-| 015 | Photo upload, gallery, and animated carousel — full feature (see `pdt-photo-feature.md`) |
+| 014 | Main page: animated photo carousel — Implemented, pending Drive provisioning and SQL migration deploy |
+| 015 | Photo upload, gallery, and animated carousel — full feature — Implemented, pending Drive provisioning and SQL migration deploy |
+
+**Blocked on Google Workspace Drive provisioning:**
+- Music Library files need re-upload (old Drive account cancelled)
+- /Photos/ and /Photos/Mainpage_Carousel/ folders need creation + service account share
+- Photo feature end-to-end test blocked until Drive available
+- Three SQL migrations unrun: `20260426_photo_uploads.sql`, `20260426_photo_uploads_carousel_file_id.sql` (run in that order; skip `convert_heic_cron.sql` — deleted, replaced by GitHub Actions)
 
 **Deferred (not abandoned):**
 - `env.local.js` console error in production (nosniff header) — benign, tracked
@@ -196,8 +202,11 @@ Service account: pdt-music-library@pdt-singers-music-library.iam.gserviceaccount
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | ID of the Music folder in Workspace Drive |
 | `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Workspace Drive |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (secret); used by Netlify Function |
+| `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of the /Photos/ folder in Workspace Drive |
+| `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of the /Photos/Mainpage_Carousel/ folder in Workspace Drive |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key; used by GitHub Actions to trigger convert-heic |
 
-Supabase Edge Function secrets (separate system — set in Supabase dashboard):
+Supabase Edge Function secrets (separate system — set via `supabase secrets set`):
 
 | Key | What it is |
 |-----|-----------|
@@ -220,6 +229,8 @@ PDT-website/                      ← repo root
 ├── 404.html
 ├── login.html                    ← OTP login; USE_MAGIC_LINKS = false flag
 ├── members/
+│   ├── photos.html               ← Member photo gallery, upload modal, admin curation
+│   ├── photos.css                ← Photo gallery styles
 │   ├── index.html                ← Member dashboard
 │   ├── directors-notes.html      ← Blog — Chris Gabel
 │   ├── poohbah.html              ← Blog — Kevin Bier (Poohbahs' Prattlings)
@@ -235,14 +246,21 @@ PDT-website/                      ← repo root
 ├── netlify/
 │   ├── edge-functions/
 │   │   ├── inject-env.js         ← Injects all env vars into window.__PDT_ENV at runtime
-│   │   └── drive-music-download.js ← Streams Drive files to browser (/api/music-download)
+│   │   ├── drive-music-download.js ← Streams Drive files to browser (/api/music-download)
+│   │   ├── upload-photo.js       ← Receives photo upload, writes to Drive + photo_uploads row
+│   │   ├── photo-proxy.js        ← Proxies Drive photo bytes to browser (auth-gated)
+│   │   └── curate-photo.js       ← Admin: promote photo to carousel / remove from carousel
 │   └── functions/
 │       └── drive-music.js        ← Drive proxy: listings for Music Library + Sunburst
 ├── supabase/
-│   └── functions/
-│       ├── generate-rehearsals/  ← Weekly cron — creates Monday rehearsals 12 weeks out
-│       ├── notify-attendance-change/ ← DB trigger — emails on attendance upsert
-│       └── send-attendance-emails/   ← Nightly cron — nudge emails (deferred #031)
+│   ├── functions/
+│   │   ├── generate-rehearsals/  ← Weekly cron — creates Monday rehearsals 12 weeks out
+│   │   ├── notify-attendance-change/ ← DB trigger — emails on attendance upsert
+│   │   ├── send-attendance-emails/   ← Nightly cron — nudge emails (deferred #031)
+│   │   └── convert-heic/         ← HEIC → JPEG conversion (heic-to@1.4.2); triggered by GitHub Actions
+│   └── migrations/
+│       ├── 20260426_photo_uploads.sql              ← photo_uploads table (UNRUN)
+│       └── 20260426_photo_uploads_carousel_file_id.sql ← carousel_file_id column (UNRUN)
 ├── css/
 │   ├── reset.css
 │   ├── variables.css             ← Design tokens (palette, type, spacing)
@@ -255,7 +273,8 @@ PDT-website/                      ← repo root
 ├── js/
 │   ├── supabase.js               ← Supabase client + auth helpers
 │   ├── nav.js                    ← Public nav hamburger behavior
-│   └── main.js                   ← Public page scripts
+│   ├── main.js                   ← Public page scripts
+│   └── carousel.js               ← Shared carousel module (home page + Friends page)
 ├── assets/
 │   └── images/
 │       ├── PDT_logo_bw.png
@@ -275,6 +294,9 @@ PDT-website/                      ← repo root
 ├── pdt-tech-maintainers-guide.html ← Presentation version of maintainers guide
 ├── investigate-before-you-design.md ← Pattern doc for pre-implementation investigations
 ├── README.md                     ← Repo onboarding (stack, local dev, deploy, structure)
+├── .github/
+│   └── workflows/
+│       └── convert-heic.yml      ← GitHub Actions — triggers convert-heic Edge Function every 15 min
 ├── env.local.js                  ← gitignored — local dev credentials (never commit)
 └── pdt-singers-music-library-*.json ← gitignored — service account key
 ```
@@ -296,6 +318,7 @@ PDT-website/                      ← repo root
 | Live site | pdtsingers.org ✅ |
 | Supabase project | Americas region |
 | GCP project | pdt-singers-music-library |
+| GCP project owner | tech@pdtsingers.org (legacy: pdtsingers.music@gmail.com — issue #060 to clean up) |
 | Service account | pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com |
 | Goodstack (GWS) | ✅ Approved and active — TechSoup association code 4139-GERS-YP8U |
 | 501(c)(3) | ✅ Confirmed — IRS letter in hand |
@@ -345,3 +368,11 @@ PDT-website/                      ← repo root
 - **Kevin is sole owner of all services** — critical single point of failure; second admin
   needed (Grant Gibson is natural candidate)
 - **WBQA SEO** — lodge list page is nearly empty; PDT SEO work is important
+- **convert-heic Edge Function** — uses `heic-to@1.4.2` (WASM, `npm:heic-to`); confirmed
+  deployable in Supabase Edge Runtime. Triggered by GitHub Actions every 15 min via
+  `.github/workflows/convert-heic.yml`; requires `SUPABASE_SERVICE_ROLE_KEY` in GitHub secrets
+- **Supabase Edge Function secrets** — set separately from Netlify env vars via
+  `supabase secrets set KEY=value`; not visible in Netlify dashboard
+- **Drive provisioning** — Google Workspace Drive not yet active for photo feature; Music
+  Library files need re-upload and Photos folders need creation + service account share once
+  provisioned

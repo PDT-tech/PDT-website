@@ -1,6 +1,6 @@
 # PDT Singers — Tech Maintainer's Guide
 
-**Last updated:** 2026-04-25  
+**Last updated:** 2026-04-27  
 **Owner:** Kevin Bier (president@pdtsingers.org)  
 **Site:** pdtsingers.org  
 **Repo:** https://github.com/kevin36v/PDT-website
@@ -575,6 +575,124 @@ Videos introduce complexity that photos don't have:
 - File size cap: a hard limit (e.g., 100MB) enforced client-side before upload?
 - Public video access: same `is_public` flag + carousel pattern, or a separate
   public video page?
+
+---
+
+## 18. Photo System
+
+The photo system (issues #014 and #015) handles member photo uploads, admin curation, the home page carousel, and HEIC-to-JPEG conversion. It is fully implemented in code as of Session 16 (2026-04-26) but pending Google Workspace Drive provisioning before end-to-end testing can complete.
+
+### Storage Architecture
+
+Photos are stored in Google Workspace Drive under `president@pdtsingers.org` in two folders:
+
+| Folder | Netlify Env Var | Purpose |
+|--------|----------------|---------|
+| `/Photos/` | `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | All member-uploaded photos |
+| `/Photos/Mainpage_Carousel/` | `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | Curated public carousel photos (copies only) |
+
+Both folders are shared with the service account `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com` (Writer on `/Photos/`, inherited by `/Photos/Mainpage_Carousel/`). Photos are never publicly shared in Drive — all access goes through the proxy functions.
+
+Photo metadata (Drive file ID, uploader, event association, curation status, HEIC conversion status) is stored in the Supabase `photo_uploads` table. Members never interact with Drive directly.
+
+### Supabase Schema
+
+The `photo_uploads` table tracks every uploaded photo:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | uuid | PK |
+| `drive_file_id` | text | Drive file ID |
+| `carousel_file_id` | text | Drive file ID of the carousel copy (null if not curated) |
+| `uploaded_by` | uuid | FK → profiles(id) |
+| `event_id` | uuid | FK → events(id), nullable |
+| `is_public` | boolean | false = members only; true = shown in carousel |
+| `conversion_status` | text | pending / processing / done / failed |
+| `conversion_error` | text | Error message if conversion failed |
+| `filename` | text | Timestamped filename stored in Drive |
+
+**Migrations to run in Supabase SQL editor (in order, before first use):**
+1. `supabase/migrations/20260426_photo_uploads.sql`
+2. `supabase/migrations/20260426_photo_uploads_carousel_file_id.sql`
+
+Do not run `convert_heic_cron.sql` — it was deleted; replaced by GitHub Actions.
+
+### Supabase Edge Function Secrets Required
+
+Set in Supabase → Edge Functions → Manage secrets:
+
+| Secret | What it is |
+|--------|-----------|
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (same value as Netlify env var) |
+| `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of `/Photos/` folder |
+| `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of `/Photos/Mainpage_Carousel/` subfolder |
+| `RESEND_API_KEY` | Resend API key for HEIC failure notifications |
+
+These are separate from the Netlify env vars of the same names. Both systems need them.
+
+### Netlify Edge/Serverless Functions
+
+| Function | Path | Purpose |
+|----------|------|---------|
+| `upload-photo.js` | Netlify Edge Function | Receives multipart upload, extracts EXIF, uploads to Drive, inserts Supabase row |
+| `photo-proxy.js` | Netlify Edge Function | Streams Drive photo to browser; auth-gated for members-only photos |
+| `curate-photo.js` | Netlify Edge Function | Admin toggle: make public (copy to carousel folder) or unpublish (delete carousel copy) |
+
+### HEIC Conversion — GitHub Actions + Supabase Edge Function
+
+iPhone photos in HEIC format are converted to JPEG in a background job after upload.
+
+**Trigger:** `.github/workflows/convert-heic.yml` — GitHub Actions scheduled workflow, fires every 15 minutes. Calls the `convert-heic` Supabase Edge Function via HTTP POST. No GCP Cloud Scheduler, no Netlify scheduled functions — GitHub Actions is free and requires no billing account.
+
+**Library:** `heic-to@1.4.2` (npm) — WASM-based via Emscripten/libheif. Confirmed deployable on Supabase Edge Runtime (Deno). Do not substitute with `jsquash` or other alternatives without testing — see `pdt-decisions.md` for the evaluation history.
+
+**GitHub Actions secret required:** `SUPABASE_SERVICE_ROLE_KEY` — set in GitHub → repository Settings → Secrets and variables → Actions. Already set as of Session 16.
+
+**Conversion flow:**
+1. HEIC uploaded to Drive with `conversion_status = 'pending'`
+2. Every 15 minutes, `convert-heic.yml` fires
+3. Edge Function queries `photo_uploads` for `conversion_status = 'pending'`
+4. Converts each HEIC to JPEG (max quality), writes JPEG to same Drive folder
+5. Verifies the JPEG Drive file ID, then deletes the original HEIC
+6. Updates `photo_uploads` row: new `drive_file_id`, `conversion_status = 'done'`
+7. On failure: sets `conversion_status = 'failed'`, records error in `conversion_error`, sends email to `tech@pdtsingers.org` via Resend
+
+Non-HEIC uploads (JPEG) land with `conversion_status = 'done'` and are never processed by this job.
+
+### Member Gallery Page
+
+`/members/photos.html` — auth-gated, member role or higher. Features:
+- Event picker (last 90 days of events with photos, expandable)
+- Fixed-aspect photo grid grouped by event
+- Upload modal: up to 8 photos per operation (JPEG and HEIC only), progress counter
+- Lightbox with prev/next navigation and single-photo download
+- Admin/events_editor: inline curation toggle (Make public / Unpublish)
+
+### Home Page Carousel
+
+`js/carousel.js` — shared module used by `index.html` and `friends.html`. Feeds from `/Photos/Mainpage_Carousel/` via `photo-proxy.js`. Displays in random order client-side. Shows logo placeholder on load, swaps in Drive photos as they arrive. Lazy-loads next image.
+
+All photos in the carousel are curated — only admins or events_editors can mark a photo as public, which triggers the copy to the carousel folder.
+
+### Drive Recovery Procedure
+
+If Workspace Drive access is lost (e.g., trial account cancellation, service account key rotation, Drive provisioning reset):
+
+1. **Verify service account still exists** in GCP Console → IAM & Admin → Service Accounts → `pdt-singers-music-library`. If it was deleted, create a new key and update `GOOGLE_SERVICE_ACCOUNT_JSON` in both Netlify env vars and Supabase Edge Function secrets.
+2. **Verify folder sharing** — in Drive, right-click each folder (Music, Sunburst, Photos, Photos/Mainpage_Carousel) → Share → confirm service account email has at minimum Viewer access (Writer for Photos).
+3. **Re-upload Music Library files** if Drive was provisioned fresh — files must be manually re-uploaded from Dropbox (the source). Folder structure under `Music/` is the only metadata; filenames must include voice part for the sort feature to work.
+4. **Photos folders** — if `/Photos/` and `/Photos/Mainpage_Carousel/` need to be recreated, create them, share with service account (Writer), grab the new folder IDs, and update `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` in both Netlify env vars and Supabase Edge Function secrets.
+5. **Test after any credential change** by visiting Music Library and Photos pages while logged in. Check Netlify Function logs if listings fail; check Edge Function logs if downloads/proxy fail.
+
+### GCP Project
+
+**Project:** `pdt-singers-music-library`  
+**Primary owner:** `tech@pdtsingers.org`  
+**Legacy co-owner:** `pdtsingers.music@gmail.com` — remove post-release (issue #060)  
+**Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
+**What GCP is used for:** Service account JWT signing for Drive API access only. No Cloud Functions, no Cloud Scheduler, no Cloud Storage. The only GCP resource that matters is the service account and its key.
+
+The GCP dashboard may show 100% error rates on APIs like Privileged Access Manager and Cloud Storage — these are enabled by default in new GCP projects and generate probe traffic that returns errors because they're unused. Ignore them. Only the Drive API errors column matters; it should be 0%.
 
 ---
 

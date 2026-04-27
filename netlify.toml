@@ -14,6 +14,14 @@
   function = "drive-music-download"
 
 [[edge_functions]]
+  path = "/api/upload-photo"
+  function = "upload-photo"
+
+[[edge_functions]]
+  path = "/api/photo"
+  function = "photo-proxy"
+
+[[edge_functions]]
   path = "/*"
   function = "inject-env"
 

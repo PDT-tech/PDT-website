@@ -21,7 +21,9 @@ export default async (request, context) => {
       SUPABASE_URL:                 "${Deno.env.get('SUPABASE_URL') || ''}",
       SUPABASE_ANON_KEY:            "${Deno.env.get('SUPABASE_ANON_KEY') || ''}",
       GOOGLE_DRIVE_API_KEY:         "${Deno.env.get('GOOGLE_DRIVE_API_KEY') || ''}",
-      GOOGLE_DRIVE_MUSIC_FOLDER_ID: "${Deno.env.get('GOOGLE_DRIVE_MUSIC_FOLDER_ID') || ''}"
+      GOOGLE_DRIVE_MUSIC_FOLDER_ID:    "${Deno.env.get('GOOGLE_DRIVE_MUSIC_FOLDER_ID') || ''}",
+      GOOGLE_DRIVE_PHOTOS_FOLDER_ID:   "${Deno.env.get('GOOGLE_DRIVE_PHOTOS_FOLDER_ID') || ''}",
+      GOOGLE_DRIVE_CAROUSEL_FOLDER_ID: "${Deno.env.get('GOOGLE_DRIVE_CAROUSEL_FOLDER_ID') || ''}"
     };
     </script>`
 

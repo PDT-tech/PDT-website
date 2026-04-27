@@ -166,6 +166,7 @@
             Mark as cancelled
           </label>
         </div>
+        <p class="form-error" id="event-save-error" style="display:none;margin-bottom:var(--space-sm)"></p>
         <div class="post-modal-actions">
           <button type="submit" class="btn-primary btn-forest" id="event-modal-save">Save</button>
           <button type="button" class="btn-secondary" id="event-modal-cancel">Cancel</button>
@@ -629,6 +630,8 @@
   let prevWasCancelled = false
 
   function openEventModal (ev = null) {
+    const saveErr = document.getElementById('event-save-error')
+    saveErr.textContent = ''; saveErr.style.display = 'none'
     prevWasCancelled = ev?.is_cancelled || false
     document.getElementById('event-modal-title').textContent = ev?.id ? 'Edit Event' : 'New Event'
     document.getElementById('event-id').value = ev?.id || ''
@@ -699,7 +702,15 @@
     }
     saveBtn.textContent = 'Save'
     saveBtn.disabled = false
-    if (error) { alert('Error saving event: ' + error.message); return }
+    if (error) {
+      const saveErr = document.getElementById('event-save-error')
+      const isDupe = error.code === '23505' || String(error.message).toLowerCase().includes('unique')
+      saveErr.textContent = isDupe
+        ? 'A rehearsal is already scheduled for that date. Choose a different date, or edit the existing rehearsal instead.'
+        : 'Error saving event — please try again.'
+      saveErr.style.display = 'block'
+      return
+    }
     closeEventModal()
     closeDetailModal()
     await loadMonth()

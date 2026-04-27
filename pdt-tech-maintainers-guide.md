@@ -108,6 +108,8 @@ Never hardcode credentials in committed files.
 | `GOOGLE_DRIVE_API_KEY` | Drive API key (local dev only) |
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | Music folder ID in Drive |
 | `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Drive |
+| `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of `/Photos/` folder in Workspace Drive |
+| `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of `/Photos/Mainpage_Carousel/` subfolder |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Service account JSON (secret) |
 
 **Supabase Edge Function secrets** (set in Supabase → Edge Functions → Manage secrets):
@@ -308,6 +310,9 @@ interact with Google directly.
 **Drive location:** `Music/` folder in president@pdtsingers.org Workspace Drive  
 **Folder ID:** set in Netlify — Site configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
+
+**Photos folder ID:** `1-5HgzbPN3ydHXcrInJ2xW3aU2WWFSgw1` (Workspace Drive, `/Photos/`)  
+**Carousel folder ID:** `11RlCH-UEcqTaIg4CPiCpP65B0-Za_rEh` (Workspace Drive, `/Photos/Mainpage_Carousel/`)
 
 **How downloads work:**
 - **Folder and file listings** — `netlify/functions/drive-music.js` (serverless). Returns JSON; no file content passes through.

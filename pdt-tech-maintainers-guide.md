@@ -407,6 +407,17 @@ If members report not receiving login codes:
 3. Verify their email address in Supabase matches exactly what they're entering
 4. Confirm their account has `is_active = true` in the profiles table
 
+**Session lifetime:**
+- Access token: 1 hour (Supabase default)
+- Refresh token: 1 week (Supabase default)
+- The Supabase JS client refreshes the access token silently in the background
+  via onAuthStateChange as long as a tab is open. Members who close the browser
+  and return within a week are still logged in. After a week of inactivity they
+  must OTP again.
+- To adjust: Supabase dashboard → Authentication → Settings → JWT expiry.
+  Current defaults are appropriate for a chorus member portal — do not change
+  without a reason.
+
 **Transactional email for attendance notifications** also routes through Resend, triggered
 by Supabase Edge Functions (not Supabase SMTP). The `RESEND_API_KEY` for this is stored
 in Supabase Edge Function secrets, not Netlify env vars.

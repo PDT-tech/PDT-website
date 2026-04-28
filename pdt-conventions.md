@@ -110,6 +110,14 @@ Reference any issue or backlog item if relevant.
 
 ---
 
+## GitHub Actions Secrets Hygiene
+
+Workflow files in `.github/workflows/` are scanned by Netlify's secret scanner on every
+push. Never hardcode secret values in workflow files — use `${{ secrets.VAR_NAME }}`
+exclusively. Hardcoded secrets will trigger a scan failure and break the build.
+
+---
+
 ## Environment & Auth
 
 - `window.__PDT_ENV` is injected by `netlify/edge-functions/inject-env.js` in

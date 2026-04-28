@@ -16,6 +16,22 @@
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/members.css">
   <script src="/env.local.js" onerror="void 0"></script>
+
+  <style>
+    .sb-dash-btn {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0 0 0.75rem;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      text-align: left;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .sb-dash-btn:hover { background: #f7f3ee; }
+  </style>
 </head>
 <body class="members-page">
 
@@ -58,35 +74,25 @@
   <!-- DASHBOARD GRID -->
   <div class="dashboard-grid">
 
-    <!-- NEXT REHEARSAL -->
-    <div class="dash-card dash-card--featured" id="next-rehearsal-card">
-      <div class="dash-card-label">Next Rehearsal</div>
-      <div class="dash-card-title" id="next-rehearsal-date">Loading…</div>
-      <div class="dash-card-body">
-        Mondays, 10:30 am – 12:30 pm<br>
-        Westside Journey United Methodist Church<br>
-        13420 SW Butner Rd, Beaverton OR 97005
-      </div>
-      <div id="next-rehearsal-absences" class="dash-absences" hidden>
-        <span class="dash-absences-label">Out this week:</span>
-        <span id="absences-list"></span>
-      </div>
-      <div class="dash-card-actions">
-        <a href="/members/calendar.html" class="btn-primary btn-sm">Full Calendar</a>
-        <button class="btn-secondary btn-sm" id="mark-absent-btn">
-          Mark myself absent
-        </button>
-      </div>
-    </div>
-
     <!-- UPCOMING EVENTS -->
     <div class="dash-card">
       <div class="dash-card-label">Upcoming Events</div>
       <div id="events-preview" class="post-preview-list">
-        <div class="post-preview-empty">No upcoming events posted.</div>
+        <div class="post-preview-empty">No upcoming events.</div>
       </div>
-      <a href="/members/events.html" class="dash-card-more">
+      <a href="/members/calendar.html" class="dash-card-more">
         All Events &rarr;
+      </a>
+    </div>
+
+    <!-- LATEST FROM THE DIRECTOR -->
+    <div class="dash-card">
+      <div class="dash-card-label">Latest from the Director</div>
+      <div id="directors-notes-preview" class="post-preview-list">
+        <div class="post-preview-empty">No posts yet.</div>
+      </div>
+      <a href="/members/directors-notes.html" class="dash-card-more">
+        All Director's Notes &rarr;
       </a>
     </div>
 
@@ -142,14 +148,14 @@
       </ul>
     </div>
 
-    <!-- LATEST FROM THE DIRECTOR -->
+    <!-- THE SUNBURST -->
     <div class="dash-card">
-      <div class="dash-card-label">Latest from the Director</div>
-      <div id="directors-notes-preview" class="post-preview-list">
-        <div class="post-preview-empty">No posts yet.</div>
+      <div class="dash-card-label">The Sunburst</div>
+      <div id="sunburst-preview" class="post-preview-list">
+        <div class="post-preview-empty">Loading…</div>
       </div>
-      <a href="/members/directors-notes.html" class="dash-card-more">
-        All Director's Notes &rarr;
+      <a href="/members/sunburst.html" class="dash-card-more">
+        All Issues &rarr;
       </a>
     </div>
 
@@ -204,57 +210,40 @@
   import '../js/auth-guard.js'
   import { supabase } from '../js/supabase.js'
 
-  // ── Load next rehearsal from calendar ─────────────────────
-  async function loadNextRehearsal () {
-    const today = new Date().toISOString().split('T')[0]
+  // ── Helpers ────────────────────────────────────────────────
+  function escHtml (s) {
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
 
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('event_type', 'rehearsal')
-      .eq('is_cancelled', false)
-      .gte('event_date', today)
-      .order('event_date', { ascending: true })
-      .limit(1)
-      .maybeSingle()  // returns null instead of 406 when no rows found
+  function formatDate (dateStr) {
+    if (!dateStr) return ''
+    const [y, m, d] = dateStr.split('-').map(Number)
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    })
+  }
 
-    const dateEl = document.getElementById('next-rehearsal-date')
+  let _token = null
+  async function getToken () {
+    if (_token) return _token
+    const { data } = await supabase.auth.getSession()
+    _token = data.session?.access_token ?? ''
+    return _token
+  }
 
-    if (error) {
-      // Fall through to client-side calculation
-    }
-
-    if (data) {
-      // Use database event
-      const date = new Date(data.event_date + 'T12:00:00')
-      dateEl.textContent = date.toLocaleDateString('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric'
-      })
-
-      // Load absences for this event
-      const { data: absences } = await supabase
-        .from('absences')
-        .select('note, profiles(full_name)')
-        .eq('event_id', data.id)
-
-      if (absences && absences.length > 0) {
-        const names = absences.map(a =>
-          a.profiles.full_name + (a.note ? ` (${a.note})` : '')
-        ).join(', ')
-        document.getElementById('absences-list').textContent = names
-        document.getElementById('next-rehearsal-absences').hidden = false
-      }
-    } else {
-      // No DB events — calculate next Monday client-side
-      const now = new Date()
-      const day = now.getDay() // 0=Sun, 1=Mon...
-      const daysUntilMonday = day === 1 ? 7 : (8 - day) % 7
-      const nextMonday = new Date(now)
-      nextMonday.setDate(now.getDate() + daysUntilMonday)
-      dateEl.textContent = nextMonday.toLocaleDateString('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric'
-      })
-    }
+  async function proxyIssue (fileId, filename) {
+    const res = await fetch(
+      `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
+      { headers: { Authorization: `Bearer ${await getToken()}` } }
+    )
+    if (!res.ok) { alert('Could not open issue — please try again.'); return }
+    const blobUrl = URL.createObjectURL(await res.blob())
+    const a       = document.createElement('a')
+    a.href        = blobUrl
+    a.target      = '_blank'
+    a.rel         = 'noopener'
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000)
   }
 
   // ── Load recent blog posts ─────────────────────────────────
@@ -285,37 +274,81 @@
     }).join('')
   }
 
-  // ── Load upcoming non-rehearsal events from calendar ───────
+  // ── Load upcoming events (all types, time-aware cutoff) ────
   async function loadUpcomingEvents (containerId) {
-    const today = new Date().toISOString().split('T')[0]
+    const now     = new Date()
+    const today   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+    const nowTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:00`
+
     const { data, error } = await supabase
       .from('events')
-      .select('id, title, event_date, location')
-      .neq('event_type', 'rehearsal')
+      .select('id, title, event_date, start_time')
       .eq('is_cancelled', false)
       .gte('event_date', today)
       .order('event_date', { ascending: true })
-      .limit(3)
+      .order('start_time', { ascending: true })
+      .limit(10)
 
     if (error || !data || data.length === 0) return
 
+    // Drop today's events whose start time has already passed
+    const upcoming = data.filter(ev => {
+      if (ev.event_date > today) return true
+      return !ev.start_time || ev.start_time > nowTime
+    }).slice(0, 5)
+
+    if (upcoming.length === 0) return
+
     const container = document.getElementById(containerId)
-    container.innerHTML = data.map(ev => {
+    container.innerHTML = upcoming.map(ev => {
       const date = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-US', {
-        month: 'short', day: 'numeric'
+        weekday: 'short', month: 'short', day: 'numeric'
       })
       return `
         <a class="post-preview" href="/members/calendar.html?event=${ev.id}">
           <div class="post-preview-meta">${date}</div>
-          <div class="post-preview-title">${ev.title}</div>
-          ${ev.location ? `<div class="post-preview-excerpt">${ev.location}</div>` : ''}
+          <div class="post-preview-title">${escHtml(ev.title)}</div>
         </a>`
     }).join('')
   }
 
+  // ── Load most recent Sunburst issue ───────────────────────
+  async function loadSunburstPreview () {
+    const container = document.getElementById('sunburst-preview')
+    try {
+      const res = await fetch('/.netlify/functions/drive-music?action=sunburst-list', {
+        headers: { Authorization: `Bearer ${await getToken()}` }
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const issues = await res.json()
+
+      if (!issues.length) {
+        container.innerHTML = '<div class="post-preview-empty">No issues available yet.</div>'
+        return
+      }
+
+      const issue    = issues[0]
+      const filename = issue.title + '.pdf'
+      container.innerHTML = `
+        <button class="sb-dash-btn"
+                data-file-id="${escHtml(issue.id)}"
+                data-filename="${escHtml(filename)}">
+          ${issue.date ? `<div class="post-preview-meta">${escHtml(formatDate(issue.date))}</div>` : ''}
+          <div class="post-preview-title">${escHtml(issue.title)}</div>
+        </button>`
+      container.addEventListener('click', async e => {
+        const btn = e.target.closest('.sb-dash-btn')
+        if (btn) await proxyIssue(btn.dataset.fileId, btn.dataset.filename)
+      })
+    } catch (err) {
+      container.innerHTML = '<div class="post-preview-empty">No issues available yet.</div>'
+      console.error('sunburst preview:', err)
+    }
+  }
+
   // ── Init ───────────────────────────────────────────────────
-  loadNextRehearsal()
   loadUpcomingEvents('events-preview')
+  loadSunburstPreview()
 
   try {
     loadRecentPosts('directors_notes', 'directors-notes-preview', '/members/directors-notes.html')

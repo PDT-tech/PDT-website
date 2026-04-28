@@ -106,3 +106,5 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 077 | DONE | New Event form: Save button non-functional; time fields missing validation (call/on-stage required for sing-outs, end after start for all); "End time" label inconsistent with "Event begins at"; excessive vertical spacing. Fixed 2026-04-27. File: members/calendar.html, css/calendar.css.
 
 078 | DONE | Photos page: filter label wrong ("all" vs "only"); filter control is a link not a checkbox; upload button and filter bar layout cramped with no breathing room. Fixed 2026-04-27. Files: members/photos.html, members/photos.css.
+
+079 | SUPPRESSED | Home page carousel hidden pending Drive provisioning. Carousel code is intact but container suppressed via CSS display:none in index.html. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. File: index.html.

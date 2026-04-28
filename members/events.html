@@ -184,16 +184,37 @@
   async function openPost (id) {
     currentPostId = id
     const { data } = await supabase
-      .from('posts').select('*, profiles(full_name)').eq('id', id).single()
-    if (data) renderDetail(data)
+      .from('posts').select('*').eq('id', id).single()
+    if (!data) return
+    let eventData = null
+    if (data.event_id) {
+      const { data: ev } = await supabase
+        .from('events')
+        .select('event_date, call_time, on_stage')
+        .eq('id', data.event_id)
+        .single()
+      eventData = ev || null
+    }
+    renderDetail(data, eventData)
   }
 
-  function renderDetail (post) {
-    document.getElementById('detail-meta').textContent =
-      formatDate(post.created_at) + (post.profiles?.full_name ? ` · ${post.profiles.full_name}` : '')
+  function renderDetail (post, eventData) {
+    const displayDate = eventData?.event_date
+      ? formatEventDate(eventData.event_date)
+      : formatDate(post.created_at)
+    document.getElementById('detail-meta').textContent = displayDate
     document.getElementById('detail-title').textContent = post.title
+
+    let preamble = ''
+    if (eventData) {
+      const rows = []
+      if (eventData.call_time) rows.push(`<p class="event-detail-field"><strong>Call time:</strong> ${eventData.call_time.slice(0, 5)}</p>`)
+      if (eventData.on_stage)  rows.push(`<p class="event-detail-field"><strong>On stage:</strong> ${eventData.on_stage.slice(0, 5)}</p>`)
+      if (rows.length) preamble = `<div class="event-detail-times">${rows.join('')}</div>`
+    }
+
     document.getElementById('detail-body').innerHTML =
-      '<p>' + post.body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>'
+      preamble + '<p>' + post.body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>'
     document.getElementById('edit-btn').dataset.post = JSON.stringify(post)
     document.getElementById('post-list').hidden = true
     document.getElementById('post-detail').hidden = false
@@ -283,6 +304,12 @@
   function formatDate (iso) {
     return new Date(iso).toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric'
+    })
+  }
+
+  function formatEventDate (dateStr) {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     })
   }
 

@@ -2,7 +2,15 @@
 
 **Archive of completed session logs.**
 **Current state is in `pdt-session-context.md`.**
-**Last entry: Session 17 — 2026-04-27**
+**Last entry: Session 18 — 2026-04-28**
+
+---
+
+## Session 18 — 2026-04-28
+
+Session 18 (2026-04-28): Events detail FK fix (#062/#070), Quick Links rebuilt (#075),
+carousel suppressed on index.html and friends.html (#079), post-v1 issues #080/#081/#082
+logged (carousel position, dynamic sing-out listings).
 
 ---
 

@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-04-27 (Session 17 — calendar/events bugs, Member Home redesign, auth token lifetime)
+**Last updated:** 2026-04-28 (Session 18 — Events detail FK fix, Quick Links rebuilt, carousels suppressed)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -70,7 +70,7 @@ always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
 ---
 
-## Current State (as of 2026-04-27)
+## Current State (as of 2026-04-28)
 
 ### Phase 1 — Member Portal ✅ Complete
 All member portal features are live and functional:
@@ -112,7 +112,7 @@ All public pages live:
 - Duane Lundsten memorial plaque approved
 
 ### Open Items
-Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-27:
+Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 
 | # | Item |
 |---|------|
@@ -121,10 +121,11 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-27:
 | 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
-| 062 | Events page shows created_at not event_date — fix next session |
-| 070 | Events detail: remove author name, add event_date + call/on-stage times — fix with #062 |
 | 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
-| 075 | Member Home: Full Calendar / Mark Absent button disposition — decision pending |
+| 079 | ✅ Carousel suppressed (display:none) in index.html and friends.html — re-enable when Drive Photos folders are live |
+| 080 | POST-V1: Fix carousel vertical position in index.html markup (between WHO WE ARE and UPCOMING SING-OUTS) before re-enabling #079 |
+| 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
+| 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
 
 **Blocked on Google Workspace Drive provisioning:**
 - Music Library files need re-upload (old Drive account cancelled)
@@ -154,8 +155,9 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-27:
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
 - Public page content review — HC feedback requested 2026-04-26; declare v1.0 done if no corrections by May 1
 - GitHub Actions secrets hygiene note needed in pdt-conventions.md (never hardcode secrets in .github/workflows/ — Netlify scanner will catch them)
-- #075 Full Calendar / Mark Absent button disposition (decision pending)
 - #071 Option C refactor (Calendar/Events) — after HC sign-off
+- #080: Fix carousel position in index.html markup before re-enabling (#079)
+- #081/#082: Dynamic sing-out listings on home page and performances page from events table
 
 ---
 

@@ -108,3 +108,9 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 078 | DONE | Photos page: filter label wrong ("all" vs "only"); filter control is a link not a checkbox; upload button and filter bar layout cramped with no breathing room. Fixed 2026-04-27. Files: members/photos.html, members/photos.css.
 
 079 | SUPPRESSED | Home page carousel hidden pending Drive provisioning. Carousel code is intact but container suppressed via CSS display:none in index.html. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. File: index.html.
+
+080 | POST-V1 | Home page carousel: fix vertical position in index.html markup so carousel sits between the WHO WE ARE block and the UPCOMING SING-OUTS block. Currently suppressed (#079) — fix position before re-enabling. File: index.html.
+
+081 | POST-V1 | Home page: UPCOMING SING-OUTS block should be dynamically populated from the events table — all performance/sing-out event_types in the next 90 days, no rehearsals, ordered by event_date ascending. Currently static placeholder content. File: index.html.
+
+082 | POST-V1 | Performances page (performances.html / Hear Us Sing): populate sing-out listings dynamically from events table, same logic as #081 — performance event_types, next 90 days, ordered by event_date. Currently static placeholder content. File: performances.html.

@@ -2,7 +2,17 @@
 
 **Archive of completed session logs.**
 **Current state is in `pdt-session-context.md`.**
-**Last entry: Session 16 — 2026-04-26**
+**Last entry: Session 17 — 2026-04-27**
+
+---
+
+## Session 17 — 2026-04-27
+
+Session 17 (2026-04-27): Calendar/events bugs (#062–#070 batch), Member Home
+redesign (Next Rehearsal removed, Sunburst card added, new block order), New
+Event form save fix + time validation + label standardization, Photos page UX
+fixes, nav/label cleanup across all 11 member pages, auth token lifetime
+documented.
 
 ---
 

@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-04-26 (Session 16 — photo feature implementation + close-out)
+**Last updated:** 2026-04-27 (Session 17 — calendar/events bugs, Member Home redesign, auth token lifetime)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -70,7 +70,7 @@ always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
 ---
 
-## Current State (as of 2026-04-26)
+## Current State (as of 2026-04-27)
 
 ### Phase 1 — Member Portal ✅ Complete
 All member portal features are live and functional:
@@ -112,18 +112,30 @@ All public pages live:
 - Duane Lundsten memorial plaque approved
 
 ### Open Items
-Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
+Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-27:
 
 | # | Item |
 |---|------|
 | 014 | Main page: animated photo carousel — Implemented, pending Drive provisioning and SQL migration deploy |
 | 015 | Photo upload, gallery, and animated carousel — full feature — Implemented, pending Drive provisioning and SQL migration deploy |
+| 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
+| 028 | Migrate all website tool accounts to tech@pdtsingers.org |
+| 031 | Attendance escalation pipeline — deferred post-launch |
+| 062 | Events page shows created_at not event_date — fix next session |
+| 070 | Events detail: remove author name, add event_date + call/on-stage times — fix with #062 |
+| 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
+| 075 | Member Home: Full Calendar / Mark Absent button disposition — decision pending |
 
 **Blocked on Google Workspace Drive provisioning:**
 - Music Library files need re-upload (old Drive account cancelled)
 - /Photos/ and /Photos/Mainpage_Carousel/ folders need creation + service account share
 - Photo feature end-to-end test blocked until Drive available
-- Three SQL migrations unrun: `20260426_photo_uploads.sql`, `20260426_photo_uploads_carousel_file_id.sql` (run in that order; skip `convert_heic_cron.sql` — deleted, replaced by GitHub Actions)
+- Two SQL migrations unrun (run in order once Drive live):
+  20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
+- Supabase Edge Function secrets not yet set:
+  GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID,
+  GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
+- Sunburst card on Member Home shows graceful placeholder until Drive live
 
 **Deferred (not abandoned):**
 - `env.local.js` console error in production (nosniff header) — benign, tracked
@@ -141,6 +153,9 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-26:
 - Vacation block feature — member self-service away window (design discussion needed)
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
 - Public page content review — HC feedback requested 2026-04-26; declare v1.0 done if no corrections by May 1
+- GitHub Actions secrets hygiene note needed in pdt-conventions.md (never hardcode secrets in .github/workflows/ — Netlify scanner will catch them)
+- #075 Full Calendar / Mark Absent button disposition (decision pending)
+- #071 Option C refactor (Calendar/Events) — after HC sign-off
 
 ---
 

@@ -930,7 +930,23 @@
     await loadMyAbsences()
   })
 
-  loadMonth()
+  ;(async () => {
+    await loadMonth()
+    const eventParam = new URLSearchParams(window.location.search).get('event')
+    if (!eventParam) return
+    let ev = monthEvents.find(e => e.id === eventParam)
+    if (!ev) {
+      const { data } = await supabase.from('events').select('*').eq('id', eventParam).maybeSingle()
+      if (!data) return
+      const [year, mon] = data.event_date.split('-').map(Number)
+      currentYear = year
+      currentMonth = mon - 1
+      await loadMonth()
+      ev = data
+    }
+    const chip = document.querySelector(`[data-event-id="${eventParam}"]`)
+    if (chip) await openDetailModal(ev, chip)
+  })()
 </script>
 
 <script src="/js/nav-member.js"></script>

@@ -644,6 +644,15 @@ body .pdt-events-editor-only {
   font-style: italic;
 }
 
+a.post-preview {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+a.post-preview:hover { background: #f7f3ee; }
+
 /* ── Button overrides for member area ──────────────────────── */
 .btn-secondary {
   display: inline-block;

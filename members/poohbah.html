@@ -262,6 +262,10 @@
 
   if (window.location.hash === '#new') openModal()
   loadPosts()
+
+  // ── ?post=<uuid> deep-link (from dashboard card) ───────────
+  const _postParam = new URLSearchParams(window.location.search).get('post')
+  if (_postParam) openPost(_postParam)
 </script>
 
 <script src="/js/nav-member.js"></script>

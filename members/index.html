@@ -258,7 +258,7 @@
   }
 
   // ── Load recent blog posts ─────────────────────────────────
-  async function loadRecentPosts (blogType, containerId) {
+  async function loadRecentPosts (blogType, containerId, blogPageUrl) {
     const { data, error } = await supabase
       .from('posts')
       .select('id, title, created_at, excerpt')
@@ -273,24 +273,53 @@
       const date = new Date(post.created_at).toLocaleDateString('en-US', {
         month: 'short', day: 'numeric'
       })
+      const href = blogPageUrl ? `${blogPageUrl}?post=${post.id}` : null
+      const tag  = href ? 'a' : 'div'
+      const attr = href ? ` href="${href}"` : ''
       return `
-        <div class="post-preview">
+        <${tag} class="post-preview"${attr}>
           <div class="post-preview-meta">${date}</div>
           <div class="post-preview-title">${post.title}</div>
           ${post.excerpt ? `<div class="post-preview-excerpt">${post.excerpt}</div>` : ''}
-        </div>`
+        </${tag}>`
+    }).join('')
+  }
+
+  // ── Load upcoming non-rehearsal events from calendar ───────
+  async function loadUpcomingEvents (containerId) {
+    const today = new Date().toISOString().split('T')[0]
+    const { data, error } = await supabase
+      .from('events')
+      .select('id, title, event_date, location')
+      .neq('event_type', 'rehearsal')
+      .eq('is_cancelled', false)
+      .gte('event_date', today)
+      .order('event_date', { ascending: true })
+      .limit(3)
+
+    if (error || !data || data.length === 0) return
+
+    const container = document.getElementById(containerId)
+    container.innerHTML = data.map(ev => {
+      const date = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric'
+      })
+      return `
+        <a class="post-preview" href="/members/calendar.html?event=${ev.id}">
+          <div class="post-preview-meta">${date}</div>
+          <div class="post-preview-title">${ev.title}</div>
+          ${ev.location ? `<div class="post-preview-excerpt">${ev.location}</div>` : ''}
+        </a>`
     }).join('')
   }
 
   // ── Init ───────────────────────────────────────────────────
   loadNextRehearsal()
+  loadUpcomingEvents('events-preview')
 
-  // Posts table doesn't exist yet — wrap in try/catch
-  // These will populate once we build the posts table
   try {
-    loadRecentPosts('directors_notes', 'directors-notes-preview')
-    loadRecentPosts('poohbah', 'poohbah-preview')
-    loadRecentPosts('events', 'events-preview')
+    loadRecentPosts('directors_notes', 'directors-notes-preview', '/members/directors-notes.html')
+    loadRecentPosts('poohbah', 'poohbah-preview', '/members/poohbah.html')
   } catch (e) {
     // Posts table not yet created — previews show "No posts yet"
   }

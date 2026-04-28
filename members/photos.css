@@ -2,10 +2,20 @@
    PDT SINGERS — Member Photos Page Styles
    ============================================================ */
 
+/* ── Upload toolbar ──────────────────────────────────────── */
+
+.photos-toolbar {
+  max-width: var(--max-width);
+  margin: var(--space-md) auto 0;
+  padding: 0 var(--space-lg);
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* ── Filter bar ──────────────────────────────────────────── */
 
 .photos-filter-bar {
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-md) var(--space-lg) var(--space-sm);
   border-bottom: 1px solid var(--rule);
   background: var(--white);
 }
@@ -13,11 +23,11 @@
 .photos-filter {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   flex-wrap: wrap;
 }
 
-.photos-filter label {
+.photos-filter > label {
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   font-weight: 600;
@@ -30,21 +40,20 @@
   padding: 0.35rem 0.65rem;
 }
 
-.btn-text {
-  background: none;
-  border: none;
-  color: var(--sky-deep);
+.photos-filter-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-family: var(--font-ui);
   font-size: var(--text-sm);
+  color: var(--text);
   cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
+  white-space: nowrap;
 }
 
-.btn-text:disabled {
-  color: var(--muted);
-  text-decoration: none;
-  cursor: default;
+.photos-filter-check-label input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--sky-deep);
 }
 
 /* ── Main area ───────────────────────────────────────────── */

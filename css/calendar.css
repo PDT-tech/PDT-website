@@ -516,3 +516,7 @@ body .pdt-cal-manager-only { display: none; }
   margin-bottom: var(--space-sm);
 }
 
+#event-form .form-group {
+  margin-bottom: 0.5rem;
+}
+

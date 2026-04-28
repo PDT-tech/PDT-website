@@ -23,7 +23,7 @@
 
 <!-- MEMBER NAV -->
 <nav class="member-nav">
-  <a href="/members/" class="member-nav-brand">PDT Singers</a>
+  <a href="/" class="member-nav-brand">PDT Singers</a>
   <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
@@ -51,17 +51,15 @@
   <!-- PAGE HERO -->
   <div class="blog-header" style="--blog-color: #6a9ab8;">
     <div class="blog-header-inner">
-      <p class="blog-eyebrow">Member Portal</p>
+      <p class="blog-eyebrow">Portland DayTime Singers — Member Portal</p>
       <h1 class="blog-title">Member Photos</h1>
       <p class="blog-byline">Browse and share chorus memories.</p>
     </div>
   </div>
 
-  <!-- TOOLBAR -->
-  <div class="cal-toolbar">
-    <div class="cal-toolbar-inner">
-      <button id="upload-btn" class="btn-primary btn-forest">+ Upload Photos</button>
-    </div>
+  <!-- UPLOAD TOOLBAR -->
+  <div class="photos-toolbar">
+    <button id="upload-btn" class="btn-primary btn-forest">+ Upload Photos</button>
   </div>
 
   <!-- EVENT FILTER -->
@@ -71,7 +69,10 @@
       <select id="event-filter" class="form-input">
         <option value="">All events</option>
       </select>
-      <button id="show-all-events" class="btn-text">Show all events with photos</button>
+      <label class="photos-filter-check-label">
+        <input type="checkbox" id="show-events-with-photos">
+        Show only events with photos
+      </label>
     </div>
   </div>
 
@@ -131,7 +132,7 @@
 <footer class="members-footer">
   <div class="members-footer-inner">
     <span>&copy; 2026 <a href="/">Portland DayTime Singers</a> &nbsp;&middot;&nbsp; Members Only</span>
-    <a href="/members/">Members Only Portal Home</a>
+    <a href="/members/">Member Home</a>
     <a href="/">PDT Singers Home</a>
   </div>
 </footer>
@@ -145,6 +146,7 @@
   let currentPhotos   = []
   let lightboxIndex   = 0
   let eventsMap       = {}  // id → event row
+  let allEventOptions = []  // {value, label} for full dropdown restore
 
   // ── Token helper (cached) ─────────────────────────────────
   let _token = null
@@ -201,6 +203,7 @@
       filterSel.add(new Option(label, ev.id))
       uploadSel.add(new Option(label, ev.id))
     })
+    allEventOptions = Array.from(filterSel.options).slice(1).map(opt => ({ value: opt.value, label: opt.text }))
   }
 
   // ── Load photos ────────────────────────────────────────────
@@ -474,12 +477,27 @@
     loadPhotos(e.target.value || null, allEventsLoaded)
   })
 
-  document.getElementById('show-all-events').addEventListener('click', () => {
-    allEventsLoaded = true
-    const btn = document.getElementById('show-all-events')
-    btn.textContent = 'Showing all events'
-    btn.disabled = true
-    loadPhotos(document.getElementById('event-filter').value || null, true)
+  document.getElementById('show-events-with-photos').addEventListener('change', async e => {
+    const filterSel = document.getElementById('event-filter')
+    const savedValue = filterSel.value
+    while (filterSel.options.length > 1) filterSel.remove(1)
+
+    let optionsToShow = allEventOptions
+    if (e.target.checked) {
+      const { data } = await supabase
+        .from('photo_uploads')
+        .select('event_id')
+        .not('event_id', 'is', null)
+      const idsWithPhotos = new Set((data || []).map(r => r.event_id))
+      optionsToShow = allEventOptions.filter(opt => idsWithPhotos.has(opt.value))
+    }
+
+    optionsToShow.forEach(opt => filterSel.add(new Option(opt.label, opt.value)))
+    if (savedValue && optionsToShow.some(opt => opt.value === savedValue)) {
+      filterSel.value = savedValue
+    } else if (savedValue) {
+      loadPhotos(null, allEventsLoaded)
+    }
   })
 
   // ── Curation ─────────────────────────────────────────────

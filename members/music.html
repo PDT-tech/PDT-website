@@ -269,13 +269,21 @@
       .song-title { font-size: var(--text-base); }
       .download-actions { flex-direction: column; }
     }
+    .music-header .music-eyebrow {
+      font-family: var(--font-ui);
+      font-size: var(--text-xs);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #6a9ab8;
+      margin-bottom: 0.4rem;
+    }
   </style>
 </head>
 <body class="members-page">
 
 <!-- MEMBER NAV -->
 <nav class="member-nav">
-  <a href="/members/" class="member-nav-brand">PDT Singers</a>
+  <a href="/" class="member-nav-brand">PDT Singers</a>
   <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
@@ -299,7 +307,8 @@
 
   <header class="music-header">
     <div class="container">
-      <h1>Music Library</h1>
+      <p class="music-eyebrow">Portland DayTime Singers — Member Portal</p>
+    <h1>Music Library</h1>
       <p>Sheet music and learning tracks for every song in our repertoire. Click a song to see its files.</p>
       <div class="music-meta">
         <span class="voice-pill" id="voice-pill" style="display:none">
@@ -332,7 +341,7 @@
 <footer class="members-footer">
   <div class="members-footer-inner">
     <span>&copy; 2026 <a href="/">Portland DayTime Singers</a> &nbsp;&middot;&nbsp; Members Only</span>
-    <a href="/members/">Members Only Portal Home</a>
+    <a href="/members/">Member Home</a>
     <a href="/">PDT Singers Home</a>
   </div>
 </footer>

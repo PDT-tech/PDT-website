@@ -23,7 +23,7 @@
 
 <!-- MEMBER NAV -->
 <nav class="member-nav">
-  <a href="/members/" class="member-nav-brand">PDT Singers</a>
+  <a href="/" class="member-nav-brand">PDT Singers</a>
   <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
@@ -51,7 +51,7 @@
   <!-- PAGE HERO -->
   <div class="blog-header" style="--blog-color: #6a9ab8;">
     <div class="blog-header-inner">
-      <p class="blog-eyebrow">Member Portal</p>
+      <p class="blog-eyebrow">Portland DayTime Singers — Member Portal</p>
       <h1 class="blog-title">Chorus Calendar</h1>
       <p class="blog-byline">Rehearsals, performances &amp; events</p>
     </div>
@@ -103,7 +103,7 @@
         <h2 class="post-modal-title" id="event-modal-title">New Event</h2>
         <button class="post-modal-close" id="event-modal-close">&times;</button>
       </div>
-      <form id="event-form">
+      <form id="event-form" novalidate>
         <input type="hidden" id="event-id">
         <p class="form-hint" style="margin-bottom: var(--space-md);">This event will appear on the Chorus Calendar.</p>
         <div class="form-group">
@@ -132,8 +132,9 @@
               <input type="time" id="event-start" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label" for="event-end">End time</label>
+              <label class="form-label" for="event-end">Event ends at</label>
               <input type="time" id="event-end" class="form-input">
+              <span class="form-error" id="end-time-error" style="display:none"></span>
             </div>
           </div>
         </div>
@@ -143,10 +144,12 @@
             <div class="form-group">
               <label class="form-label" for="event-call-time">Call time</label>
               <input type="time" id="event-call-time" class="form-input">
+              <span class="form-error" id="call-time-error" style="display:none"></span>
             </div>
             <div class="form-group">
               <label class="form-label" for="event-on-stage">On-stage at</label>
               <input type="time" id="event-on-stage" class="form-input">
+              <span class="form-error" id="on-stage-error" style="display:none"></span>
             </div>
           </div>
           <div class="form-group">
@@ -312,7 +315,7 @@
 <footer class="members-footer">
   <div class="members-footer-inner">
     <span>&copy; 2026 <a href="/">Portland DayTime Singers</a> &nbsp;&middot;&nbsp; Members Only</span>
-    <a href="/members/">Members Only Portal Home</a>
+    <a href="/members/">Member Home</a>
     <a href="/">PDT Singers Home</a>
   </div>
 </footer>
@@ -723,8 +726,9 @@
   let prevWasCancelled = false
 
   function openEventModal (ev = null) {
-    const saveErr = document.getElementById('event-save-error')
-    saveErr.textContent = ''; saveErr.style.display = 'none'
+    document.querySelectorAll('#event-form .form-error').forEach(el => {
+      el.textContent = ''; el.style.display = 'none'
+    })
     prevWasCancelled = ev?.is_cancelled || false
     document.getElementById('event-modal-title').textContent = ev?.id ? 'Edit Event' : 'New Event'
     document.getElementById('event-id').value = ev?.id || ''
@@ -756,23 +760,45 @@
     document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
   })
 
-  ;['event-call-time', 'event-on-stage'].forEach(id => {
-    const el = document.getElementById(id)
-    el.addEventListener('blur', () => {
-      el.parentElement.querySelector('.form-error')?.remove()
-      if (el.value && !/^\d{2}:\d{2}$/.test(el.value)) {
-        const err = document.createElement('span')
-        err.className = 'form-error'
-        err.textContent = 'Enter a valid time'
-        el.after(err)
-      }
+  function validateEventForm () {
+    document.querySelectorAll('#event-form .form-error').forEach(el => {
+      el.textContent = ''; el.style.display = 'none'
     })
-    el.addEventListener('focus', () => el.parentElement.querySelector('.form-error')?.remove())
-    el.addEventListener('invalid', e => e.preventDefault())
-  })
+    let valid = true
+    const isPerf     = document.getElementById('event-type').value === 'performance'
+    const startVal   = document.getElementById('event-start').value
+    const endVal     = document.getElementById('event-end').value
+    const callVal    = document.getElementById('event-call-time').value
+    const onStageVal = document.getElementById('event-on-stage').value
+
+    if (startVal && endVal && endVal <= startVal) {
+      const e = document.getElementById('end-time-error')
+      e.textContent = 'End time must be after start time.'; e.style.display = 'block'
+      valid = false
+    }
+    if (isPerf) {
+      if (!callVal) {
+        const e = document.getElementById('call-time-error')
+        e.textContent = 'Call time is required for sing-outs.'; e.style.display = 'block'
+        valid = false
+      }
+      if (!onStageVal) {
+        const e = document.getElementById('on-stage-error')
+        e.textContent = 'On-stage time is required for sing-outs.'; e.style.display = 'block'
+        valid = false
+      }
+      if (callVal && onStageVal && callVal > onStageVal) {
+        const e = document.getElementById('call-time-error')
+        e.textContent = 'Call time must be before or equal to on-stage time.'; e.style.display = 'block'
+        valid = false
+      }
+    }
+    return valid
+  }
 
   document.getElementById('event-form').addEventListener('submit', async (e) => {
     e.preventDefault()
+    if (!validateEventForm()) return
     const saveBtn = document.getElementById('event-modal-save')
     saveBtn.textContent = 'Saving…'
     saveBtn.disabled = true

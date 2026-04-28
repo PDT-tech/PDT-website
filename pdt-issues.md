@@ -100,3 +100,9 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 074 | DONE   | Member Home: Director and Poohbah blog cards not clickable. Latest post cards on members/index.html are static. Each should link to the blog page with that post's modal open (?post=<uuid> deep-link pattern, matching #072). Fixed 2026-04-27. loadRecentPosts() renders items as <a> links when blogPageUrl provided; directors-notes.html and poohbah.html detect ?post param on load and call openPost(). Files: members/index.html, members/directors-notes.html, members/poohbah.html, css/members.css.
 
 075 | OPEN | Member Home: disposition of "Full Calendar" and "Mark Myself Absent" buttons after Next Rehearsal block removal. These buttons currently live in the NEXT REHEARSAL card. When that card is removed, the buttons lose their home. Options: (a) add a "Can You Be There?" link to the Upcoming Events card footer alongside "All Events →", (b) add to Quick Links, (c) drop them entirely — Calendar and Attendance are already in the nav. Decision deferred. Do not implement until Kevin decides.
+
+076 | DONE | Member portal: nav brand href broken on all member pages (resolved to current page instead of /); footer label "Members Only Portal Home" inconsistent with Member Home nav label; sub-head missing org name on non-home pages. Fixed 2026-04-27. Files: all 11 member portal pages.
+
+077 | DONE | New Event form: Save button non-functional; time fields missing validation (call/on-stage required for sing-outs, end after start for all); "End time" label inconsistent with "Event begins at"; excessive vertical spacing. Fixed 2026-04-27. File: members/calendar.html, css/calendar.css.
+
+078 | DONE | Photos page: filter label wrong ("all" vs "only"); filter control is a link not a checkbox; upload button and filter bar layout cramped with no breathing room. Fixed 2026-04-27. Files: members/photos.html, members/photos.css.

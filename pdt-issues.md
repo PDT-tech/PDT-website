@@ -73,7 +73,7 @@ Post-release. Repository currently lives under kevin36v personal GitHub account.
 Transfer to tech@pdtsingers.org GitHub account or a PDT GitHub Organization.
 Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
-062 | DONE   | Events page: post displays created_at date instead of event_date. Fixed 2026-04-27: detail view now queries events table via event_id FK to get event_date; falls back to post created_at when event_id is null. formatEventDate() renders with weekday ("Monday, May 12, 2026"). File: members/events.html.
+062 | DONE   | Events page: post displays created_at date instead of event_date. Fixed 2026-04-28: Events detail now reads event_date from events table via event_id FK; falls back to post created_at when event_id is null. File: members/events.html.
 
 063 | DONE   | Events page: event times displayed with seconds (HH:MM:SS). Fixed 2026-04-27. calendar.html formatTime() already correct (destructures [h,m] only). attendance.js and admin-attendance.js formatTime() already correct. events.html line 295: trimmed start_time URL param to .slice(0,5) before inserting into post body template. File: members/events.html.
 
@@ -89,7 +89,7 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 069 | DONE   | Member portal nav: remove "MEMBERS" link from member nav header. Removed <span class="member-badge">Members</span> from inside the nav brand link — it was redundant with the brand destination. Fixed 2026-04-27. Files: members/{index,calendar,events,attendance,directors-notes,poohbah,music,sunburst,photos,resources,admin-attendance}.html.
 
-070 | DONE   | Events page post detail: remove creator name; add event_date, call_time, on_stage. Fixed 2026-04-27: author name removed from detail-meta; call_time and on_stage prepended to detail-body as labeled fields (HH:MM format, hidden when null); event date shown in meta via #062 fix. File: members/events.html.
+070 | DONE   | Events page post detail: remove creator name; add event_date, call_time, on_stage. Fixed 2026-04-28: Author name removed from detail view; call_time and on_stage added (HH:MM format, hidden when null). File: members/events.html.
 
 071 | DESIGN | Calendar/Events architecture: Option C selected — retire Events blog posts, make Events page a calendar-driven view with optional editorial narrative. Decision: Events page (members/events.html) will render directly from the events table filtered to performance and social event_types, not from the posts table. The posts table blog_type='events' rows will be migrated and retired. Schema change required: add public_notes column (text, nullable) to events table — this is the editorial/narrative field (separate from notes, which is operational). The create/edit calendar form gets an "Event description / public announcement" textarea mapped to public_notes. Events page renders: event_date, title, location, call_time, on_stage, dress_code, and public_notes as prose body. If public_notes is null, event still displays with structured fields only. Author attribution removed (no posted_by on events). Events are always published once created (no per-event draft/publish toggle). Migration: for existing events posts with a non-null event_id FK, copy post body into events.public_notes, then delete those post rows. Orphaned events posts (no event_id) reviewed manually. Moss's workflow moves to the calendar create/edit form. Do not implement #064 or #068 — they become moot under Option C. Implement #070 as part of this work (remove author name, add event_date + times from events table). Implementation order: (a) migration adding public_notes column, (b) calendar.html form update, (c) events.html rewrite as calendar view, (d) data migration script, (e) remove events rows from posts table. Flag: this is a significant refactor — implement as a dedicated session after #065 and #066 are resolved.
 
@@ -99,7 +99,7 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 074 | DONE   | Member Home: Director and Poohbah blog cards not clickable. Latest post cards on members/index.html are static. Each should link to the blog page with that post's modal open (?post=<uuid> deep-link pattern, matching #072). Fixed 2026-04-27. loadRecentPosts() renders items as <a> links when blogPageUrl provided; directors-notes.html and poohbah.html detect ?post param on load and call openPost(). Files: members/index.html, members/directors-notes.html, members/poohbah.html, css/members.css.
 
-075 | DONE   | Member Home: disposition of "Full Calendar" and "Mark Myself Absent" buttons after Next Rehearsal block removal. Fixed 2026-04-28: both links added to Quick Links card on members/index.html — "Full Calendar" (→ calendar.html) and "Mark Myself Absent" (→ attendance.html) inserted after the existing Calendar entry. File: members/index.html.
+075 | DONE   | Member Home: disposition of "Full Calendar" and "Mark Myself Absent" buttons after Next Rehearsal block removal. Fixed 2026-04-28: Quick Links rebuilt — Calendar, Can You Be There?, Music Library, Upload Photos. Full Calendar and Mark Myself Absent removed. File: members/index.html.
 
 076 | DONE | Member portal: nav brand href broken on all member pages (resolved to current page instead of /); footer label "Members Only Portal Home" inconsistent with Member Home nav label; sub-head missing org name on non-home pages. Fixed 2026-04-27. Files: all 11 member portal pages.
 
@@ -107,7 +107,7 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 078 | DONE | Photos page: filter label wrong ("all" vs "only"); filter control is a link not a checkbox; upload button and filter bar layout cramped with no breathing room. Fixed 2026-04-27. Files: members/photos.html, members/photos.css.
 
-079 | SUPPRESSED | Home page carousel hidden pending Drive provisioning. Carousel code is intact but container suppressed via CSS display:none in index.html. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. File: index.html.
+079 | DONE   | Home page carousel hidden pending Drive provisioning. Fixed 2026-04-28: Carousel suppressed via display:none in index.html and friends.html. Code intact. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. Files: index.html, friends.html.
 
 080 | POST-V1 | Home page carousel: fix vertical position in index.html markup so carousel sits between the WHO WE ARE block and the UPCOMING SING-OUTS block. Currently suppressed (#079) — fix position before re-enabling. File: index.html.
 

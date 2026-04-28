@@ -125,14 +125,16 @@
           <label class="form-label" for="event-date">Date</label>
           <input type="date" id="event-date" class="form-input" required>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="event-start">Event begins at</label>
-            <input type="time" id="event-start" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="event-end">End time</label>
-            <input type="time" id="event-end" class="form-input">
+        <div id="non-perf-times-section">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="event-start">Event begins at</label>
+              <input type="time" id="event-start" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="event-end">End time</label>
+              <input type="time" id="event-end" class="form-input">
+            </div>
           </div>
         </div>
         <div class="perf-times-section modal-hidden" id="perf-times-section">
@@ -146,6 +148,10 @@
               <label class="form-label" for="event-on-stage">On-stage at</label>
               <input type="time" id="event-on-stage" class="form-input">
             </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="event-dress-code">Outfit?</label>
+            <input type="text" id="event-dress-code" class="form-input" placeholder="e.g. Black &amp; Whites">
           </div>
         </div>
         <div class="form-group">
@@ -225,6 +231,10 @@
         <div class="cal-detail-row modal-hidden" id="dm-on-stage-row">
           <span class="cal-detail-label">On stage</span>
           <span class="cal-detail-value" id="dm-on-stage"></span>
+        </div>
+        <div class="cal-detail-row modal-hidden" id="dm-dress-code-row">
+          <span class="cal-detail-label">Outfit</span>
+          <span class="cal-detail-value" id="dm-dress-code"></span>
         </div>
         <div class="cal-detail-row modal-hidden" id="dm-location-row">
           <span class="cal-detail-label">Location</span>
@@ -490,7 +500,7 @@
     })
 
     const timeRow = document.getElementById('dm-time-row')
-    if (ev.start_time) {
+    if (ev.start_time && ev.event_type !== 'performance') {
       document.getElementById('dm-time').textContent =
         formatTime(ev.start_time) + (ev.end_time ? ` – ${formatTime(ev.end_time)}` : '')
       timeRow.classList.remove('modal-hidden')
@@ -498,8 +508,9 @@
       timeRow.classList.add('modal-hidden')
     }
 
-    const callTimeRow = document.getElementById('dm-call-time-row')
-    const onStageRow  = document.getElementById('dm-on-stage-row')
+    const callTimeRow    = document.getElementById('dm-call-time-row')
+    const onStageRow     = document.getElementById('dm-on-stage-row')
+    const dressCodeRow   = document.getElementById('dm-dress-code-row')
     if (ev.event_type === 'performance') {
       if (ev.call_time) {
         document.getElementById('dm-call-time').textContent = formatTime(ev.call_time)
@@ -507,12 +518,22 @@
       } else {
         callTimeRow.classList.add('modal-hidden')
       }
-      document.getElementById('dm-on-stage').textContent =
-        ev.on_stage ? formatTime(ev.on_stage) : 'same as show time'
-      onStageRow.classList.remove('modal-hidden')
+      if (ev.on_stage) {
+        document.getElementById('dm-on-stage').textContent = formatTime(ev.on_stage)
+        onStageRow.classList.remove('modal-hidden')
+      } else {
+        onStageRow.classList.add('modal-hidden')
+      }
+      if (ev.dress_code) {
+        document.getElementById('dm-dress-code').textContent = ev.dress_code
+        dressCodeRow.classList.remove('modal-hidden')
+      } else {
+        dressCodeRow.classList.add('modal-hidden')
+      }
     } else {
       callTimeRow.classList.add('modal-hidden')
       onStageRow.classList.add('modal-hidden')
+      dressCodeRow.classList.add('modal-hidden')
     }
 
     const locRow = document.getElementById('dm-location-row')
@@ -714,10 +735,13 @@
     document.getElementById('event-end').value = ev?.end_time?.slice(0,5) || ''
     document.getElementById('event-call-time').value = ev?.call_time?.slice(0,5) || ''
     document.getElementById('event-on-stage').value = ev?.on_stage?.slice(0,5) || ''
+    document.getElementById('event-dress-code').value = ev?.dress_code || ''
     document.getElementById('event-location').value = ev?.location || ''
     document.getElementById('event-notes').value = ev?.notes || ''
     document.getElementById('event-cancelled').checked = ev?.is_cancelled || false
-    document.getElementById('perf-times-section').classList.toggle('modal-hidden', ev?.event_type !== 'performance')
+    const isPerf = ev?.event_type === 'performance'
+    document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
+    document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
     document.getElementById('event-modal').classList.remove('modal-hidden')
   }
 
@@ -729,6 +753,7 @@
   document.getElementById('event-type').addEventListener('change', () => {
     const isPerf = document.getElementById('event-type').value === 'performance'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
+    document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
   })
 
   ;['event-call-time', 'event-on-stage'].forEach(id => {
@@ -757,10 +782,11 @@
       title:        document.getElementById('event-title').value.trim(),
       event_type:   document.getElementById('event-type').value,
       event_date:   document.getElementById('event-date').value,
-      start_time:   document.getElementById('event-start').value || null,
-      end_time:     document.getElementById('event-end').value || null,
+      start_time:   isPerf ? null : (document.getElementById('event-start').value || null),
+      end_time:     isPerf ? null : (document.getElementById('event-end').value || null),
       call_time:    isPerf ? (document.getElementById('event-call-time').value || null) : null,
       on_stage:     isPerf ? (document.getElementById('event-on-stage').value || null) : null,
+      dress_code:   isPerf ? (document.getElementById('event-dress-code').value.trim() || null) : null,
       location:     document.getElementById('event-location').value.trim() || null,
       notes:        document.getElementById('event-notes').value.trim() || null,
       is_cancelled: document.getElementById('event-cancelled').checked,

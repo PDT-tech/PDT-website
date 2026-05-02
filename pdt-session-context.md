@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-02 (Session 19 — Workspace unblocked, GitHub Actions HEIC paused, tech@ ownership transfer underway)
+**Last updated:** 2026-05-02 (Session 20 — Music Library/Sunburst confirmed live, photo upload Drive fix committed, Netlify deploy blocked on account migration)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -116,8 +116,8 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 
 | # | Item |
 |---|------|
-| 014 | Main page: animated photo carousel — Implemented, pending Drive provisioning and SQL migration deploy |
-| 015 | Photo upload, gallery, and animated carousel — full feature — Implemented, pending Drive provisioning and SQL migration deploy |
+| 014 | Main page: animated photo carousel — committed, deploy blocked on Netlify account migration |
+| 015 | Photo upload, gallery, and carousel — committed, deploy blocked on Netlify account migration |
 | 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
@@ -141,6 +141,10 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 - #048 — Supabase cold-start slow load — accepted as known behavior, closed
 
 **Standing backlog:**
+- Netlify deploy unblocked: relink GitHub repo to PDT-tech/PDT-website once Netlify support completes account migration (ticket open, filed 2026-05-02); then trigger deploy to get upload-photo.js JWT fix live
+- Re-enable GitHub Actions HEIC workflow after first successful photo upload end-to-end test
+- Run two unrun Supabase migrations (in order): 20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
+- Set Supabase Edge Function secrets: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
 - tech@ ownership transfer: Netlify pending support (case 561988); Supabase pending support (email suppression); all other services complete
 - Re-enable GitHub Actions HEIC workflow once Drive Photos folders confirmed live
 - May 28: check Workspace nonprofit SKU has landed and zeroed out billing before May 31 charge date

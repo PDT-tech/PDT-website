@@ -1,7 +1,19 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-04-26
+# Last updated: 2026-05-02
+
+---
+
+## 2026-05-02 — Drive upload: service account impersonation via domain-wide delegation
+
+**Question:** Why do Drive uploads from the service account fail with a 403 storage quota error?
+
+**Decision:** Service accounts have no storage quota of their own. Uploads must impersonate a Workspace user via domain-wide delegation. The `sub` claim in the service account JWT is set to `tech@pdtsingers.org`. Domain-wide delegation was enabled on the service account in GCP and authorized in Google Workspace Admin console (Security → API Controls → Domain-Wide Delegation) with scope `https://www.googleapis.com/auth/drive`.
+
+**Rationale:** This is a Google-imposed limitation on service accounts. The fix is the pattern Google recommends for Workspace environments. Reads (Music Library, Sunburst, photo proxy) are unaffected — only writes (upload-photo.js) required this change.
+
+**Applies to:** `netlify/edge-functions/upload-photo.js` only.
 
 ---
 

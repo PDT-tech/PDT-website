@@ -330,7 +330,7 @@ PDT-website/                      ← repo root
 | Performance fee | $150 standard 40-min; free for philanthropic/mission/recruitment |
 | WBQA | sppbsqsus.org / facebook.com/WBQA.Sings |
 | Charter | Lodge #18, WBQA Annual Convention, San Antonio TX, March 14, 2026 |
-| GitHub | https://github.com/kevin36v/PDT-website |
+| GitHub | https://github.com/PDT-tech/PDT-website |
 | Netlify project | astonishing-douhua-7cfbb7.netlify.app |
 | Live site | pdtsingers.org ✅ |
 | Supabase project | Americas region |

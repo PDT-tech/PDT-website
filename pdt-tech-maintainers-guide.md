@@ -21,33 +21,19 @@ step, no framework, no CMS. Updating the site means editing files and pushing to
 
 | Service | URL | Login | What it controls |
 |---------|-----|-------|-----------------|
-| Netlify | netlify.com | GitHub (kevin36v) | Hosting, deploys, env vars, forms |
-| Supabase | supabase.com | GitHub (kevin36v) | Auth, database, member accounts |
-| GitHub | github.com/kevin36v | kevin36v | Source control, CI/CD |
-| Google Cloud | console.cloud.google.com | president@pdtsingers.org | Music Library service account |
-| Google Workspace | admin.google.com | president@pdtsingers.org | Email, Drive, Meet |
-| Resend | resend.com | — | Transactional email (magic links) |
-| Helping Hosting | — | — | Domain registrar (pdtsingers.org) |
+| Netlify | netlify.com | GitHub (PDT-tech) | Hosting, deploys, env vars, forms |
+| Supabase | supabase.com | GitHub (PDT-tech) | Auth, database, member accounts |
+| GitHub | github.com/PDT-tech | PDT-tech | Source control, CI/CD |
+| Google Cloud | console.cloud.google.com | tech@pdtsingers.org | Music Library service account |
+| Google Workspace | admin.google.com | tech@pdtsingers.org | Email, Drive, Meet |
+| Resend | resend.com | tech@pdtsingers.org | Transactional email |
+| HelpingHosting | helpinghosting.com | tech@pdtsingers.org | Domain registrar (pdtsingers.org) |
 
-⚠️ **CRITICAL: Kevin is currently the sole owner of every service listed above.**
-If Kevin is unavailable for any reason, no one else can make changes to the site,
-member accounts, DNS, or any other system. This is an unacceptable single point of
-failure for a functioning chorus.
+**Account ownership model:** The `tech@pdtsingers.org` Workspace account is a role account — whoever holds the Tech Poohbah position gets those credentials. `president@pdtsingers.org` is the backup owner on all services. If the Tech Poohbah is unavailable, the president can log in as `tech@` or reassign the role via the Workspace Admin Console.
 
-**Action required — add a second admin to every service:**
-- [ ] Netlify — add second owner (Site settings → Team)
-- [ ] Supabase — add second owner (Project settings → Team)
-- [ ] GitHub — add second owner (repo Settings → Collaborators)
-- [ ] Google Cloud Console — add second owner to pdt-singers-music-library project
-- [ ] Google Workspace admin — add second admin (admin.google.com)
-- [ ] Resend — add second owner (Team settings)
-- [ ] Helping Hosting (domain registrar) — add second account or document recovery path
-- [ ] Goodstack (formerly TechSoup) — add second contact
+**Netlify note:** Transfer from personal account (k7vi@hotmail.com) to PDT-tech is pending Netlify support response (case 561988). Once complete, all Netlify access moves to the PDT-tech GitHub login.
 
-The backup admin should be a board member (Grant Gibson is the natural candidate as
-Secretary-Treasurer) or a trusted technical contact. They do not need to know how to
-use these systems day-to-day — they just need access so they can hand off to a future
-maintainer if needed.
+**Supabase note:** Owner invite to tech@pdtsingers.org is pending Supabase support clearing an email suppression record. Once cleared, re-send the Owner invite from Organization Settings → Members.
 
 ---
 
@@ -699,7 +685,7 @@ If Workspace Drive access is lost (e.g., trial account cancellation, service acc
 
 **Project:** `pdt-singers-music-library`  
 **Primary owner:** `tech@pdtsingers.org`  
-**Legacy co-owner:** `pdtsingers.music@gmail.com` — remove post-release (issue #060)  
+**Backup owner:** `president@pdtsingers.org`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`  
 **What GCP is used for:** Service account JWT signing for Drive API access only. No Cloud Functions, no Cloud Scheduler, no Cloud Storage. The only GCP resource that matters is the service account and its key.
 

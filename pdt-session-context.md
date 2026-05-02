@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-04-28 (Session 18 — Events detail FK fix, Quick Links rebuilt, carousels suppressed)
+**Last updated:** 2026-05-02 (Session 19 — Workspace unblocked, GitHub Actions HEIC paused, tech@ ownership transfer underway)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -37,7 +37,7 @@ NOT affiliated with BHS — state clearly on About page.
 - **Netlify Functions** — serverless Drive proxy for Music Library and Sunburst newsletter
 - **Netlify Edge Functions** — `inject-env.js` (env var injection), `drive-music-download.js`
   (streaming file downloads)
-- Source control: **GitHub** — https://github.com/kevin36v/PDT-website
+- Source control: **GitHub** — https://github.com/PDT-tech/PDT-website
 - Email (transactional): **Resend** (resend.com) — noreply@pdtsingers.org
 - Email (group): **Google Workspace for Nonprofits** — president@pdtsingers.org (active)
 - Music files: **Google Workspace Drive** — president@pdtsingers.org, served via service
@@ -127,15 +127,13 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
 
-**Blocked on Google Workspace Drive provisioning:**
-- Music Library files need re-upload (old Drive account cancelled)
+**Google Workspace Drive — now unblocked (2026-05-02):**
+- Drive is live and accessible under president@pdtsingers.org
 - /Photos/ and /Photos/Mainpage_Carousel/ folders need creation + service account share
-- Photo feature end-to-end test blocked until Drive available
-- Two SQL migrations unrun (run in order once Drive live):
-  20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
-- Supabase Edge Function secrets not yet set:
-  GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID,
-  GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
+- Photo feature end-to-end test can now proceed
+- Two SQL migrations still unrun (run in order): 20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
+- Supabase Edge Function secrets still need setting: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
+- GitHub Actions HEIC conversion workflow (convert-heic.yml) is DISABLED — re-enable after Drive Photos folders are confirmed live and end-to-end test passes
 - Sunburst card on Member Home shows graceful placeholder until Drive live
 
 **Deferred (not abandoned):**
@@ -143,7 +141,9 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 - #048 — Supabase cold-start slow load — accepted as known behavior, closed
 
 **Standing backlog:**
-- Add second admin account owner to all services (Netlify, Supabase, GitHub, GCP, GWS, Resend, Helping Hosting, Goodstack) — Grant Gibson is the natural candidate
+- tech@ ownership transfer: Netlify pending support (case 561988); Supabase pending support (email suppression); all other services complete
+- Re-enable GitHub Actions HEIC workflow once Drive Photos folders confirmed live
+- May 28: check Workspace nonprofit SKU has landed and zeroed out billing before May 31 charge date
 - Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
 - Admin attendance override (#032) — ✅ complete (Session 13)
 - Sing-out attendance census report (#033) — ✅ complete (Session 14/15)

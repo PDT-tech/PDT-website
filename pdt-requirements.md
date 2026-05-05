@@ -238,7 +238,7 @@ mismatch possible.
 **Implementation details:**
 - Service account: `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
 - GCP project: `pdt-singers-music-library`
-- Drive: Music folder in Workspace Drive (president@pdtsingers.org), shared with service account (Viewer). Dropbox retired April 2026.
+- Drive: Music folder in Workspace Drive (president@pdtsingers.org), shared with service account (Editor — changed 2026-05-04; was Viewer). Dropbox retired April 2026.
 - Credential stored as `GOOGLE_SERVICE_ACCOUNT_JSON` in Netlify env vars (secret)
 - Music folder ID stored as `GOOGLE_DRIVE_MUSIC_FOLDER_ID` in Netlify env vars
   (Workspace Drive value — April 2026)
@@ -258,7 +258,7 @@ mismatch possible.
 
 **Drive folder structure:**
 ```
-Music/ (president@pdtsingers.org Workspace Drive — shared with service account, Viewer)
+Music/ (president@pdtsingers.org Workspace Drive — shared with service account, Editor — changed 2026-05-04)
        (folder ID: REDACTED-see-Netlify-env-GOOGLE_DRIVE_MUSIC_FOLDER_ID)
     ├── Ain't Misbehavin'/        ← performance repertoire
     ├── God Bless America/        ← performance repertoire
@@ -280,6 +280,17 @@ variants). The page sorts the member's own voice part tracks to the top and offe
 
 No Supabase `songs` table — Drive folder list is the source of truth. Adding a song
 requires only creating a new folder in Drive and dropping files in.
+
+**Music Library Admin — Upload & Delete (Session 19)**
+
+- **Roles:** musical_director, tech. (Post-v1: add "Music Team" role when that role is created — see pdt-issues.md)
+- **Service account permission:** Editor on Music folder (was Viewer — changed 2026-05-04)
+- **New Edge Function:** `netlify/edge-functions/drive-music-upload.js` → `/api/music-upload`
+- **Actions:** `create_folder`, `upload_file`, `delete_file`
+- **Accepted MIME types:** `application/pdf`, `audio/mpeg` only. Others return 415.
+- **Duplicate filename handling:** insert sequential suffix before extension (`-1`, `-2` … `-99`)
+- **Folder delete:** not supported in V1. Admin uses Drive directly for folder operations.
+- **UI:** two admin-only buttons (+ New Song Folder, + Upload File) between title block and song count banner on `members/music.html`. File rows gain a right-aligned trash icon for admin users.
 
 ### 5h. Cross-Posting (backlog — requirements TBD)
 Post PDT events and announcements from the website to Facebook Events and member

@@ -316,6 +316,25 @@ Do not construct direct `drive.google.com` download URLs in client code — they
 **File naming for learning tracks:** include the voice part in the filename
 (Tenor, Lead, Bari/Baritone, Bass) so the page sorts the member's own part to the top.
 
+### Music Library Admin — Upload & Delete
+
+**Who can use it:** `musical_director` and `tech` roles only.
+
+| Action | How |
+|--------|-----|
+| Create song folder | Music Library page → **+ New Song Folder** button |
+| Upload PDF or MP3 | Music Library page → **+ Upload File** button |
+| Delete a file | Music Library page → trash icon on the file row → confirm |
+| Delete a folder | **Must be done directly in Google Drive** — not supported via the website |
+
+These actions call `netlify/edge-functions/drive-music-upload.js` (→ `/api/music-upload`).
+
+- **Accepted file types:** PDF and MP3 only. MIME type is enforced server-side — the file picker accept attribute is a hint only.
+- **Duplicate filenames:** if a file with the same name exists in the folder, the function automatically appends a suffix (`-1`, `-2`, … `-99`).
+- **Service account permission:** the service account now has **Editor** access on the `Music/` folder (changed from Viewer on 2026-05-04).
+
+**Local dev limitation:** upload and delete cannot be tested locally with `GOOGLE_DRIVE_API_KEY` — write operations require the service account. Test on a Netlify preview deploy, or share a personal test Drive folder with the service account as Editor.
+
 ---
 
 ## 10. The Sunburst Newsletter
@@ -429,7 +448,10 @@ Netlify → Forms → [form name] → Form notifications.
 | Add a member | Supabase → Authentication → Users |
 | Deactivate a member | Supabase → Table Editor → profiles → is_active = false |
 | Change a member's role | Supabase → Table Editor → profiles → role |
-| Add a song to Music Library | Drop folder + files in Google Drive Music/ folder |
+| Add a song to Music Library | Music Library page → + New Song Folder (or drop folder in Drive directly) |
+| Upload a file to Music Library | Music Library page → + Upload File (musical_director / tech only) |
+| Delete a Music Library file | Music Library page → trash icon on file row (musical_director / tech only) |
+| Delete a Music Library folder | Google Drive directly — not supported via the website |
 | Cancel a rehearsal | Calendar page (admin view) → mark Cancelled |
 | View attendance census | Members portal → Attendance Report (admin/director only) |
 | Check Edge Function logs | Supabase → Edge Functions → [function name] → logs |
@@ -455,6 +477,9 @@ Browser
         ├── drive-music-download.js (Netlify Edge Function — /api/music-download)
         │     └── Streams Drive file content directly to browser
         │     └── No buffering, no size ceiling; token never leaves function
+        ├── drive-music-upload.js (Netlify Edge Function — /api/music-upload)
+        │     └── Music Library write ops: create_folder, upload_file, delete_file
+        │     └── Role-gated: musical_director and tech only
         └── Netlify Forms (public form submissions)
 
 Authentication: Supabase (email → OTP code via Resend SMTP; shouldCreateUser: false)
@@ -676,7 +701,7 @@ All photos in the carousel are curated — only admins or events_editors can mar
 If Workspace Drive access is lost (e.g., trial account cancellation, service account key rotation, Drive provisioning reset):
 
 1. **Verify service account still exists** in GCP Console → IAM & Admin → Service Accounts → `pdt-singers-music-library`. If it was deleted, create a new key and update `GOOGLE_SERVICE_ACCOUNT_JSON` in both Netlify env vars and Supabase Edge Function secrets.
-2. **Verify folder sharing** — in Drive, right-click each folder (Music, Sunburst, Photos, Photos/Mainpage_Carousel) → Share → confirm service account email has at minimum Viewer access (Writer for Photos).
+2. **Verify folder sharing** — in Drive, right-click each folder (Music, Sunburst, Photos, Photos/Mainpage_Carousel) → Share → confirm service account email has: Editor on Music (changed 2026-05-04), Viewer on Sunburst, Writer on Photos and Photos/Mainpage_Carousel.
 3. **Re-upload Music Library files** if Drive was provisioned fresh — files must be manually re-uploaded from Dropbox (the source). Folder structure under `Music/` is the only metadata; filenames must include voice part for the sort feature to work.
 4. **Photos folders** — if `/Photos/` and `/Photos/Mainpage_Carousel/` need to be recreated, create them, share with service account (Writer), grab the new folder IDs, and update `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` in both Netlify env vars and Supabase Edge Function secrets.
 5. **Test after any credential change** by visiting Music Library and Photos pages while logged in. Check Netlify Function logs if listings fail; check Edge Function logs if downloads/proxy fail.

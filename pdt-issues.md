@@ -1,6 +1,6 @@
 # PDT Singers — Issue Tracker
 # Maintained exclusively by CC (Claude Code). Do not edit manually.
-# Last updated: 2026-04-27
+# Last updated: 2026-05-04
 
 001 | DONE   | Portal exit link: no path from member portal back to public site. Add "/" link to portal footer wordmark "Portland DayTime Singers". See also 010. Fixed 2026-04-20: wrapped "Portland DayTime Singers" in footer span as <a href="/"> across all 10 member pages.
 002 | DONE   | Logo: new WebP assets from Mercedes Gibson deployed for both cityscape and words portions of hero. Cityscape has residual light halo in dark mode (watercolor wash pixels not fully transparent) — requires source file fix from designer when words transparent file is also delivered. Good enough to ship. Fixed 2026-04-19.
@@ -114,3 +114,7 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 081 | POST-V1 | Home page: UPCOMING SING-OUTS block should be dynamically populated from the events table — all performance/sing-out event_types in the next 90 days, no rehearsals, ordered by event_date ascending. Currently static placeholder content. File: index.html.
 
 082 | POST-V1 | Performances page (performances.html / Hear Us Sing): populate sing-out listings dynamically from events table, same logic as #081 — performance event_types, next 90 days, ordered by event_date. Currently static placeholder content. File: performances.html.
+
+083 | OPEN | BLOCKER — Netlify account migration pending. Netlify support confirmed migration of the pdtsingers.org project from kevin36v personal account to tech@pdtsingers.org is scheduled for Tuesday 2026-05-05. GitHub repo already migrated. No deploys possible until migration completes. On completion: immediately verify all env vars survived in Netlify dashboard before first deploy (priority check: GOOGLE_SERVICE_ACCOUNT_JSON, SUPABASE_ANON_KEY, and all GOOGLE_DRIVE_* vars).
+
+084 | OPEN | PENDING — Supabase account migration pending. Supabase support to migrate project ownership to tech@pdtsingers.org. Not currently blocking any active development.

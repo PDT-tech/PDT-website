@@ -26,6 +26,10 @@
   function = "curate-photo"
 
 [[edge_functions]]
+  path = "/api/music-upload"
+  function = "drive-music-upload"
+
+[[edge_functions]]
   path = "/*"
   function = "inject-env"
 

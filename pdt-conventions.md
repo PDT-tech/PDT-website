@@ -209,6 +209,8 @@ When testing the Music Library locally:
 2. Test
 3. **Revert to Restricted immediately** — do not leave it open
 
+The `/api/music-upload` Edge Function calls Drive write APIs. It cannot be tested locally using the `GOOGLE_DRIVE_API_KEY` direct-call path. Test upload/delete on a Netlify preview deploy, or against a personal test Drive folder with the service account shared as Editor.
+
 ---
 
 ## Authenticated File Downloads

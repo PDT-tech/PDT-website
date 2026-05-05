@@ -277,6 +277,93 @@
       color: #6a9ab8;
       margin-bottom: 0.4rem;
     }
+    .modal-hidden { display: none !important; }
+    .admin-bar { display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); }
+    .admin-inline-msg { font-family: var(--font-ui); font-size: var(--text-sm); margin-bottom: var(--space-md); }
+    .post-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: var(--space-lg);
+    }
+    .post-modal {
+      background: #ffffff;
+      border-radius: 6px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .post-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .post-modal-title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .post-modal-close {
+      font-size: 1.5rem;
+      color: #5a5a5a;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.25rem;
+    }
+    .post-modal-close:hover { color: #1a1a1a; }
+    .post-modal form {
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .post-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: 1px solid rgba(0,0,0,0.07);
+    }
+    .post-modal-msg { font-family: var(--font-ui); font-size: var(--text-sm); }
+    .file-delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 4px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      opacity: 0.45;
+      transition: opacity var(--transition), color var(--transition);
+      margin-left: var(--space-xs);
+    }
+    .file-delete-btn:hover { opacity: 1; color: #c0392b; }
+    .file-del-label { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--text); flex: 1; min-width: 0; }
+    .file-del-confirm, .file-del-cancel {
+      font-family: var(--font-ui);
+      font-size: var(--text-xs);
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .file-del-confirm { background: var(--forest); color: #ffffff; border: none; }
+    .file-del-confirm:hover { background: var(--forest-mid); }
+    .file-del-cancel { background: #f0f0f0; color: #2a2a2a; border: 1px solid rgba(0,0,0,0.2); }
+    .file-del-cancel:hover { background: rgba(0,0,0,0.05); }
+    .file-delete-error { font-family: var(--font-ui); font-size: var(--text-xs); color: #c0392b; padding: 2px 8px 4px; }
   </style>
 </head>
 <body class="members-page">
@@ -332,11 +419,66 @@
         <p>Unable to load the music library right now. Please try again in a moment.</p>
       </div>
       <div id="library-content" style="display:none">
+        <div id="music-admin-bar" class="admin-bar" style="display:none">
+          <button class="btn-primary" id="new-folder-btn">+ New Song Folder</button>
+          <button class="btn-primary" id="upload-file-btn">+ Upload File</button>
+        </div>
+        <p id="admin-inline-msg" class="admin-inline-msg" style="display:none"></p>
         <p class="song-count" id="song-count"></p>
         <div class="song-list" id="song-list"></div>
       </div>
     </div>
   </main>
+
+<!-- NEW SONG FOLDER MODAL -->
+<div class="post-modal-overlay modal-hidden" id="folder-modal">
+  <div class="post-modal" style="max-width:420px">
+    <div class="post-modal-header">
+      <h2 class="post-modal-title">New Song Folder</h2>
+      <button class="post-modal-close" id="folder-modal-close">&times;</button>
+    </div>
+    <form id="folder-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="folder-name-input">Song folder name</label>
+        <input type="text" id="folder-name-input" class="form-input" required placeholder="e.g. Amazing Grace">
+      </div>
+      <p id="folder-modal-msg" class="post-modal-msg" style="display:none"></p>
+      <div class="post-modal-actions">
+        <button type="button" class="btn-secondary" id="folder-modal-cancel">Cancel</button>
+        <button type="submit" class="btn-primary btn-forest" id="folder-modal-submit">Create Folder</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- UPLOAD FILE MODAL -->
+<div class="post-modal-overlay modal-hidden" id="upload-modal">
+  <div class="post-modal" style="max-width:460px">
+    <div class="post-modal-header">
+      <h2 class="post-modal-title">Upload File</h2>
+      <button class="post-modal-close" id="upload-modal-close">&times;</button>
+    </div>
+    <form id="upload-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="upload-folder-select">Select song folder</label>
+        <select id="upload-folder-select" class="form-input"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="upload-file-input">File</label>
+        <input type="file" id="upload-file-input" class="form-input" accept=".pdf,.mp3">
+      </div>
+      <div id="upload-progress" class="panel-loading" style="display:none">
+        <div class="mini-spinner"></div>
+        Uploading…
+      </div>
+      <p id="upload-modal-msg" class="post-modal-msg" style="display:none"></p>
+      <div class="post-modal-actions">
+        <button type="button" class="btn-secondary" id="upload-modal-cancel">Cancel</button>
+        <button type="submit" class="btn-primary btn-forest" id="upload-modal-submit">Upload</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <footer class="members-footer">
   <div class="members-footer-inner">
@@ -484,16 +626,59 @@
         actionsEl.appendChild(btn)
       }
 
-      const grid = item.querySelector('.file-grid')
+      const grid    = item.querySelector('.file-grid')
+      const isAdmin = ['musical_director','tech'].includes(window.__PDT_USER?.role)
+      const trashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>`
+
       ;[...myTracks, ...pdfs, ...others].forEach(file => {
         const type = getFileType(file.name)
         const mine = isMyTrack(file.name, vp)
         const row  = document.createElement('div')
         row.className = `file-row${mine ? ' my-track' : ''}`
-        row.innerHTML = `
-          <div class="file-icon ${type}">${type.toUpperCase()}</div>
-          <span class="file-name" title="${file.name}">${file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,'')}</span>
-          <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">${type === 'pdf' ? 'Open' : 'Download'}</a>`
+
+        function setNormal () {
+          row.innerHTML = `
+            <div class="file-icon ${type}">${type.toUpperCase()}</div>
+            <span class="file-name" title="${escHtml(file.name)}">${escHtml(file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,''))}</span>
+            <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">${type === 'pdf' ? 'Open' : 'Download'}</a>
+            ${isAdmin ? `<button class="file-delete-btn" title="Delete file">${trashSvg}</button>` : ''}`
+          if (isAdmin) {
+            row.querySelector('.file-delete-btn').addEventListener('click', setConfirm)
+          }
+        }
+
+        async function setConfirm () {
+          const label = escHtml(file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,''))
+          row.innerHTML = `
+            <span class="file-del-label">${label} — Delete permanently?</span>
+            <button class="file-del-confirm">Confirm</button>
+            <button class="file-del-cancel">Cancel</button>`
+          row.querySelector('.file-del-cancel').addEventListener('click', setNormal)
+          row.querySelector('.file-del-confirm').addEventListener('click', async () => {
+            const fd = new FormData()
+            fd.append('action', 'delete_file')
+            fd.append('fileId', file.id)
+            try {
+              const res  = await fetch('/api/music-upload', {
+                method : 'POST',
+                headers: { Authorization: `Bearer ${await getToken()}` },
+                body   : fd
+              })
+              const data = await res.json()
+              if (!res.ok || !data.success) throw new Error()
+              row.remove()
+            } catch {
+              setNormal()
+              const err = document.createElement('p')
+              err.className = 'file-delete-error'
+              err.textContent = 'Delete failed. Please try again.'
+              row.insertAdjacentElement('afterend', err)
+              setTimeout(() => err.remove(), 5000)
+            }
+          })
+        }
+
+        setNormal()
         grid.appendChild(row)
       })
 
@@ -571,10 +756,187 @@
       return item
     }
 
+    // ── Admin controls (musical_director + tech only) ────────
+    let _adminFolders = []
+
+    function applyAdminControls (profile) {
+      if (!['musical_director','tech'].includes(profile?.role)) return
+      document.getElementById('music-admin-bar').style.display = 'flex'
+    }
+    if (window.__PDT_USER) {
+      applyAdminControls(window.__PDT_USER)
+    } else {
+      document.addEventListener('pdt:profile-loaded', e => applyAdminControls(e.detail))
+    }
+
+    function showAdminMsg (msg, isError = false) {
+      const el = document.getElementById('admin-inline-msg')
+      el.textContent = msg
+      el.style.color = isError ? '#c0392b' : '#2c5f2e'
+      el.style.display = 'block'
+      if (!isError) setTimeout(() => { el.style.display = 'none' }, 3000)
+    }
+
+    async function reloadListing () {
+      const list = document.getElementById('song-list')
+      list.innerHTML = ''
+      try {
+        const folders = await fetchFolders()
+        _adminFolders = folders
+        document.getElementById('song-count').textContent =
+          `${folders.length} song${folders.length !== 1 ? 's' : ''}`
+        folders.forEach(f => list.appendChild(buildSongItem(f)))
+      } catch (err) {
+        console.error('reloadListing:', err)
+      }
+    }
+
+    // ── New Song Folder modal ────────────────────────────────
+    const folderModal = document.getElementById('folder-modal')
+    const folderForm  = document.getElementById('folder-form')
+
+    document.getElementById('new-folder-btn').addEventListener('click', () => {
+      folderForm.reset()
+      document.getElementById('folder-modal-msg').style.display = 'none'
+      folderModal.classList.remove('modal-hidden')
+      document.getElementById('folder-name-input').focus()
+    })
+
+    function closeFolderModal () {
+      folderModal.classList.add('modal-hidden')
+      folderForm.reset()
+    }
+    document.getElementById('folder-modal-close').addEventListener('click', closeFolderModal)
+    document.getElementById('folder-modal-cancel').addEventListener('click', closeFolderModal)
+    folderModal.addEventListener('click', e => { if (e.target === folderModal) closeFolderModal() })
+
+    folderForm.addEventListener('submit', async e => {
+      e.preventDefault()
+      const folderName = document.getElementById('folder-name-input').value.trim()
+      if (!folderName) return
+      const msg    = document.getElementById('folder-modal-msg')
+      const submit = document.getElementById('folder-modal-submit')
+      submit.disabled = true
+      msg.style.display = 'none'
+
+      const fd = new FormData()
+      fd.append('action', 'create_folder')
+      fd.append('parentFolderId', window.__PDT_ENV?.GOOGLE_DRIVE_MUSIC_FOLDER_ID || '')
+      fd.append('folderName', folderName)
+
+      try {
+        const res  = await fetch('/api/music-upload', {
+          method : 'POST',
+          headers: { Authorization: `Bearer ${await getToken()}` },
+          body   : fd
+        })
+        const data = await res.json()
+        if (!res.ok || !data.success) {
+          msg.textContent = data.error || 'Failed to create folder. Please try again.'
+          msg.style.color = '#c0392b'
+          msg.style.display = 'block'
+        } else {
+          closeFolderModal()
+          showAdminMsg(`Folder "${data.name}" created.`)
+          await reloadListing()
+        }
+      } catch {
+        msg.textContent = 'Failed to create folder. Please try again.'
+        msg.style.color = '#c0392b'
+        msg.style.display = 'block'
+      } finally {
+        submit.disabled = false
+      }
+    })
+
+    // ── Upload File modal ────────────────────────────────────
+    const uploadModal = document.getElementById('upload-modal')
+    const uploadForm  = document.getElementById('upload-form')
+
+    function populateFolderDropdown () {
+      const sel = document.getElementById('upload-folder-select')
+      sel.innerHTML = ''
+      if (!_adminFolders.length) {
+        const opt = document.createElement('option')
+        opt.value = ''; opt.textContent = 'Loading…'; opt.disabled = true; opt.selected = true
+        sel.appendChild(opt)
+        return
+      }
+      _adminFolders.forEach(f => {
+        const opt = document.createElement('option')
+        opt.value = f.id; opt.textContent = f.name
+        sel.appendChild(opt)
+      })
+    }
+
+    document.getElementById('upload-file-btn').addEventListener('click', () => {
+      uploadForm.reset()
+      document.getElementById('upload-modal-msg').style.display = 'none'
+      document.getElementById('upload-progress').style.display = 'none'
+      populateFolderDropdown()
+      uploadModal.classList.remove('modal-hidden')
+    })
+
+    function closeUploadModal () {
+      uploadModal.classList.add('modal-hidden')
+      uploadForm.reset()
+    }
+    document.getElementById('upload-modal-close').addEventListener('click', closeUploadModal)
+    document.getElementById('upload-modal-cancel').addEventListener('click', closeUploadModal)
+    uploadModal.addEventListener('click', e => { if (e.target === uploadModal) closeUploadModal() })
+
+    uploadForm.addEventListener('submit', async e => {
+      e.preventDefault()
+      const folderId = document.getElementById('upload-folder-select').value
+      const fileEl   = document.getElementById('upload-file-input')
+      const file     = fileEl.files?.[0]
+      if (!folderId || !file) return
+
+      const msg      = document.getElementById('upload-modal-msg')
+      const progress = document.getElementById('upload-progress')
+      const submit   = document.getElementById('upload-modal-submit')
+      submit.disabled = true
+      msg.style.display = 'none'
+      progress.style.display = 'flex'
+
+      const fd = new FormData()
+      fd.append('action', 'upload_file')
+      fd.append('parentFolderId', folderId)
+      fd.append('file', file)
+      fd.append('filename', file.name)
+
+      try {
+        const res  = await fetch('/api/music-upload', {
+          method : 'POST',
+          headers: { Authorization: `Bearer ${await getToken()}` },
+          body   : fd
+        })
+        progress.style.display = 'none'
+        const data = await res.json()
+        if (!res.ok || !data.success) {
+          msg.textContent = res.status === 415 ? data.error : 'Upload failed. Please try again.'
+          msg.style.color = '#c0392b'
+          msg.style.display = 'block'
+        } else {
+          closeUploadModal()
+          showAdminMsg(`"${data.name}" uploaded.`)
+          await reloadListing()
+        }
+      } catch {
+        progress.style.display = 'none'
+        msg.textContent = 'Upload failed. Please try again.'
+        msg.style.color = '#c0392b'
+        msg.style.display = 'block'
+      } finally {
+        submit.disabled = false
+      }
+    })
+
     // ── Init ──────────────────────────────────────────────────
     async function init () {
       try {
         const folders = await fetchFolders()
+        _adminFolders = folders
         document.getElementById('library-loading').style.display = 'none'
         if (!folders.length) {
           document.getElementById('library-error').style.display = 'block'

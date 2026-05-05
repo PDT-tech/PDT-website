@@ -1,7 +1,32 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-05-02
+# Last updated: 2026-05-04
+
+---
+
+## 2026-05-04 — Music Library: upload/delete via shared Edge Function
+
+**Question:** How do Music Library admins create folders, upload files, and delete
+files without logging into Drive directly?
+
+**Decision:** Single new Netlify Edge Function (`netlify/edge-functions/drive-music-upload.js`
+→ `/api/music-upload`) handles all three write actions: `create_folder`, `upload_file`,
+`delete_file`. Role-gated to `musical_director` and `tech`. Service account promoted
+from Viewer → Editor on the Music Drive folder.
+
+**Key details:**
+- Accepted formats: PDF and MP3 only (MIME-enforced server-side). 415 error message:
+  "Only PDF and MP3 files are supported. Please select a supported file type and try again."
+- Duplicate filenames: sequential suffix before extension (`-1`, `-2` … `-99`)
+- Folder delete: deliberately excluded from V1 — Kevin handles in Drive directly
+- UI: two admin buttons on `members/music.html` between title block and song count banner;
+  trash icon per file row (inline confirm, no modal)
+- Post-v1: add "Music Team" role to the gate when that role is created
+
+**Rationale:** Same Edge Function for all write actions keeps auth/credential logic in
+one place. Folder delete excluded because non-empty folder deletion via Drive API requires
+recursive logic disproportionate to the volume of folder operations expected.
 
 ---
 

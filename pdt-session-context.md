@@ -162,6 +162,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 - #071 Option C refactor (Calendar/Events) — after HC sign-off
 - #080: Fix carousel position in index.html markup before re-enabling (#079)
 - #081/#082: Dynamic sing-out listings on home page and performances page from events table
+- Polling/voting feature (spec in progress — see chat history)
 
 ---
 

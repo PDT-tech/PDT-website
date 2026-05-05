@@ -2,7 +2,28 @@
 
 **Archive of completed session logs.**
 **Current state is in `pdt-session-context.md`.**
-**Last entry: Session 18 — 2026-04-28**
+**Last entry: Session 19 — 2026-05-04**
+
+---
+
+## Session 19 — 2026-05-04
+
+**Session 19 — 2026-05-04**
+- ✅ Music Library upload/delete feature designed and built
+  - New Edge Function: netlify/edge-functions/drive-music-upload.js → /api/music-upload
+  - Actions: create_folder, upload_file, delete_file
+  - Role-gated: musical_director + tech
+  - Service account promoted to Editor on Music Drive folder
+  - UI: admin button bar on members/music.html (+ New Song Folder, + Upload File)
+  - File rows: per-file trash icon with inline confirm (admin only)
+  - Duplicate filename dedup: sequential -1/-2 suffix before extension
+  - 415 on unsupported MIME with user-facing error message
+  - Folder delete excluded from V1 (Drive direct for that)
+  - pdt-conventions.md: local dev limitation note added
+  - pdt-requirements.md §5g: updated with admin upload/delete subsection
+  - pdt-tech-maintainers-guide.md: §9, §13, §14, §18 updated
+  - pdt-decisions.md: new entry added
+- ✅ Polling/voting feature spec drafted (not yet built — pending session)
 
 ---
 

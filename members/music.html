@@ -865,6 +865,10 @@
         sel.appendChild(opt)
         return
       }
+      const blank = document.createElement('option')
+      blank.value = ''; blank.textContent = '— Select a folder —'
+      blank.disabled = true; blank.selected = true
+      sel.appendChild(blank)
       _adminFolders.forEach(f => {
         const opt = document.createElement('option')
         opt.value = f.id; opt.textContent = f.name
@@ -893,9 +897,14 @@
       const folderId = document.getElementById('upload-folder-select').value
       const fileEl   = document.getElementById('upload-file-input')
       const file     = fileEl.files?.[0]
-      if (!folderId || !file) return
-
       const msg      = document.getElementById('upload-modal-msg')
+      if (!folderId) {
+        msg.textContent = 'Please select a song folder.'
+        msg.style.color = '#c0392b'
+        msg.style.display = 'block'
+        return
+      }
+      if (!file) return
       const progress = document.getElementById('upload-progress')
       const submit   = document.getElementById('upload-modal-submit')
       submit.disabled = true

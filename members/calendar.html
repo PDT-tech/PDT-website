@@ -972,6 +972,10 @@
 
   ;(async () => {
     await loadMonth()
+    if (new URLSearchParams(window.location.search).get('new') === '1') {
+      openEventModal()
+      return
+    }
     const eventParam = new URLSearchParams(window.location.search).get('event')
     if (!eventParam) return
     let ev = monthEvents.find(e => e.id === eventParam)

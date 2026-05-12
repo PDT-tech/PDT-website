@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 26 — photo/music upload stale priority removed; Session 26 priorities corrected)
+**Last updated:** 2026-05-12 (Session 26 — cross-doc currency audit; photo/music upload stale priority removed; architecture diagram completed)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -208,10 +208,18 @@ Browser
         ├── drive-music-download.js (Netlify Edge Function — /api/music-download)
         │     └── Streams Drive file content directly to browser
         │     └── No buffering, no size ceiling; service account token never leaves function
+        ├── drive-music-upload.js (Netlify Edge Function — /api/music-upload)
+        │     └── Music Library admin writes (upload, delete, create folder)
+        ├── upload-photo.js (Netlify Edge Function — /api/upload-photo)
+        │     └── Receives multipart photo upload, extracts EXIF, writes to Drive + Supabase
+        ├── photo-proxy.js (Netlify Edge Function — /api/photo-proxy)
+        │     └── Streams Drive photo bytes to browser; auth-gated for member photos
+        ├── curate-photo.js (Netlify Edge Function — /api/curate-photo)
+        │     └── Admin: copy photo to carousel folder / delete carousel copy
         └── Netlify Forms (public form submissions)
 
 Authentication:  Supabase (email → 6-digit OTP via Resend SMTP; shouldCreateUser: false)
-Database:        Supabase (profiles, events, event_attendance, absences, posts tables)
+Database:        Supabase (profiles, events, event_attendance, absences, posts, photo_uploads tables)
 Edge Functions:  Supabase
   ├── generate-rehearsals — weekly cron; creates Monday rehearsals 12 weeks out
   ├── notify-attendance-change — database trigger; fires on event_attendance upsert

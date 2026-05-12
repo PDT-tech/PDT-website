@@ -1,9 +1,9 @@
 # PDT Singers — Photo Upload & Gallery Feature
 
-**Status:** Design complete — ready for implementation planning  
+**Status:** ✅ Complete and live (Issues #014 and #015 closed)  
 **Created:** 2026-04-17 (Session 7)  
-**Last updated:** 2026-04-26 (Session 8) — all architecture decisions resolved  
-**Next step:** Write CC build prompts
+**Last updated:** 2026-05-12 (Session 26 audit) — feature fully deployed; doc updated to reflect as-built state  
+**Implemented:** Sessions 19–24
 
 ---
 
@@ -77,12 +77,11 @@ to the uploader.
 `conversion_status = 'pending'`. Non-HEIC uploads land with `conversion_status = 'done'`
 and skip conversion entirely.
 
-**Trigger:** GCP Cloud Scheduler (free tier) calls the `convert-heic` Supabase Edge
-Function via HTTP POST every 15 minutes. Cloud Scheduler is configured in the
-existing GCP project (`pdt-singers-music-library`). The Edge Function URL is
-`https://<project-ref>.supabase.co/functions/v1/convert-heic` with an `Authorization`
-header carrying the service role key. No pg_cron, no Netlify scheduled function —
-both require paid plan upgrades.
+**Trigger:** `.github/workflows/convert-heic.yml` — GitHub Actions scheduled workflow
+fires every 15 minutes and calls the `convert-heic` Supabase Edge Function via HTTP POST.
+GCP Cloud Scheduler was considered and rejected (requires billing account setup).
+GitHub Actions is free and already trusted infrastructure. Requires `SUPABASE_SERVICE_ROLE_KEY`
+in GitHub Actions secrets.
 
 The function queries for `conversion_status = 'pending'` rows, processes
 them in upload-time order, converts each HEIC to JPEG via `heic-to (npm:heic-to@1.4.2, WASM-based via Emscripten/libheif)`,
@@ -197,37 +196,37 @@ CREATE TABLE photo_uploads (
 
 ---
 
-## New Environment Variables Required
+## Environment Variables (as-built)
 
+All variables set and live. No pending work items.
+
+**Netlify env vars:**
 | Variable | What it is |
 |----------|-----------|
 | `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of `/Photos/` folder in Workspace Drive |
 | `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of `/Photos/Mainpage_Carousel/` subfolder |
 
-Both go in Netlify env vars and `env.local.js`. Both injected via `inject-env.js`.
-
-**Work item for Kevin:** Create `/Photos/Mainpage_Carousel/` subfolder in Drive,
-confirm service account has write access (it's inherited from `/Photos/` share),
-grab the folder ID, add both folder IDs to Netlify env vars and `env.local.js`.
+**Supabase Edge Function secrets (set via `supabase secrets set`):**
+| Variable | What it is |
+|----------|-----------|
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON — same value as Netlify var |
+| `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | Same value as Netlify var |
+| `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | Same value as Netlify var |
+| `RESEND_API_KEY` | For HEIC conversion failure notification emails |
 
 ---
 
-## Implementation Order
+## As-Built Implementation Summary (all complete)
 
-1. **Kevin (manual):** Create `/Photos/Mainpage_Carousel/` in Drive, grab folder IDs,
-   set `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` in
-   Netlify env vars and `env.local.js`
-2. **Schema:** Add `photo_uploads` table + RLS to Supabase
-3. **Upload function:** `netlify/edge-functions/upload-photo.js` — multipart POST,
-   EXIF extraction, Drive upload, Supabase row insert
-4. **Photo proxy:** `netlify/edge-functions/photo-proxy.js` — streams Drive file
-   to browser (auth-gated and public variants)
-5. **Member gallery page:** `members/photos.html` — event picker, grid, upload modal,
-   lightbox, admin curation toggle
-6. **Carousel component:** home page and Friends page carousel (shared JS module)
-7. **HEIC conversion:** `convert-heic` Supabase Edge Function + GCP Cloud Scheduler
-8. **inject-env.js update:** add `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and
-   `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` to injected vars
+1. ✅ Drive folders `/Photos/` and `/Photos/Mainpage_Carousel/` created; service account shared as Writer; folder IDs set in Netlify env vars and env.local.js
+2. ✅ `photo_uploads` table + RLS — migrations `20260426_photo_uploads.sql` and `20260426_photo_uploads_carousel_file_id.sql` run
+3. ✅ `netlify/edge-functions/upload-photo.js` — multipart POST, EXIF extraction, Drive upload, Supabase row insert
+4. ✅ `netlify/edge-functions/photo-proxy.js` — streams Drive file to browser (auth-gated)
+5. ✅ `netlify/edge-functions/curate-photo.js` — admin toggle: copy to carousel folder / delete carousel copy
+6. ✅ `members/photos.html` — event picker, CSS grid gallery, upload modal, lightbox, admin curation toggle, bulk upload override (admin: 8→100 file cap)
+7. ✅ `carousel.js` — shared module; home page and Friends page carousels live
+8. ✅ `convert-heic` Supabase Edge Function + GitHub Actions workflow (`.github/workflows/convert-heic.yml`) — fires every 15 min
+9. ✅ `inject-env.js` updated — injects `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` and `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID`
 
 ---
 
@@ -248,6 +247,6 @@ grab the folder ID, add both folder IDs to Netlify env vars and `env.local.js`.
 
 ## Issues
 
-- **#014** — Home page animated carousel (feeds from `/Photos/Mainpage_Carousel/`)
-- **#015** — Full photo upload, gallery, curation, and carousel system (this doc)
+- **#014** ✅ DONE — Home page animated carousel — live on index.html and friends.html
+- **#015** ✅ DONE — Full photo upload, gallery, curation, and carousel system — fully live
 - **#059** — Donation page with Stripe (future feature, no due date — see issues list)

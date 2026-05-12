@@ -155,11 +155,26 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 
 ### Deferred (do not pick up unless Kevin raises)
 - Responsive width fix on carousel (low priority)
-- All standing backlog items in pdt-session-context.md
+- See Standing Backlog below.
 
 ### Retired This Session
 - ZIP photo import — replaced by admin bulk upload override (100-file cap)
 - Admin Drive folder import tool — obviated by bulk upload override
+
+### Standing Backlog
+- Supabase account migration — pending support (email suppression issue)
+- May 28: verify Workspace nonprofit SKU zeroed billing before May 31 charge date
+- Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
+- SEO: meta tags, XML sitemap, Google Search Console
+- Mobile responsiveness audit (WCAG AA)
+- Public page content polish — real copy, real photos
+- The Sunburst: public-facing version under Friends page (not yet started)
+- Vacation block feature — member self-service away window (design discussion needed)
+- Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
+- #071 Option C refactor (Calendar/Events) — after HC sign-off
+- #081/#082: Dynamic sing-out listings on home page and performances page from events table
+- Polling/voting feature — spec drafted Session 19, not yet built
+- Grant Gibson as second owner on all services — critical operational risk
 
 ---
 

@@ -4,6 +4,12 @@
 
 ---
 
+## Claude AI / CC Division of Responsibility
+
+claude.ai handles requirements, design, architecture tradeoffs, troubleshooting logic, spec decisions, document authoring, and CC prompt generation. CC handles all source code reading, writing, execution, git commits, and pushes. When claude.ai needs source-level detail before writing a CC prompt, it asks Kevin to query CC first — it does not read code files directly. Repo file edits are never produced as claude.ai chat artifacts; a CC prompt is written instead. Exception: new files not yet in the repo may be produced directly by claude.ai.
+
+---
+
 ## Investigate Before You Design
 
 **When claude.ai asks CC to investigate an existing feature before redesigning

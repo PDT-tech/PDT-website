@@ -169,6 +169,13 @@
           <textarea id="event-notes" class="form-input form-textarea"
                     placeholder="Dress code, parking, arrival time, etc."></textarea>
         </div>
+        <div class="form-group modal-hidden" id="public-notes-section">
+          <label class="form-label" for="event-public-notes">
+            Public description <span class="form-hint">Shown on the Events page and public site. Leave blank if none.</span>
+          </label>
+          <textarea id="event-public-notes" class="form-input form-textarea"
+                    placeholder="What members and the public should know about this event."></textarea>
+        </div>
         <div class="form-group form-check">
           <label class="form-check-label">
             <input type="checkbox" id="event-cancelled">
@@ -742,10 +749,13 @@
     document.getElementById('event-dress-code').value = ev?.dress_code || ''
     document.getElementById('event-location').value = ev?.location || ''
     document.getElementById('event-notes').value = ev?.notes || ''
+    document.getElementById('event-public-notes').value = ev?.public_notes || ''
     document.getElementById('event-cancelled').checked = ev?.is_cancelled || false
     const isPerf = ev?.event_type === 'performance'
+    const showPublicNotes = ev?.event_type === 'performance' || ev?.event_type === 'social'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
     document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
+    document.getElementById('public-notes-section').classList.toggle('modal-hidden', !showPublicNotes)
     document.getElementById('event-modal').classList.remove('modal-hidden')
   }
 
@@ -755,9 +765,12 @@
   }
 
   document.getElementById('event-type').addEventListener('change', () => {
-    const isPerf = document.getElementById('event-type').value === 'performance'
+    const type = document.getElementById('event-type').value
+    const isPerf = type === 'performance'
+    const showPublicNotes = type === 'performance' || type === 'social'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
     document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
+    document.getElementById('public-notes-section').classList.toggle('modal-hidden', !showPublicNotes)
   })
 
   function validateEventForm () {
@@ -815,6 +828,7 @@
       dress_code:   isPerf ? (document.getElementById('event-dress-code').value.trim() || null) : null,
       location:     document.getElementById('event-location').value.trim() || null,
       notes:        document.getElementById('event-notes').value.trim() || null,
+      public_notes: document.getElementById('event-public-notes').value.trim() || null,
       is_cancelled: document.getElementById('event-cancelled').checked,
       created_by:   window.__PDT_USER?.id
     }

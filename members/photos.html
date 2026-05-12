@@ -99,7 +99,7 @@
         <div class="form-group">
           <label class="photos-filter-check-label">
             <input type="checkbox" id="upload-show-older">
-            Show older events
+            Include events older than 6 months
           </label>
         </div>
         <div class="form-group">
@@ -191,6 +191,7 @@
       .from('events')
       .select('id, title, event_date, event_type')
       .neq('event_type', 'rehearsal')
+      .lte('event_date', new Date().toISOString().split('T')[0])
       .order('event_date', { ascending: false })
 
     if (!noFloor) {
@@ -398,6 +399,7 @@
     document.getElementById('upload-form').reset()
     document.getElementById('upload-error').classList.add('modal-hidden')
     document.getElementById('upload-progress').classList.add('modal-hidden')
+    document.getElementById('upload-progress').textContent = ''
     await loadEvents({ uploadOnly: true })
     const filterVal = document.getElementById('event-filter').value
     if (filterVal) document.getElementById('upload-event-select').value = filterVal
@@ -421,11 +423,13 @@
 
   // File picker: validate count and types on change
   document.getElementById('upload-file-input').addEventListener('change', e => {
-    const errEl = document.getElementById('upload-error')
-    const files = Array.from(e.target.files || [])
+    const errEl  = document.getElementById('upload-error')
+    const progEl = document.getElementById('upload-progress')
+    const files  = Array.from(e.target.files || [])
     if (files.length > 8) {
       errEl.textContent = 'Please select up to 8 photos at a time.'
       errEl.classList.remove('modal-hidden')
+      progEl.classList.add('modal-hidden')
       e.target.value = ''
       return
     }
@@ -433,10 +437,13 @@
     if (invalid.length) {
       errEl.textContent = 'Please upload JPEG or HEIC photos only.'
       errEl.classList.remove('modal-hidden')
+      progEl.classList.add('modal-hidden')
       e.target.value = ''
       return
     }
     errEl.classList.add('modal-hidden')
+    progEl.textContent = `Ready to upload ${files.length} photo${files.length === 1 ? '' : 's'}`
+    progEl.classList.remove('modal-hidden')
   })
 
   // Upload: send files sequentially, update progress counter

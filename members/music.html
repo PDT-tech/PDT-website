@@ -923,7 +923,30 @@
         } else {
           closeUploadModal()
           showAdminMsg(`"${data.name}" uploaded.`)
+          const openFolderId = document.querySelector('.song-item.open')?.dataset.folderId
           await reloadListing(true)
+          if (openFolderId) {
+            const openPanel = document.querySelector(`.song-item[data-folder-id="${openFolderId}"]`)
+            if (openPanel) {
+              openPanel.classList.add('open')
+              openPanel.querySelector('.song-trigger')?.setAttribute('aria-expanded', 'true')
+              const grid = openPanel.querySelector('.file-grid')
+              grid.innerHTML = '<div class="panel-loading"><div class="mini-spinner"></div> Loading files…</div>'
+              try {
+                const files = await fetchFiles(openFolderId, true)
+                grid.innerHTML = ''
+                if (!files.length) {
+                  grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
+                } else {
+                  renderFiles(files, openPanel)
+                }
+                openPanel.dataset.loaded = 'true'
+              } catch {
+                grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">Could not load files. Please try again.</p>'
+                openPanel.dataset.loaded = 'false'
+              }
+            }
+          }
         }
       } catch {
         progress.style.display = 'none'

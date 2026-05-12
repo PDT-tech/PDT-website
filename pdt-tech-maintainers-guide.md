@@ -297,8 +297,8 @@ interact with Google directly.
 **Folder ID:** set in Netlify — Site configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
 **Service account:** `pdt-music-library@pdt-singers-music-library.iam.gserviceaccount.com`
 
-**Photos folder ID:** `1-5HgzbPN3ydHXcrInJ2xW3aU2WWFSgw1` (Workspace Drive, `/Photos/`)  
-**Carousel folder ID:** `11RlCH-UEcqTaIg4CPiCpP65B0-Za_rEh` (Workspace Drive, `/Photos/Mainpage_Carousel/`)
+**Photos folder ID:** [REDACTED — real value in Netlify env vars as GOOGLE_DRIVE_PHOTOS_FOLDER_ID] (Workspace Drive, `/Photos/`)  
+**Carousel folder ID:** [REDACTED — real value in Netlify env vars as GOOGLE_DRIVE_CAROUSEL_FOLDER_ID] (Workspace Drive, `/Photos/Mainpage_Carousel/`)
 
 **How downloads work:**
 - **Folder and file listings** — `netlify/functions/drive-music.js` (serverless). Returns JSON; no file content passes through.

@@ -298,7 +298,7 @@ served via the existing service account proxy. No new storage service.
   convention → upload to Drive. Page auto-reflects on next load, no deploy.
 
 **Env var:** `GOOGLE_DRIVE_SUNBURST_FOLDER_ID`  
-**Folder ID:** `1MWi8I8-702dtX4BNKabApXpCggszIul_`
+**Folder ID:** [REDACTED — real value in Netlify env vars as GOOGLE_DRIVE_SUNBURST_FOLDER_ID]
 
 ---
 

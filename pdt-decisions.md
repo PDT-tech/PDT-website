@@ -38,7 +38,7 @@ recursive logic disproportionate to the volume of folder operations expected.
 
 **Rationale:** This is a Google-imposed limitation on service accounts. The fix is the pattern Google recommends for Workspace environments. Reads (Music Library, Sunburst, photo proxy) are unaffected — only writes (upload-photo.js) required this change.
 
-**Applies to:** `netlify/edge-functions/upload-photo.js` only.
+**Applies to:** `netlify/edge-functions/upload-photo.js`, `photo-proxy.js`, `curate-photo.js`, `drive-music-upload.js`.
 
 ---
 

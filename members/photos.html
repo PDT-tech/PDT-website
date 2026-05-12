@@ -65,7 +65,7 @@
   <!-- EVENT FILTER -->
   <div class="photos-filter-bar">
     <div class="photos-filter">
-      <label for="event-filter">Filter by event:</label>
+      <label for="event-filter">View photos from this event:</label>
       <select id="event-filter" class="form-input">
         <option value="">All events</option>
       </select>
@@ -91,14 +91,20 @@
       </div>
       <form id="upload-form">
         <div class="form-group">
-          <label class="form-label" for="upload-event-select">Event</label>
+          <label class="form-label" for="upload-event-select">Upload photos for this event:</label>
           <select id="upload-event-select" class="form-input">
             <option value="">General / No specific event</option>
           </select>
         </div>
         <div class="form-group">
+          <label class="photos-filter-check-label">
+            <input type="checkbox" id="upload-show-older">
+            Show older events
+          </label>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="upload-file-input">
-            Photos <span class="form-hint">(JPEG or HEIC, up to 8)</span>
+            Upload these photos <span class="form-hint">(JPEG or HEIC, up to 8):</span>
           </label>
           <input type="file" id="upload-file-input" class="form-input"
                  accept="image/jpeg,image/heic" multiple>
@@ -177,33 +183,43 @@
   applyRoleVisibility()
 
   // ── Load events ────────────────────────────────────────────
-  async function loadEvents () {
-    const cutoff = new Date()
-    cutoff.setDate(cutoff.getDate() - 90)
-    const cutoffStr = cutoff.toISOString().split('T')[0]
+  async function loadEvents (opts = {}) {
+    const uploadOnly = opts.uploadOnly ?? false
+    const noFloor    = opts.noFloor    ?? false
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('events')
       .select('id, title, event_date, event_type')
-      .gte('event_date', cutoffStr)
+      .neq('event_type', 'rehearsal')
       .order('event_date', { ascending: false })
 
-    if (error || !data) return
+    if (!noFloor) {
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - 180)
+      query = query.gte('event_date', cutoff.toISOString().split('T')[0])
+    }
 
-    eventsMap = {}
-    data.forEach(ev => { eventsMap[ev.id] = ev })
+    const { data, error } = await query
+    if (error || !data) return
 
     const filterSel = document.getElementById('event-filter')
     const uploadSel = document.getElementById('upload-event-select')
-    while (filterSel.options.length > 1) filterSel.remove(1)
-    while (uploadSel.options.length > 1) uploadSel.remove(1)
 
+    if (!uploadOnly) {
+      eventsMap = {}
+      data.forEach(ev => { eventsMap[ev.id] = ev })
+
+      while (filterSel.options.length > 1) filterSel.remove(1)
+      data.forEach(ev => {
+        filterSel.add(new Option(`${ev.title} (${ev.event_date})`, ev.id))
+      })
+      allEventOptions = Array.from(filterSel.options).slice(1).map(opt => ({ value: opt.value, label: opt.text }))
+    }
+
+    while (uploadSel.options.length > 1) uploadSel.remove(1)
     data.forEach(ev => {
-      const label = `${ev.title} (${ev.event_date})`
-      filterSel.add(new Option(label, ev.id))
-      uploadSel.add(new Option(label, ev.id))
+      uploadSel.add(new Option(`${ev.title} (${ev.event_date})`, ev.id))
     })
-    allEventOptions = Array.from(filterSel.options).slice(1).map(opt => ({ value: opt.value, label: opt.text }))
   }
 
   // ── Load photos ────────────────────────────────────────────
@@ -378,10 +394,13 @@
   })
 
   // ── Upload modal ───────────────────────────────────────────
-  function openUploadModal () {
+  async function openUploadModal () {
     document.getElementById('upload-form').reset()
     document.getElementById('upload-error').classList.add('modal-hidden')
     document.getElementById('upload-progress').classList.add('modal-hidden')
+    await loadEvents({ uploadOnly: true })
+    const filterVal = document.getElementById('event-filter').value
+    if (filterVal) document.getElementById('upload-event-select').value = filterVal
     document.getElementById('upload-modal').classList.remove('modal-hidden')
   }
 
@@ -394,6 +413,10 @@
   document.getElementById('upload-cancel').addEventListener('click', closeUploadModal)
   document.getElementById('upload-modal').addEventListener('click', e => {
     if (e.target === document.getElementById('upload-modal')) closeUploadModal()
+  })
+
+  document.getElementById('upload-show-older').addEventListener('change', async e => {
+    await loadEvents({ uploadOnly: true, noFloor: e.target.checked })
   })
 
   // File picker: validate count and types on change

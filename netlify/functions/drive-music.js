@@ -38,7 +38,9 @@ async function getAccessToken (serviceAccount, subject = null) {
   const claim  = base64url(JSON.stringify({
     iss  : serviceAccount.client_email,
     ...(subject ? { sub: subject } : {}),
-    scope: 'https://www.googleapis.com/auth/drive.readonly',
+    scope: subject
+      ? 'https://www.googleapis.com/auth/drive'
+      : 'https://www.googleapis.com/auth/drive.readonly',
     aud  : TOKEN_URL,
     iat  : now,
     exp  : now + 3600

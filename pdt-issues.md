@@ -115,6 +115,8 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 082 | POST-V1 | Performances page (performances.html / Hear Us Sing): populate sing-out listings dynamically from events table, same logic as #081 — performance event_types, next 90 days, ordered by event_date. Currently static placeholder content. File: performances.html.
 
-083 | OPEN | BLOCKER — Netlify account migration pending. Netlify support confirmed migration of the pdtsingers.org project from kevin36v personal account to tech@pdtsingers.org is scheduled for Tuesday 2026-05-05. GitHub repo already migrated. No deploys possible until migration completes. On completion: immediately verify all env vars survived in Netlify dashboard before first deploy (priority check: GOOGLE_SERVICE_ACCOUNT_JSON, SUPABASE_ANON_KEY, and all GOOGLE_DRIVE_* vars).
+083 | DONE   | BLOCKER — Netlify account migration pending. Netlify support confirmed migration of the pdtsingers.org project from kevin36v personal account to tech@pdtsingers.org is scheduled for Tuesday 2026-05-05. GitHub repo already migrated. No deploys possible until migration completes. On completion: immediately verify all env vars survived in Netlify dashboard before first deploy (priority check: GOOGLE_SERVICE_ACCOUNT_JSON, SUPABASE_ANON_KEY, and all GOOGLE_DRIVE_* vars). Resolved 2026-05-11 via Option B: repo rebound to kevin36v personal account, repo made public, offending Netlify snippet deleted.
 
 084 | OPEN | PENDING — Supabase account migration pending. Supabase support to migrate project ownership to tech@pdtsingers.org. Not currently blocking any active development.
+
+085 | OPEN | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames.

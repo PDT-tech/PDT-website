@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 24 — Photo upload UX fixes; Music Library #085; decisions logged)
+**Last updated:** 2026-05-12 (Session 25 — Netlify unblocked; maintainers guide §2 rewritten; succession planning resolved)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -145,13 +145,16 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ #085 — PDF extension now visible in Music Library file label; audio rows unchanged
 - ✅ Decisions logged — flat /Photos/ folder rationale; ZIP import retired; admin bulk upload replaces both
 
-### Session 25 Priorities
-1. Netlify migration follow-up — still blocking deploy of Music Library upload/delete and photo uploader fix; check status
-2. Photo uploader end-to-end test — pending Netlify migration resolution (reentry sequence in pdt-photo-feature.md)
-3. Music Library upload/delete — pending Netlify migration resolution
-4. Drive folder structure — decided: flat /Photos/, no subfolders (documented in pdt-decisions.md)
-5. Moss Egli Supabase onboarding — still pending
-6. Grant Gibson as second owner — critical operational risk, still unresolved
+### Session 25 — Completed ✅
+- ✅ Netlify migration blocker resolved — repo rebound to PDT-tech GitHub org (2026-05-12); account transfer to tech@ still pending Netlify support (case 561988) but not blocking
+- ✅ Moss Egli onboarding — confirmed complete (onboarded April 2026); removed from all backlog items
+- ✅ Succession planning resolved — role-account strategy documented: tech@ is primary, president@ is backup; treasurer@ planned as low-priority addition; maintainers guide is authoritative reference
+- ✅ pdt-tech-maintainers-guide.md §2 rewritten — role-account ownership model, "why we use it" rationale per service, stale migration notes updated, GitHub repo URL corrected to PDT-tech org
+
+### Session 26 Priorities
+1. Photo uploader and Music Library upload/delete — end-to-end test now that Netlify is unblocked (reentry sequence in pdt-photo-feature.md; verify env vars first)
+2. Sunday HTML doc sync pass — pdt-tech-maintainers-guide.html sync with updated markdown
+3. Google Workspace billing check — May 28 (tickler on Kevin's calendar; do not surface before then)
 
 ### Deferred (do not pick up unless Kevin raises)
 - Responsive width fix on carousel (low priority)
@@ -163,7 +166,8 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 
 ### Standing Backlog
 - Supabase account migration — pending support (email suppression issue)
-- May 28: verify Workspace nonprofit SKU zeroed billing before May 31 charge date
+- Create treasurer@pdtsingers.org in Workspace Admin Console and grant Workspace admin rights (low priority)
+- May 28: verify Workspace nonprofit SKU billing zeroed before May 31 charge date (tickler on Kevin's calendar)
 - Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
 - SEO: meta tags, XML sitemap, Google Search Console
 - Mobile responsiveness audit (WCAG AA)
@@ -174,7 +178,6 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - #071 Option C refactor (Calendar/Events) — after HC sign-off
 - #081/#082: Dynamic sing-out listings on home page and performances page from events table
 - Polling/voting feature — spec drafted Session 19, not yet built
-- Grant Gibson as second owner on all services — critical operational risk
 
 ---
 
@@ -400,8 +403,7 @@ PDT-website/                      ← repo root
 - **Supabase cold-start** — free tier pauses after ~1 week inactivity; first load may be
   slow (Issue #048, low priority)
 - **pdtsingers.music@gmail.com** — staging account, not used; may dispose
-- **Kevin is sole owner of all services** — critical single point of failure; second admin
-  needed (Grant Gibson is natural candidate)
+- **Service account succession** — tech@ is primary owner of all services; president@ is backup; role-account strategy documented in pdt-tech-maintainers-guide.md §2. treasurer@ planned as additional backup (low priority). No single-person dependency.
 - **WBQA SEO** — lodge list page is nearly empty; PDT SEO work is important
 - **convert-heic Edge Function** — uses `heic-to@1.4.2` (WASM, `npm:heic-to`); confirmed
   deployable in Supabase Edge Runtime. Triggered by GitHub Actions every 15 min via

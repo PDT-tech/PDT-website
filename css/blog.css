@@ -125,6 +125,53 @@
   border-radius: 2px;
 }
 
+/* ── Events page ───────────────────────────────────────────── */
+.event-cancelled-badge {
+  background: var(--warm, #c0392b);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-family: var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 2px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.event-card--cancelled .post-list-title {
+  opacity: 0.65;
+}
+
+.event-detail-toggle {
+  background: none;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--link, #4e6e4e);
+  cursor: pointer;
+  padding: 0;
+  margin-top: var(--space-xs);
+  display: block;
+}
+
+.event-card-detail {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border, #e0e0e0);
+}
+
+.event-detail-field {
+  font-size: var(--text-sm);
+  margin-bottom: 0.25rem;
+}
+
+.event-detail-notes {
+  font-size: var(--text-sm);
+  margin-top: var(--space-xs);
+  line-height: 1.6;
+}
+
 /* ── Post Detail ───────────────────────────────────────────── */
 .post-back-btn {
   font-family: var(--font-ui);

@@ -1,9 +1,9 @@
 # PDT Singers — Tech Maintainer's Guide
 
-**Last updated:** 2026-04-27  
-**Owner:** Kevin Bier (president@pdtsingers.org)  
+**Last updated:** 2026-05-12  
+**Owner:** tech@pdtsingers.org (technical administration role account)  
 **Site:** pdtsingers.org  
-**Repo:** https://github.com/kevin36v/PDT-website
+**Repo:** https://github.com/PDT-tech/PDT-website
 
 ---
 
@@ -19,21 +19,37 @@ step, no framework, no CMS. Updating the site means editing files and pushing to
 
 ## 2. Accounts & Access
 
-| Service | URL | Login | What it controls |
-|---------|-----|-------|-----------------|
-| Netlify | netlify.com | GitHub (PDT-tech) | Hosting, deploys, env vars, forms |
-| Supabase | supabase.com | GitHub (PDT-tech) | Auth, database, member accounts |
-| GitHub | github.com/PDT-tech | PDT-tech | Source control, CI/CD |
-| Google Cloud | console.cloud.google.com | tech@pdtsingers.org | Music Library service account |
-| Google Workspace | admin.google.com | tech@pdtsingers.org | Email, Drive, Meet |
-| Resend | resend.com | tech@pdtsingers.org | Transactional email |
-| HelpingHosting | helpinghosting.com | tech@pdtsingers.org | Domain registrar (pdtsingers.org) |
+### Account ownership model
 
-**Account ownership model:** The `tech@pdtsingers.org` Workspace account is a role account — whoever holds the Tech Poohbah position gets those credentials. `president@pdtsingers.org` is the backup owner on all services. If the Tech Poohbah is unavailable, the president can log in as `tech@` or reassign the role via the Workspace Admin Console.
+The site uses two role accounts in Google Workspace for Nonprofits, both are admins on all services:
 
-**Netlify note:** Transfer from personal account (k7vi@hotmail.com) to PDT-tech is pending Netlify support response (case 561988). Once complete, all Netlify access moves to the PDT-tech GitHub login.
+- **`tech@pdtsingers.org`** — primary technical administration role. This is the login for Netlify, Supabase, GitHub org, GCP, Resend, and the domain registrar. Whoever holds technical responsibility for the site operates this account.
+- **`president@pdtsingers.org`** — organizational backup. Has admin rights on Google Workspace and is a secondary owner where services permit multiple owners. If `tech@` access is ever lost, the president can restore it via the Workspace Admin Console at admin.google.com.
 
-**Supabase note:** Owner invite to tech@pdtsingers.org is pending Supabase support clearing an email suppression record. Once cleared, re-send the Owner invite from Organization Settings → Members.
+All services are intentionally bound to these role accounts, not to any individual person's personal account. Succession means handing off `tech@` credentials — no service re-registration required.
+
+A third role account, `treasurer@pdtsingers.org`, is planned as additional backup and will be added to Workspace and granted admin rights when created.
+
+---
+
+### Services
+
+| Service | Dashboard URL | Login | Why we use it |
+|---------|--------------|-------|---------------|
+| Netlify | netlify.com | GitHub (PDT-tech org) | Hosts the site, runs Edge Functions and serverless Functions, manages env vars, and receives public form submissions. Free tier. Manual-deploy-only — auto-publish is always locked. |
+| Supabase | supabase.com | GitHub (PDT-tech org) | Auth (email OTP via Resend), relational database (member profiles, events, attendance, posts, photo metadata), and Edge Functions (rehearsal generation, attendance notifications). Free tier. |
+| GitHub | github.com/PDT-tech | PDT-tech org | Source control and CI/CD. Netlify deploys from `main`. GitHub Actions runs the HEIC-to-JPEG conversion scheduler every 15 minutes. |
+| Google Cloud Platform | console.cloud.google.com | tech@pdtsingers.org | Hosts the `pdt-singers-music-library` project and its service account (`pdt-music-library@...`). The service account is the only credential used to read/write Google Drive on behalf of the site. No other GCP services are used. |
+| Google Workspace | admin.google.com | tech@pdtsingers.org | Provides the `@pdtsingers.org` email domain and Google Drive storage for Music Library files, Sunburst newsletter PDFs, and member photos. Nonprofits edition — free via Goodstack/TechSoup verification. |
+| Resend | resend.com | tech@pdtsingers.org | Sends all transactional email from `noreply@pdtsingers.org` — OTP login codes and attendance notification emails. Required because OTP login depends on reliable programmatic email delivery; a standard Gmail account cannot be used here. Free tier covers current volume. |
+| HelpingHosting | helpinghosting.com | tech@pdtsingers.org | Domain registrar for `pdtsingers.org`. DNS is managed here. Annual renewal ~$12. |
+
+---
+
+### Migration status
+
+- **Netlify:** Rebound to the PDT-tech GitHub org (2026-05-12). Full account transfer to `tech@pdtsingers.org` is pending Netlify support (case 561988) — not blocking.
+- **Supabase:** Owner invite to `tech@pdtsingers.org` is pending Supabase support clearing an email suppression record. Once cleared, re-send the Owner invite from Organization Settings → Members — not blocking.
 
 ---
 

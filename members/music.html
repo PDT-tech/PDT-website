@@ -522,7 +522,7 @@
       return _token
     }
 
-    async function fetchFolders () {
+    async function fetchFolders (bustCache = false) {
       if (IS_LOCAL) {
         const key    = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
         const folder = window.__PDT_ENV?.GOOGLE_DRIVE_MUSIC_FOLDER_ID || ''
@@ -531,14 +531,15 @@
         if (!res.ok) throw new Error(`Drive ${res.status}`)
         return (await res.json()).files || []
       }
-      const res = await fetch('/.netlify/functions/drive-music?type=folders', {
+      const url = '/.netlify/functions/drive-music?type=folders' + (bustCache ? `&_t=${Date.now()}` : '')
+      const res = await fetch(url, {
         headers: { Authorization: `Bearer ${await getToken()}` }
       })
       if (!res.ok) throw new Error(`Function ${res.status}`)
       return res.json()
     }
 
-    async function fetchFiles (folderId) {
+    async function fetchFiles (folderId, bustCache = false) {
       if (IS_LOCAL) {
         const key = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
         const q   = encodeURIComponent(`'${folderId}' in parents and trashed=false`)
@@ -546,7 +547,8 @@
         if (!res.ok) throw new Error(`Drive ${res.status}`)
         return (await res.json()).files || []
       }
-      const res = await fetch(`/.netlify/functions/drive-music?type=files&folderId=${folderId}`, {
+      const url = `/.netlify/functions/drive-music?type=files&folderId=${folderId}` + (bustCache ? `&_t=${Date.now()}` : '')
+      const res = await fetch(url, {
         headers: { Authorization: `Bearer ${await getToken()}` }
       })
       if (!res.ok) throw new Error(`Function ${res.status}`)
@@ -667,6 +669,7 @@
               const data = await res.json()
               if (!res.ok || !data.success) throw new Error()
               row.remove()
+              await reloadListing(true)
             } catch {
               setNormal()
               const err = document.createElement('p')
@@ -691,7 +694,7 @@
     }
 
     // ── Build accordion item ──────────────────────────────────
-    function buildSongItem (folder) {
+    function buildSongItem (folder, bustCache = false) {
       const item = document.createElement('div')
       item.className = 'song-item'
       item.dataset.folderId = folder.id
@@ -737,7 +740,7 @@
         grid.innerHTML = '<div class="panel-loading"><div class="mini-spinner"></div> Loading files…</div>'
 
         try {
-          const files = await fetchFiles(folder.id)
+          const files = await fetchFiles(folder.id, bustCache)
           grid.innerHTML = ''
           if (!files.length) {
             grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
@@ -777,15 +780,15 @@
       if (!isError) setTimeout(() => { el.style.display = 'none' }, 3000)
     }
 
-    async function reloadListing () {
+    async function reloadListing (bustCache = false) {
       const list = document.getElementById('song-list')
       list.innerHTML = ''
       try {
-        const folders = await fetchFolders()
+        const folders = await fetchFolders(bustCache)
         _adminFolders = folders
         document.getElementById('song-count').textContent =
           `${folders.length} song${folders.length !== 1 ? 's' : ''}`
-        folders.forEach(f => list.appendChild(buildSongItem(f)))
+        folders.forEach(f => list.appendChild(buildSongItem(f, bustCache)))
       } catch (err) {
         console.error('reloadListing:', err)
       }
@@ -838,7 +841,7 @@
         } else {
           closeFolderModal()
           showAdminMsg(`Folder "${data.name}" created.`)
-          await reloadListing()
+          await reloadListing(true)
         }
       } catch {
         msg.textContent = 'Failed to create folder. Please try again.'
@@ -920,7 +923,7 @@
         } else {
           closeUploadModal()
           showAdminMsg(`"${data.name}" uploaded.`)
-          await reloadListing()
+          await reloadListing(true)
         }
       } catch {
         progress.style.display = 'none'

@@ -49,7 +49,8 @@ async function getAccessToken (serviceAccount) {
   const header = base64urlStr(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
   const claim  = base64urlStr(JSON.stringify({
     iss  : serviceAccount.client_email,
-    scope: 'https://www.googleapis.com/auth/drive.readonly',
+    sub  : 'tech@pdtsingers.org',
+    scope: 'https://www.googleapis.com/auth/drive',
     aud  : TOKEN_URL,
     iat  : now,
     exp  : now + 3600

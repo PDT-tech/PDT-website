@@ -107,9 +107,9 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 078 | DONE | Photos page: filter label wrong ("all" vs "only"); filter control is a link not a checkbox; upload button and filter bar layout cramped with no breathing room. Fixed 2026-04-27. Files: members/photos.html, members/photos.css.
 
-079 | DONE   | Home page carousel hidden pending Drive provisioning. Fixed 2026-04-28: Carousel suppressed via display:none in index.html and friends.html. Code intact. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. Files: index.html, friends.html.
+079 | DONE   | Home page carousel hidden pending Drive provisioning. Fixed 2026-04-28: Carousel suppressed via display:none in index.html and friends.html. Code intact. Re-enable when /Photos/ and /Photos/Mainpage_Carousel/ folders are live, service account is shared, and Netlify env vars GOOGLE_DRIVE_PHOTOS_FOLDER_ID and GOOGLE_DRIVE_CAROUSEL_FOLDER_ID are set. Also: once re-enabled, cap carousel width to a max-width (not full-bleed on wide desktop) and confirm the logo placeholder displays correctly during initial load. Files: index.html, friends.html. Fixed 2026-05-12.
 
-080 | POST-V1 | Home page carousel: fix vertical position in index.html markup so carousel sits between the WHO WE ARE block and the UPCOMING SING-OUTS block. Currently suppressed (#079) — fix position before re-enabling. File: index.html.
+080 | DONE   | Home page carousel: fix vertical position in index.html markup so carousel sits between the WHO WE ARE block and the UPCOMING SING-OUTS block. Currently suppressed (#079) — fix position before re-enabling. File: index.html. Fixed 2026-05-12.
 
 081 | POST-V1 | Home page: UPCOMING SING-OUTS block should be dynamically populated from the events table — all performance/sing-out event_types in the next 90 days, no rehearsals, ordered by event_date ascending. Currently static placeholder content. File: index.html.
 

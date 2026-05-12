@@ -767,7 +767,8 @@ body {
 
 /* ── Carousel ───────────────────────────────────────────────── */
 .carousel-section {
-  margin: 0;  /* spacing handled by hero-spacer above and coming-soon-band below */
+  max-width: var(--max-width);
+  margin: 0 auto;  /* spacing handled by hero-spacer above and coming-soon-band below */
 }
 
 .carousel-container {

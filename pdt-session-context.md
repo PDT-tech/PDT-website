@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 23 — Carousel re-enabled; DWD scope bug fixed in drive-music.js; #079 and #080 closed)
+**Last updated:** 2026-05-12 (Session 24 — Photo upload UX fixes; Music Library #085; decisions logged)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -126,7 +126,6 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 | 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
-| 085 | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames |
 
 ### Session 23 Completed
 - **#080** ✅ — Carousel moved to correct position in index.html (between WHO WE ARE and UPCOMING SING-OUTS)
@@ -134,32 +133,33 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - **Carousel DWD scope bug** ✅ — drive-music.js getAccessToken now uses `drive` scope when subject is non-null (DWD path), `drive.readonly` otherwise. Root cause: Workspace Admin DWD grant covers `drive` but not `drive.readonly` as a distinct scope string.
 - **pdt-conventions.md** ✅ — claude.ai/CC division of responsibility documented
 
-### Session 24 Priorities (in order)
-1. **P1 — Event dropdown bug** — Two events named "FIRST FRIDAY Sing-out" with different dates; Feb 1st sing-out missing from dropdown. Investigate deduplication/keying issue in dropdown population code.
-2. **P1 — Upload status message** — (a) Stale status ("Uploading N of N") persists when dialog reopens; clear on dialog init. (b) Pre-upload label should read "Ready to upload N photos", switching to "Uploading X of Y..." during upload.
-3. **Upload modal event pre-population** — When filter dropdown has an event selected, opening "+ Upload Photos" should initialize modal event dropdown to match.
-4. **Admin Drive folder import tool** — Admin pastes Drive folder ID, sees file list, selects event association, confirms; creates photo_uploads rows for existing Drive files (no re-upload).
-5. **#085** — Music Library: show file extension on PDF file rows.
+### Session 24 — Completed ✅
+- ✅ Event dropdown 90-day cutoff bug — extended to 180 days; Feb 1st sing-out now visible
+- ✅ Rehearsals excluded from both event dropdowns by default
+- ✅ Future events excluded from both event dropdowns
+- ✅ Upload modal label clarity — "View photos from this event:", "Upload photos for this event:", "Upload these photos (JPEG or HEIC):"
+- ✅ "Show older events" checkbox → "Include events older than 6 months"; correctly excludes future events even when checked
+- ✅ Upload modal pre-populates event from view filter on open
+- ✅ Stale upload status message fixed — cleared on modal open; shows "Ready to upload N photo(s)" on file selection
+- ✅ Admin bulk upload override — #upload-bulk-override checkbox (admin-only, pdt-admin-only class); raises limit 8→100; large-upload warning shown; ZIP import retired
+- ✅ #085 — PDF extension now visible in Music Library file label; audio rows unchanged
+- ✅ Decisions logged — flat /Photos/ folder rationale; ZIP import retired; admin bulk upload replaces both
 
-### Deferred Items
-- **ZIP photo import** — client-side extraction via `fflate`; browser unzips, feeds individual files into existing upload pipeline sequentially; no Edge Function changes needed; existing 8-file limit and progress counter apply naturally. Build when demand warrants.
-- `env.local.js` console error in production (nosniff header) — benign, tracked
-- Supabase cold-start slow load (#048) — accepted as known behavior
+### Session 25 Priorities
+1. Netlify migration follow-up — still blocking deploy of Music Library upload/delete and photo uploader fix; check status
+2. Photo uploader end-to-end test — pending Netlify migration resolution (reentry sequence in pdt-photo-feature.md)
+3. Music Library upload/delete — pending Netlify migration resolution
+4. Drive folder structure — decided: flat /Photos/, no subfolders (documented in pdt-decisions.md)
+5. Moss Egli Supabase onboarding — still pending
+6. Grant Gibson as second owner — critical operational risk, still unresolved
 
-### Standing Backlog
-- Supabase account migration — pending support (email suppression issue)
-- May 28: verify Workspace nonprofit SKU zeroed billing before May 31 charge date
-- Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
-- SEO: meta tags, XML sitemap, Google Search Console
-- Mobile responsiveness audit (WCAG AA)
-- Public page content polish — real copy, real photos
-- The Sunburst: public-facing version under Friends page (not yet started)
-- Vacation block feature — member self-service away window (design discussion needed)
-- Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
-- #071 Option C refactor (Calendar/Events) — after HC sign-off
-- #081/#082: Dynamic sing-out listings on home page and performances page from events table
-- Polling/voting feature — spec drafted Session 19, not yet built
-- Grant Gibson as second owner on all services — critical operational risk
+### Deferred (do not pick up unless Kevin raises)
+- Responsive width fix on carousel (low priority)
+- All standing backlog items in pdt-session-context.md
+
+### Retired This Session
+- ZIP photo import — replaced by admin bulk upload override (100-file cap)
+- Admin Drive folder import tool — obviated by bulk upload override
 
 ---
 

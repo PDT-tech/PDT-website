@@ -151,13 +151,9 @@ export const handler = async (event) => {
       const q   = `'${carouselFolderId}' in parents and trashed=false`
       const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name)`
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      console.log('[carousel-list] Drive status:', res.status)
-      const rawBody = await res.text()
-      console.log('[carousel-list] Drive raw body:', rawBody.slice(0, 500))
       if (!res.ok) throw new Error(`Drive carousel fetch failed: ${res.status}`)
-      const data  = JSON.parse(rawBody)
+      const data  = await res.json()
       const files = (data.files || []).map(f => ({ fileId: f.id, filename: f.name }))
-      console.log('[carousel-list] files.length:', files.length, '| first:', JSON.stringify(files[0] ?? null))
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },

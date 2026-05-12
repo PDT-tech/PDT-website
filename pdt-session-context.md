@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-02 (Session 20 — Music Library/Sunburst confirmed live, photo upload Drive fix committed, Netlify deploy blocked on account migration)
+**Last updated:** 2026-05-11 (Session 21 — Music Library upload/delete tested and live, #083 closed, repo made public)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -84,7 +84,7 @@ All member portal features are live and functional:
 - "Can You Be There?" attendance page — two-cluster dropdown UI (sing-outs left, rehearsals right)
 - Admin attendance override page
 - Sing-out attendance census report (admin/director)
-- Music Library (Drive-backed, accordion UI, voice-part sorting, streaming downloads)
+- Music Library (Drive-backed, accordion UI, voice-part sorting, streaming downloads, admin upload/delete live — musical_director + tech + admin roles)
 - Member account management (admin-created accounts only)
 
 ### Phase 2 — Public Site ✅ Complete
@@ -112,12 +112,12 @@ All public pages live:
 - Duane Lundsten memorial plaque approved
 
 ### Open Items
-Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
+Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 
 | # | Item |
 |---|------|
-| 014 | Main page: animated photo carousel — committed, deploy blocked on Netlify account migration |
-| 015 | Photo upload, gallery, and carousel — committed, deploy blocked on Netlify account migration |
+| 014 | Main page: animated photo carousel — committed, pending deploy |
+| 015 | Photo upload, gallery, and carousel — committed, pending deploy |
 | 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
@@ -126,6 +126,8 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 | 080 | POST-V1: Fix carousel vertical position in index.html markup (between WHO WE ARE and UPCOMING SING-OUTS) before re-enabling #079 |
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
+| 083 | ✅ CLOSED — Netlify account migration resolved 2026-05-11 via Option B: repo rebound to kevin36v personal account, repo made public, offending snippet deleted |
+| 085 | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames |
 
 **Google Workspace Drive — now unblocked (2026-05-02):**
 - Drive is live and accessible under president@pdtsingers.org
@@ -141,12 +143,13 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-04-28:
 - #048 — Supabase cold-start slow load — accepted as known behavior, closed
 
 **Standing backlog:**
-- Netlify deploy unblocked: relink GitHub repo to PDT-tech/PDT-website once Netlify support completes account migration (ticket open, filed 2026-05-02); then trigger deploy to get upload-photo.js JWT fix live
+- ✅ Netlify migration resolved (Option B) — repo public at github.com/PDT-tech/PDT-website; Netlify snippet removed; inject-env.js is now sole env var injection mechanism
 - Re-enable GitHub Actions HEIC workflow after first successful photo upload end-to-end test
 - Run two unrun Supabase migrations (in order): 20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
 - Set Supabase Edge Function secrets: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
-- tech@ ownership transfer: Netlify pending support (case 561988); Supabase pending support (email suppression); all other services complete
+- Supabase account migration still pending support (email suppression issue)
 - Re-enable GitHub Actions HEIC workflow once Drive Photos folders confirmed live
+- Music Library PDF extension display (#085)
 - May 28: check Workspace nonprofit SKU has landed and zeroed out billing before May 31 charge date
 - Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
 - Admin attendance override (#032) — ✅ complete (Session 13)

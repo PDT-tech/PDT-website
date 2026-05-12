@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 26 — cross-doc currency audit; photo/music upload stale priority removed; architecture diagram completed)
+**Last updated:** 2026-05-12 (Session 26 — #071 Option C complete; cross-doc currency audit)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -123,7 +123,6 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 | 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
-| 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
 
@@ -151,9 +150,14 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ Succession planning resolved — role-account strategy documented: tech@ is primary, president@ is backup; treasurer@ planned as low-priority addition; maintainers guide is authoritative reference
 - ✅ pdt-tech-maintainers-guide.md §2 rewritten — role-account ownership model, "why we use it" rationale per service, stale migration notes updated, GitHub repo URL corrected to PDT-tech org
 
-### Session 26 Priorities
-1. Sunday HTML doc sync pass — pdt-tech-maintainers-guide.html sync with updated §2 markdown (role-account ownership model, "why we use it" per service, GitHub URL corrected to PDT-tech org)
-2. Google Workspace billing check — May 28 (tickler on Kevin's calendar; do not surface before then)
+### Session 26 — Completed ✅
+- ✅ Cross-doc currency audit — #014 and #015 closed in issues, pdt-photo-feature.md updated to as-built status, session-context architecture diagram completed with all 5 Edge Functions, photo_uploads added to DB tables line
+- ✅ Issues closed — #026 (profile already correct), #029, #030 (email forwarding: ops procedure, documented in maintainers guide §2), #061 (GitHub transfer already done), #064, #068 (moot under Option C), #071 (Option C implemented)
+- ✅ #071 Option C — events.html rewritten as calendar-driven view; public_notes column added to events table; board_meeting events included; calendar form updated with Public description field; cancelled event badge; data migration run (2 events posts migrated and retired); Moss workflow doc added (pdt-moss-events-guide.md)
+
+### Session 27 Priorities
+1. Polling/voting feature — design discussion (spec drafted Session 19, not yet built)
+2. Sunday HTML doc sync — pdt-tech-maintainers-guide.html (deferred from Session 26; do on a Sunday)
 
 ### Deferred (do not pick up unless Kevin raises)
 - Responsive width fix on carousel (low priority)
@@ -174,9 +178,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - The Sunburst: public-facing version under Friends page (not yet started)
 - Vacation block feature — member self-service away window (design discussion needed)
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
-- #071 Option C refactor (Calendar/Events) — after HC sign-off
 - #081/#082: Dynamic sing-out listings on home page and performances page from events table
-- Polling/voting feature — spec drafted Session 19, not yet built
 
 ---
 

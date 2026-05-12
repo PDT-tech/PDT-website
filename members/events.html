@@ -53,71 +53,14 @@
       <h1 class="blog-title">Events</h1>
       <p class="blog-byline">Performances, sing-outs &amp; social events</p>
     </div>
-    <!-- Shown to events_editor AND admin -->
-    <button class="btn-primary pdt-events-editor-only" id="new-post-btn">
-      + New Event Post
-    </button>
+    <a href="/members/calendar.html" class="btn-primary pdt-manager-only" id="new-event-btn" style="display:none">
+      + New Event
+    </a>
   </div>
 
   <div class="blog-layout">
-    <div class="post-list" id="post-list">
+    <div class="post-list" id="event-list">
       <div class="post-list-loading">Loading events…</div>
-    </div>
-    <div class="post-detail" id="post-detail" hidden>
-      <button class="post-back-btn" id="back-btn">&larr; All events</button>
-      <article class="post-article">
-        <div class="post-article-meta" id="detail-meta"></div>
-        <h2 class="post-article-title" id="detail-title"></h2>
-        <div class="post-article-body" id="detail-body"></div>
-      </article>
-      <div class="post-article-actions pdt-events-editor-only">
-        <button class="btn-secondary btn-sm" id="edit-btn">Edit</button>
-        <button class="btn-danger btn-sm" id="delete-btn">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="post-modal-overlay modal-hidden" id="modal-overlay">
-    <div class="post-modal">
-      <div class="post-modal-header">
-        <h2 class="post-modal-title" id="modal-title">New Event Post</h2>
-        <button class="post-modal-close" id="modal-close">&times;</button>
-      </div>
-      <form id="post-form">
-        <input type="hidden" id="post-id">
-        <input type="hidden" id="post-event-id">
-        <div class="form-group">
-          <label class="form-label" for="post-title">Title</label>
-          <input type="text" id="post-title" class="form-input" required
-                 placeholder="e.g. Sing-Out at Marquis Gardens — April 12">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="post-event-date">Event date <span class="form-hint">(optional)</span></label>
-          <input type="date" id="post-event-date" class="form-input">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="post-excerpt">
-            Short summary <span class="form-hint">(optional — shown in preview)</span>
-          </label>
-          <input type="text" id="post-excerpt" class="form-input"
-                 placeholder="One sentence summary">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="post-body">Details</label>
-          <textarea id="post-body" class="form-input form-textarea" required
-                    placeholder="Event details, what to wear, when to arrive, parking, etc."></textarea>
-        </div>
-        <div class="form-group form-check">
-          <label class="form-check-label">
-            <input type="checkbox" id="post-published">
-            Save as draft
-          </label>
-        </div>
-        <div class="post-modal-actions">
-          <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
-          <button type="submit" class="btn-primary btn-forest" id="modal-save">Save</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -135,175 +78,62 @@
   import '../js/auth-guard.js'
   import { supabase } from '../js/supabase.js'
 
-  const BLOG_TYPE = 'events'
-  let currentPostId = null
+  async function loadEvents () {
+    const today = new Date().toISOString().split('T')[0]
+    const { data: events, error } = await supabase
+      .from('events')
+      .select('id, title, event_type, event_date, start_time, call_time, on_stage, location, dress_code, public_notes, is_cancelled')
+      .in('event_type', ['performance', 'social', 'board_meeting'])
+      .gte('event_date', today)
+      .order('event_date', { ascending: true })
 
-  // Show edit controls to events_editor AND admin
-  function applyRoleVisibility () {
-    const profile = window.__PDT_USER
-    if (!profile) {
-      document.addEventListener('pdt:profile-loaded', () => applyRoleVisibility())
+    const list = document.getElementById('event-list')
+
+    if (error || !events || events.length === 0) {
+      list.innerHTML = '<div class="post-list-empty">No upcoming events scheduled. Check back soon!</div>'
       return
     }
-    if (profile.role === 'events_editor' || profile.role === 'admin') {
-      document.querySelectorAll('.pdt-events-editor-only').forEach(el => {
-        el.style.display = 'block'
-      })
-    }
-  }
-  applyRoleVisibility()
 
-  async function loadPosts () {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('id, title, excerpt, created_at, published, profiles(full_name)')
-      .eq('blog_type', BLOG_TYPE)
-      .order('created_at', { ascending: false })
+    list.innerHTML = events.map(ev => {
+      const dateStr = formatEventDate(ev.event_date)
+      const cancelled = ev.is_cancelled
+        ? '<span class="event-cancelled-badge">CANCELLED</span>'
+        : ''
 
-    const list = document.getElementById('post-list')
-    if (error || !data || data.length === 0) {
-      list.innerHTML = '<div class="post-list-empty">No events posted yet.</div>'
-      return
-    }
-    list.innerHTML = data.map(post => `
-      <div class="post-list-item ${!post.published ? 'post-unpublished' : ''}"
-           data-id="${post.id}">
-        <div class="post-list-meta">
-          ${formatDate(post.created_at)}
-          ${!post.published ? '<span class="post-draft-badge">Draft</span>' : ''}
+      const detailRows = []
+      if (ev.call_time)   detailRows.push(`<p class="event-detail-field"><strong>Call time:</strong> ${formatTime(ev.call_time)}</p>`)
+      if (ev.on_stage)    detailRows.push(`<p class="event-detail-field"><strong>On stage:</strong> ${formatTime(ev.on_stage)}</p>`)
+      if (ev.dress_code)  detailRows.push(`<p class="event-detail-field"><strong>Outfit:</strong> ${escHtml(ev.dress_code)}</p>`)
+      if (ev.public_notes) detailRows.push(`<p class="event-detail-notes">${escHtml(ev.public_notes)}</p>`)
+
+      const detailHtml = detailRows.length
+        ? `<div class="event-card-detail modal-hidden" id="detail-${ev.id}">${detailRows.join('')}</div>`
+        : ''
+      const toggleHtml = detailRows.length
+        ? `<button class="event-detail-toggle" data-id="${ev.id}" aria-expanded="false">Details ▾</button>`
+        : ''
+
+      return `
+        <div class="post-list-item event-card${cancelled ? ' event-card--cancelled' : ''}" data-id="${ev.id}">
+          <div class="post-list-meta">${dateStr}</div>
+          <div class="post-list-title">${escHtml(ev.title)}${cancelled}</div>
+          ${ev.location ? `<div class="post-list-excerpt">${escHtml(ev.location)}</div>` : ''}
+          ${toggleHtml}
+          ${detailHtml}
         </div>
-        <div class="post-list-title">${post.title}</div>
-        ${post.excerpt ? `<div class="post-list-excerpt">${post.excerpt}</div>` : ''}
-      </div>
-    `).join('')
-    list.querySelectorAll('.post-list-item').forEach(item => {
-      item.addEventListener('click', () => openPost(item.dataset.id))
-    })
-  }
+      `
+    }).join('')
 
-  async function openPost (id) {
-    currentPostId = id
-    const { data } = await supabase
-      .from('posts').select('*').eq('id', id).single()
-    if (!data) return
-    let eventData = null
-    if (data.event_id) {
-      const { data: ev } = await supabase
-        .from('events')
-        .select('event_date, call_time, on_stage')
-        .eq('id', data.event_id)
-        .single()
-      eventData = ev || null
-    }
-    renderDetail(data, eventData)
-  }
-
-  function renderDetail (post, eventData) {
-    const displayDate = eventData?.event_date
-      ? formatEventDate(eventData.event_date)
-      : formatDate(post.created_at)
-    document.getElementById('detail-meta').textContent = displayDate
-    document.getElementById('detail-title').textContent = post.title
-
-    let preamble = ''
-    if (eventData) {
-      const rows = []
-      if (eventData.call_time) rows.push(`<p class="event-detail-field"><strong>Call time:</strong> ${eventData.call_time.slice(0, 5)}</p>`)
-      if (eventData.on_stage)  rows.push(`<p class="event-detail-field"><strong>On stage:</strong> ${eventData.on_stage.slice(0, 5)}</p>`)
-      if (rows.length) preamble = `<div class="event-detail-times">${rows.join('')}</div>`
-    }
-
-    document.getElementById('detail-body').innerHTML =
-      preamble + '<p>' + post.body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>'
-    document.getElementById('edit-btn').dataset.post = JSON.stringify(post)
-    document.getElementById('post-list').hidden = true
-    document.getElementById('post-detail').hidden = false
-  }
-
-  document.getElementById('back-btn').addEventListener('click', () => {
-    document.getElementById('post-detail').hidden = true
-    document.getElementById('post-list').hidden = false
-    currentPostId = null
-  })
-
-  document.getElementById('new-post-btn')?.addEventListener('click', () => openModal())
-
-  document.getElementById('edit-btn').addEventListener('click', (e) => {
-    openModal(JSON.parse(e.target.dataset.post || '{}'))
-  })
-
-  document.getElementById('delete-btn').addEventListener('click', async () => {
-    if (!confirm('Delete this event post? This cannot be undone.')) return
-    const { error } = await supabase.from('posts').delete().eq('id', currentPostId)
-    if (!error) {
-      document.getElementById('post-detail').hidden = true
-      document.getElementById('post-list').hidden = false
-      currentPostId = null
-      await loadPosts()
-    }
-  })
-
-  function openModal (post = null) {
-    document.getElementById('modal-title').textContent = post?.id ? 'Edit Event Post' : 'New Event Post'
-    document.getElementById('post-id').value = post?.id || ''
-    document.getElementById('post-event-id').value = post?.event_id || ''
-    document.getElementById('post-title').value = post?.title || ''
-    document.getElementById('post-event-date').value = post?.event_date || ''
-    document.getElementById('post-excerpt').value = post?.excerpt || ''
-    document.getElementById('post-body').value = post?.body || ''
-    document.getElementById('post-published').checked = post ? !post.published : false
-    document.getElementById('modal-overlay').classList.remove('modal-hidden')
-  }
-
-  function closeModal () {
-    document.getElementById('modal-overlay').classList.add('modal-hidden')
-    document.getElementById('post-form').reset()
-  }
-
-  document.getElementById('modal-close').addEventListener('click', closeModal)
-  document.getElementById('modal-cancel').addEventListener('click', closeModal)
-  document.getElementById('modal-overlay').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('modal-overlay')) closeModal()
-  })
-
-  document.getElementById('post-form').addEventListener('submit', async (e) => {
-    e.preventDefault()
-    const saveBtn = document.getElementById('modal-save')
-    saveBtn.textContent = 'Saving…'
-    saveBtn.disabled = true
-
-    const id         = document.getElementById('post-id').value
-    const title      = document.getElementById('post-title').value.trim()
-    const event_date = document.getElementById('post-event-date').value || null
-    const excerpt    = document.getElementById('post-excerpt').value.trim() || null
-    const body       = document.getElementById('post-body').value.trim()
-    const published  = !document.getElementById('post-published').checked
-    const eventIdRaw = document.getElementById('post-event-id').value
-    const payload    = { blog_type: BLOG_TYPE, title, event_date, excerpt, body, published,
-                         author_id: window.__PDT_USER?.id,
-                         ...(eventIdRaw ? { event_id: eventIdRaw } : {}) }
-
-    let error
-    if (id) {
-      ;({ error } = await supabase.from('posts').update(payload).eq('id', id))
-    } else {
-      ;({ error } = await supabase.from('posts').insert(payload))
-    }
-
-    saveBtn.textContent = 'Save'
-    saveBtn.disabled = false
-
-    if (error) { alert('Error saving: ' + error.message); return }
-    closeModal()
-    await loadPosts()
-    document.getElementById('post-detail').hidden = true
-    document.getElementById('post-list').hidden = false
-    currentPostId = null
-  })
-
-  function formatDate (iso) {
-    return new Date(iso).toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric'
+    list.querySelectorAll('.event-detail-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const id = btn.dataset.id
+        const detail = document.getElementById(`detail-${id}`)
+        const expanded = btn.getAttribute('aria-expanded') === 'true'
+        detail.classList.toggle('modal-hidden', expanded)
+        btn.setAttribute('aria-expanded', String(!expanded))
+        btn.textContent = expanded ? 'Details ▾' : 'Details ▴'
+      })
     })
   }
 
@@ -313,24 +143,18 @@
     })
   }
 
-  if (window.location.hash === '#new') openModal()
-
-  // Pre-populate from calendar ?new=1 params (#047)
-  const urlParams = new URLSearchParams(window.location.search)
-  if (urlParams.get('new') === '1') {
-    const parts = []
-    if (urlParams.get('start_time')) parts.push(`Show time: ${urlParams.get('start_time').slice(0, 5)}`)
-    if (urlParams.get('location'))   parts.push(`Location: ${urlParams.get('location')}`)
-    if (urlParams.get('notes'))      parts.push(urlParams.get('notes'))
-    openModal({
-      title:      urlParams.get('title') || '',
-      event_date: urlParams.get('event_date') || '',
-      event_id:   urlParams.get('event_id') || '',
-      body:       parts.join('\n')
-    })
+  function formatTime (timeStr) {
+    const [h, m] = timeStr.split(':')
+    const d = new Date()
+    d.setHours(+h, +m)
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
   }
 
-  loadPosts()
+  function escHtml (str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  }
+
+  loadEvents()
 </script>
 
 <script src="/js/nav-member.js"></script>

@@ -171,7 +171,7 @@
         </div>
         <div class="form-group modal-hidden" id="public-notes-section">
           <label class="form-label" for="event-public-notes">
-            Public description <span class="form-hint">Shown on the Events page and public site. Leave blank if none.</span>
+            Public description <span class="form-hint">Shown on the Events page. For HC meetings, include the Google Meet link here.</span>
           </label>
           <textarea id="event-public-notes" class="form-input form-textarea"
                     placeholder="What members and the public should know about this event."></textarea>
@@ -752,7 +752,7 @@
     document.getElementById('event-public-notes').value = ev?.public_notes || ''
     document.getElementById('event-cancelled').checked = ev?.is_cancelled || false
     const isPerf = ev?.event_type === 'performance'
-    const showPublicNotes = ev?.event_type === 'performance' || ev?.event_type === 'social'
+    const showPublicNotes = ev?.event_type === 'performance' || ev?.event_type === 'social' || ev?.event_type === 'board_meeting'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
     document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
     document.getElementById('public-notes-section').classList.toggle('modal-hidden', !showPublicNotes)
@@ -767,7 +767,7 @@
   document.getElementById('event-type').addEventListener('change', () => {
     const type = document.getElementById('event-type').value
     const isPerf = type === 'performance'
-    const showPublicNotes = type === 'performance' || type === 'social'
+    const showPublicNotes = type === 'performance' || type === 'social' || type === 'board_meeting'
     document.getElementById('perf-times-section').classList.toggle('modal-hidden', !isPerf)
     document.getElementById('non-perf-times-section').style.display = isPerf ? 'none' : ''
     document.getElementById('public-notes-section').classList.toggle('modal-hidden', !showPublicNotes)

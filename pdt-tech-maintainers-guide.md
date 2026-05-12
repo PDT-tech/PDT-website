@@ -51,6 +51,23 @@ A third role account, `treasurer@pdtsingers.org`, is planned as additional backu
 - **Netlify:** Rebound to the PDT-tech GitHub org (2026-05-12). Full account transfer to `tech@pdtsingers.org` is pending Netlify support (case 561988) — not blocking.
 - **Supabase:** Owner invite to `tech@pdtsingers.org` is pending Supabase support clearing an email suppression record. Once cleared, re-send the Owner invite from Organization Settings → Members — not blocking.
 
+### Email Forwarding
+
+Google Workspace email forwarding must be configured at the admin level — Gmail-level forwarding (Settings → Forwarding and POP/IMAP) does not work for Workspace accounts.
+
+**To configure forwarding for any `@pdtsingers.org` address:**
+
+1. Go to admin.google.com → Apps → Google Workspace → Gmail → Routing
+2. Find "Email forwarding using recipient address map"
+3. Add a mapping: `address@pdtsingers.org` → `personal@example.com`
+4. Save and allow a few minutes to propagate
+
+**Currently active forwarding:**
+- `tech@pdtsingers.org` → k7vi@pm.me (Kevin Bier)
+- `president@pdtsingers.org` → [confirm with Kevin]
+
+**To add a High Council member:** coordinate with the member to get their personal email before configuring. Do not configure forwarding without confirming the destination address directly with the recipient.
+
 ---
 
 ## 3. Local Development

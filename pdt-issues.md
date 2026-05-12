@@ -119,4 +119,4 @@ Coordinate with Netlify re-link after transfer. No urgency until post-release.
 
 084 | OPEN | PENDING — Supabase account migration pending. Supabase support to migrate project ownership to tech@pdtsingers.org. Not currently blocking any active development.
 
-085 | OPEN | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames.
+085 | DONE   | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames. Fixed 2026-05-12.

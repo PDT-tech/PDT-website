@@ -117,3 +117,4 @@ works under tech@pdtsingers.org. Do not remove until post-release verification c
 084 | OPEN | PENDING — Supabase account migration pending. Supabase support to migrate project ownership to tech@pdtsingers.org. Not currently blocking any active development.
 
 085 | DONE   | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames. Fixed 2026-05-12.
+086 | OPEN | Carousel: responsive width fix on wide desktop. Carousel on index.html and friends.html renders full-bleed on wide viewports. Should be capped at max-width with margin: 0 auto, same as other content blocks. Low priority — cosmetic only. Files: index.html, friends.html, css/main.css.

@@ -160,7 +160,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 2. Sunday HTML doc sync — pdt-tech-maintainers-guide.html (deferred from Session 26; do on a Sunday)
 
 ### Deferred (do not pick up unless Kevin raises)
-- Responsive width fix on carousel (low priority)
+- #086 — Carousel responsive width fix on wide desktop (low priority, cosmetic)
 - See Standing Backlog below.
 
 ### Retired This Session

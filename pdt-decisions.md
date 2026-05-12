@@ -365,3 +365,27 @@ Runtime. Quality parameter is 0–1 scale; quality: 1 = maximum quality.
 `sharp` relies on `libvips` native bindings and is incompatible with the Supabase Edge runtime.
 heic-to uses WASM exclusively — no native binaries — and is deployable via npm: specifiers.
 Behavioral spec is unchanged: max-quality JPEG, same post-process pipeline.
+
+---
+
+## 2026-05-12 — /Photos/ folder stays flat; no event subfolders
+
+**Question:** Should Google Drive /Photos/ be organized into per-event subfolders (e.g. 2026-05-01 FIRST FRIDAY Sing-out/) for human browsability?
+
+**Decision:** No. Keep /Photos/ as a single flat folder.
+
+**Rationale:** The only humans who ever see the raw Drive folder are admins (currently Kevin, eventually Grant Gibson as second owner). All other roles — uploaders, viewers, Moss as events_editor — interact exclusively through the member portal, which is already organized by event. The "browsable by non-technical members" argument doesn't hold because those members never touch Drive directly. Subfolders would add real code complexity (upload must find-or-create subfolder, photo listing must recurse or use cross-tree Drive query, import tool design changes) in exchange for a benefit that accrues only to the one or two people who occasionally poke around in Drive for maintenance purposes. The photo_uploads table and the portal viewer are the authoritative human-readable index; Drive is blob storage.
+
+If this is revisited: The forcing function would be if non-admin members are ever given direct Drive access, or if the flat folder becomes genuinely unwieldy for admin maintenance at scale (hundreds of events). At that point the import tool design (item 4, retired this session) would need to be resurrected alongside the subfolder decision.
+
+---
+
+## 2026-05-12 — ZIP photo import retired; replaced by admin bulk upload override
+
+**Question:** Should we build a ZIP import flow (client-side fflate extraction feeding the existing upload pipeline) to support bulk photo uploads?
+
+**Decision:** No. ZIP handling is retired from the backlog. Replaced by an admin-only bulk upload override (checkbox in upload modal, raises file limit from 8 to 100).
+
+**Rationale:** The ZIP flow was motivated by the need to upload large batches of event photos without hitting the 8-file cap. The admin bulk override solves the same problem more simply: admin unchecks locally, selects up to 100 JPEG/HEIC files, uploads sequentially through the existing pipeline. No new parsing logic, no fflate dependency, no ZIP edge cases (nested folders, non-image files, macOS __MACOSX artifacts). The constraint is JPEG/HEIC only (already enforced by file picker validation), which eliminates the file-type ambiguity that makes ZIP contents unpredictable. Direct Drive upload by non-admins remains unsupported by policy — the portal uploader is the only sanctioned write path for all non-admin roles.
+
+Standing rule: Direct write access to Drive /Photos/ is admin-only. All other roles upload exclusively through the member portal uploader.

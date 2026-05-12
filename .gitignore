@@ -27,6 +27,8 @@ env.local.js
 
 # npm
 node_modules/
+package.json
+package-lock.json
 
 # Supabase CLI temp files
 supabase/.temp/

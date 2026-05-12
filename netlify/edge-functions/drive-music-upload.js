@@ -3,7 +3,7 @@
    Netlify Edge Function (Deno)
 
    Handles music library write operations for role-gated admins.
-   Allowed roles: musical_director, tech.
+   Allowed roles: musical_director, tech, admin.
 
    Endpoint:
      POST /api/music-upload  (multipart/form-data)
@@ -178,7 +178,7 @@ export default async (request) => {
   if (!user) return jsonRes({ success: false, error: 'Unauthorized' }, 401)
 
   const role = await getUserRole(user.id)
-  if (role !== 'musical_director' && role !== 'tech') {
+  if (role !== 'musical_director' && role !== 'tech' && role !== 'admin') {
     return jsonRes({ success: false, error: 'Forbidden' }, 403)
   }
 

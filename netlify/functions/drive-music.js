@@ -32,11 +32,12 @@ function base64url (str) {
     .replace(/=/g, '')
 }
 
-async function getAccessToken (serviceAccount) {
+async function getAccessToken (serviceAccount, subject = null) {
   const now    = Math.floor(Date.now() / 1000)
   const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
   const claim  = base64url(JSON.stringify({
     iss  : serviceAccount.client_email,
+    ...(subject ? { sub: subject } : {}),
     scope: 'https://www.googleapis.com/auth/drive.readonly',
     aud  : TOKEN_URL,
     iat  : now,
@@ -144,7 +145,7 @@ export const handler = async (event) => {
       return { statusCode: 500, body: JSON.stringify({ error: 'Carousel folder not configured' }) }
     }
     try {
-      const token = await getAccessToken(serviceAccount)
+      const token = await getAccessToken(serviceAccount, 'tech@pdtsingers.org')
       const q   = `'${carouselFolderId}' in parents and trashed=false`
       const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name)`
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })

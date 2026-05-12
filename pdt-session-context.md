@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-11 (Session 21 — Music Library upload/delete tested and live, #083 closed, repo made public)
+**Last updated:** 2026-05-12 (Session 22 — Photo upload/curation pipeline fully tested and live; #014/#015 closed; GitHub Actions HEIC workflow re-enabled; DWD scope fix applied to all three photo Edge Functions)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -32,16 +32,17 @@ NOT affiliated with BHS — state clearly on About page.
 - Hosted on **Netlify** (free tier) — manual deploy only (auto-publish always locked)
 - Auth via **Supabase** — email → 6-digit OTP code via Resend SMTP; admin-created accounts
   only (`shouldCreateUser: false`); `is_active` flag gates portal access
-- Database via **Supabase** — profiles, events, event_attendance, absences, posts tables
+- Database via **Supabase** — profiles, events, event_attendance, absences, posts, photo_uploads tables
 - Forms via **Netlify Forms**
 - **Netlify Functions** — serverless Drive proxy for Music Library and Sunburst newsletter
 - **Netlify Edge Functions** — `inject-env.js` (env var injection), `drive-music-download.js`
-  (streaming file downloads)
+  (streaming downloads), `drive-music-upload.js` (Music Library admin writes), `upload-photo.js`,
+  `photo-proxy.js`, `curate-photo.js`
 - Source control: **GitHub** — https://github.com/PDT-tech/PDT-website
 - Email (transactional): **Resend** (resend.com) — noreply@pdtsingers.org
 - Email (group): **Google Workspace for Nonprofits** — president@pdtsingers.org (active)
-- Music files: **Google Workspace Drive** — president@pdtsingers.org, served via service
-  account proxy
+- Music + Photo files: **Google Workspace Drive** — president@pdtsingers.org, served via service
+  account proxy (impersonates tech@pdtsingers.org via domain-wide delegation)
 - GCP project: `pdt-singers-music-library` — service account for Drive proxy
 
 **Owner/maintainer:** Kevin Bier (president@pdtsingers.org) — experienced software/product
@@ -70,7 +71,7 @@ always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
 ---
 
-## Current State (as of 2026-04-28)
+## Current State (as of 2026-05-12)
 
 ### Phase 1 — Member Portal ✅ Complete
 All member portal features are live and functional:
@@ -86,15 +87,16 @@ All member portal features are live and functional:
 - Sing-out attendance census report (admin/director)
 - Music Library (Drive-backed, accordion UI, voice-part sorting, streaming downloads, admin upload/delete live — musical_director + tech + admin roles)
 - Member account management (admin-created accounts only)
+- **Member Photos** — upload, gallery, curation, carousel ✅ fully live (#014/#015 closed Session 22)
 
 ### Phase 2 — Public Site ✅ Complete
 All public pages live:
-- index.html (Home — hero, chorus identity, CTAs)
+- index.html (Home — carousel present but suppressed pending #080)
 - about.html
 - performances.html (with Netlify booking inquiry form)
 - join.html
 - music.html
-- friends.html (with live Facebook page link)
+- friends.html (carousel suppressed pending #080)
 - contact.html
 - 404.html
 
@@ -110,62 +112,50 @@ All public pages live:
 - README.md fully rewritten (Issue #052)
 - pdt-issues.md, pdt-decisions.md, pdt-conventions.md, CLAUDE.md all in repo
 - Duane Lundsten memorial plaque approved
+- Photos Drive folders live: `/Photos/` and `/Photos/Mainpage_Carousel/` under president@pdtsingers.org
+- GitHub Actions HEIC workflow re-enabled ✅ (Session 22)
 
 ### Open Items
 Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 
 | # | Item |
 |---|------|
-| 014 | Main page: animated photo carousel — committed, pending deploy |
-| 015 | Photo upload, gallery, and carousel — committed, pending deploy |
 | 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
 | 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
-| 079 | ✅ Carousel suppressed (display:none) in index.html and friends.html — re-enable when Drive Photos folders are live |
-| 080 | POST-V1: Fix carousel vertical position in index.html markup (between WHO WE ARE and UPCOMING SING-OUTS) before re-enabling #079 |
+| 079 | Re-enable carousel on index.html and friends.html — blocked on #080 |
+| 080 | Fix carousel vertical position in index.html markup (between WHO WE ARE and UPCOMING SING-OUTS) — must be done before #079 |
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
-| 083 | ✅ CLOSED — Netlify account migration resolved 2026-05-11 via Option B: repo rebound to kevin36v personal account, repo made public, offending snippet deleted |
 | 085 | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames |
 
-**Google Workspace Drive — now unblocked (2026-05-02):**
-- Drive is live and accessible under president@pdtsingers.org
-- /Photos/ and /Photos/Mainpage_Carousel/ folders need creation + service account share
-- Photo feature end-to-end test can now proceed
-- Two SQL migrations still unrun (run in order): 20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
-- Supabase Edge Function secrets still need setting: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
-- GitHub Actions HEIC conversion workflow (convert-heic.yml) is DISABLED — re-enable after Drive Photos folders are confirmed live and end-to-end test passes
-- Sunburst card on Member Home shows graceful placeholder until Drive live
+### Session 23 Priorities (in order)
+1. **#080** — Fix carousel vertical position in `index.html` markup (between WHO WE ARE and UPCOMING SING-OUTS)
+2. **#079** — Re-enable carousel on `index.html` and `friends.html` (remove display:none)
+3. **Upload modal event pre-population** — when filter dropdown has an event selected, opening "+ Upload Photos" should initialize the modal event dropdown to match instead of defaulting to "General / No specific event"
+4. **Admin Drive folder import tool** — admin pastes a Drive folder ID, sees file list, selects event association, confirms; creates `photo_uploads` rows for existing Drive files (no re-upload). Needed because photos are sometimes uploaded directly to Drive (e.g. `/Photos/2026-05-01 Devine Furniture/`)
+5. **#085** — Music Library: show file extension on PDF file rows
 
-**Deferred (not abandoned):**
+### Deferred Items
+- **ZIP photo import** — client-side extraction via `fflate`; browser unzips, feeds individual files into existing upload pipeline sequentially; no Edge Function changes needed; existing 8-file limit and progress counter apply naturally. Build when demand warrants.
 - `env.local.js` console error in production (nosniff header) — benign, tracked
-- #048 — Supabase cold-start slow load — accepted as known behavior, closed
+- Supabase cold-start slow load (#048) — accepted as known behavior
 
-**Standing backlog:**
-- ✅ Netlify migration resolved (Option B) — repo public at github.com/PDT-tech/PDT-website; Netlify snippet removed; inject-env.js is now sole env var injection mechanism
-- Re-enable GitHub Actions HEIC workflow after first successful photo upload end-to-end test
-- Run two unrun Supabase migrations (in order): 20260426_photo_uploads.sql, 20260426_photo_uploads_carousel_file_id.sql
-- Set Supabase Edge Function secrets: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_PHOTOS_FOLDER_ID, GOOGLE_DRIVE_CAROUSEL_FOLDER_ID, RESEND_API_KEY
-- Supabase account migration still pending support (email suppression issue)
-- Re-enable GitHub Actions HEIC workflow once Drive Photos folders confirmed live
-- Music Library PDF extension display (#085)
-- May 28: check Workspace nonprofit SKU has landed and zeroed out billing before May 31 charge date
+### Standing Backlog
+- Supabase account migration — pending support (email suppression issue)
+- May 28: verify Workspace nonprofit SKU zeroed billing before May 31 charge date
 - Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
-- Admin attendance override (#032) — ✅ complete (Session 13)
-- Sing-out attendance census report (#033) — ✅ complete (Session 14/15)
 - SEO: meta tags, XML sitemap, Google Search Console
 - Mobile responsiveness audit (WCAG AA)
 - Public page content polish — real copy, real photos
 - The Sunburst: public-facing version under Friends page (not yet started)
 - Vacation block feature — member self-service away window (design discussion needed)
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
-- Public page content review — HC feedback requested 2026-04-26; declare v1.0 done if no corrections by May 1
-- GitHub Actions secrets hygiene note needed in pdt-conventions.md (never hardcode secrets in .github/workflows/ — Netlify scanner will catch them)
 - #071 Option C refactor (Calendar/Events) — after HC sign-off
-- #080: Fix carousel position in index.html markup before re-enabling (#079)
 - #081/#082: Dynamic sing-out listings on home page and performances page from events table
-- Polling/voting feature (spec in progress — see chat history)
+- Polling/voting feature — spec drafted Session 19, not yet built
+- Grant Gibson as second owner on all services — critical operational risk
 
 ---
 
@@ -272,6 +262,7 @@ PDT-website/                      ← repo root
 │   ├── edge-functions/
 │   │   ├── inject-env.js         ← Injects all env vars into window.__PDT_ENV at runtime
 │   │   ├── drive-music-download.js ← Streams Drive files to browser (/api/music-download)
+│   │   ├── drive-music-upload.js ← Music Library admin writes (/api/music-upload)
 │   │   ├── upload-photo.js       ← Receives photo upload, writes to Drive + photo_uploads row
 │   │   ├── photo-proxy.js        ← Proxies Drive photo bytes to browser (auth-gated)
 │   │   └── curate-photo.js       ← Admin: promote photo to carousel / remove from carousel
@@ -284,8 +275,8 @@ PDT-website/                      ← repo root
 │   │   ├── send-attendance-emails/   ← Nightly cron — nudge emails (deferred #031)
 │   │   └── convert-heic/         ← HEIC → JPEG conversion (heic-to@1.4.2); triggered by GitHub Actions
 │   └── migrations/
-│       ├── 20260426_photo_uploads.sql              ← photo_uploads table (UNRUN)
-│       └── 20260426_photo_uploads_carousel_file_id.sql ← carousel_file_id column (UNRUN)
+│       ├── 20260426_photo_uploads.sql              ← photo_uploads table ✅ run
+│       └── 20260426_photo_uploads_carousel_file_id.sql ← carousel_file_id column ✅ run
 ├── css/
 │   ├── reset.css
 │   ├── variables.css             ← Design tokens (palette, type, spacing)
@@ -398,6 +389,7 @@ PDT-website/                      ← repo root
   `.github/workflows/convert-heic.yml`; requires `SUPABASE_SERVICE_ROLE_KEY` in GitHub secrets
 - **Supabase Edge Function secrets** — set separately from Netlify env vars via
   `supabase secrets set KEY=value`; not visible in Netlify dashboard
-- **Drive provisioning** — Google Workspace Drive not yet active for photo feature; Music
-  Library files need re-upload and Photos folders need creation + service account share once
-  provisioned
+- **Drive DWD impersonation** — all Drive write operations impersonate `tech@pdtsingers.org`
+  via domain-wide delegation. Applies to: `upload-photo.js`, `photo-proxy.js`,
+  `curate-photo.js`, `drive-music-upload.js`. Service account acting as itself is insufficient
+  — Drive files owned by president@ require DWD to write.

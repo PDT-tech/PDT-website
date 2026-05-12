@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 25 — Netlify unblocked; maintainers guide §2 rewritten; succession planning resolved)
+**Last updated:** 2026-05-12 (Session 26 — photo/music upload stale priority removed; Session 26 priorities corrected)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -152,9 +152,8 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ pdt-tech-maintainers-guide.md §2 rewritten — role-account ownership model, "why we use it" rationale per service, stale migration notes updated, GitHub repo URL corrected to PDT-tech org
 
 ### Session 26 Priorities
-1. Photo uploader and Music Library upload/delete — end-to-end test now that Netlify is unblocked (reentry sequence in pdt-photo-feature.md; verify env vars first)
-2. Sunday HTML doc sync pass — pdt-tech-maintainers-guide.html sync with updated markdown
-3. Google Workspace billing check — May 28 (tickler on Kevin's calendar; do not surface before then)
+1. Sunday HTML doc sync pass — pdt-tech-maintainers-guide.html sync with updated §2 markdown (role-account ownership model, "why we use it" per service, GitHub URL corrected to PDT-tech org)
+2. Google Workspace billing check — May 28 (tickler on Kevin's calendar; do not surface before then)
 
 ### Deferred (do not pick up unless Kevin raises)
 - Responsive width fix on carousel (low priority)

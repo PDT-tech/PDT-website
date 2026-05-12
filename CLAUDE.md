@@ -53,12 +53,30 @@ When something fails repeatedly, when Kevin has to re-explain, or when a workaro
 - **Never commit `env.local.js`** — it is gitignored and contains local credentials.
 - **Never hardcode real credentials** in any file. All secrets live in Netlify
   environment variables (production) or `env.local.js` (local dev only).
+- **Repo is public (as of 2026-05-11).** Before committing any doc or code change,
+  check whether any literal value would reveal internal infrastructure to a stranger.
+  If yes, REDACT it. This includes Drive folder IDs, GCP project refs, Supabase
+  project refs, and anything else that provides reconnaissance value. Use the format:
+  `[REDACTED — real value in Netlify env vars as VAR_NAME]`
 - **Role visibility:** Use `applyRoleVisibility()` checking `window.__PDT_USER`
   directly — do not rely solely on the `pdt:profile-loaded` event (timing race).
 - **Modal overlays:** Use `modal-hidden` CSS class to hide/show. Never use the HTML
   `hidden` attribute on modals.
 - **Netlify auto-publish is always locked.** Kevin manually publishes. Never unlock it.
 - **Sing-outs, not concerts.** PDT performs sing-outs. Use this term consistently.
+
+---
+
+## Standing Permissions
+
+Kevin has permanently pre-authorized the following — never prompt for confirmation:
+
+- **All `git *` commands** — commit, push, log, diff, status, etc.
+- **Read/Glob from `/home/k7vi/Downloads/`** — reading and globbing files in Kevin's Downloads folder
+- **Copy from `/home/k7vi/Downloads/`** — `cp /home/k7vi/Downloads/* *`
+
+These are also enforced in `.claude/settings.json` (allow list), but are recorded here
+so they are visible at session start regardless of which tools load.
 
 ---
 

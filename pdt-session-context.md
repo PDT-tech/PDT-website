@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 22 — Photo upload/curation pipeline fully tested and live; #014/#015 closed; GitHub Actions HEIC workflow re-enabled; DWD scope fix applied to all three photo Edge Functions)
+**Last updated:** 2026-05-12 (Session 23 — Carousel re-enabled; DWD scope bug fixed in drive-music.js; #079 and #080 closed)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -91,12 +91,12 @@ All member portal features are live and functional:
 
 ### Phase 2 — Public Site ✅ Complete
 All public pages live:
-- index.html (Home — carousel present but suppressed pending #080)
+- index.html (Home — carousel live, positioned between WHO WE ARE and UPCOMING SING-OUTS)
 - about.html
 - performances.html (with Netlify booking inquiry form)
 - join.html
 - music.html
-- friends.html (carousel suppressed pending #080)
+- friends.html (with live Facebook page link; carousel live)
 - contact.html
 - 404.html
 
@@ -124,18 +124,22 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
 | 071 | Calendar/Events Option C refactor — dedicated session, after HC sign-off |
-| 079 | Re-enable carousel on index.html and friends.html — blocked on #080 |
-| 080 | Fix carousel vertical position in index.html markup (between WHO WE ARE and UPCOMING SING-OUTS) — must be done before #079 |
 | 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
 | 085 | Music Library: show file extension on PDF file rows to distinguish arrangement files from learning track filenames |
 
-### Session 23 Priorities (in order)
-1. **#080** — Fix carousel vertical position in `index.html` markup (between WHO WE ARE and UPCOMING SING-OUTS)
-2. **#079** — Re-enable carousel on `index.html` and `friends.html` (remove display:none)
-3. **Upload modal event pre-population** — when filter dropdown has an event selected, opening "+ Upload Photos" should initialize the modal event dropdown to match instead of defaulting to "General / No specific event"
-4. **Admin Drive folder import tool** — admin pastes a Drive folder ID, sees file list, selects event association, confirms; creates `photo_uploads` rows for existing Drive files (no re-upload). Needed because photos are sometimes uploaded directly to Drive (e.g. `/Photos/2026-05-01 Devine Furniture/`)
-5. **#085** — Music Library: show file extension on PDF file rows
+### Session 23 Completed
+- **#080** ✅ — Carousel moved to correct position in index.html (between WHO WE ARE and UPCOMING SING-OUTS)
+- **#079** ✅ — Carousel re-enabled on index.html and friends.html; max-width: var(--max-width), margin: 0 auto
+- **Carousel DWD scope bug** ✅ — drive-music.js getAccessToken now uses `drive` scope when subject is non-null (DWD path), `drive.readonly` otherwise. Root cause: Workspace Admin DWD grant covers `drive` but not `drive.readonly` as a distinct scope string.
+- **pdt-conventions.md** ✅ — claude.ai/CC division of responsibility documented
+
+### Session 24 Priorities (in order)
+1. **P1 — Event dropdown bug** — Two events named "FIRST FRIDAY Sing-out" with different dates; Feb 1st sing-out missing from dropdown. Investigate deduplication/keying issue in dropdown population code.
+2. **P1 — Upload status message** — (a) Stale status ("Uploading N of N") persists when dialog reopens; clear on dialog init. (b) Pre-upload label should read "Ready to upload N photos", switching to "Uploading X of Y..." during upload.
+3. **Upload modal event pre-population** — When filter dropdown has an event selected, opening "+ Upload Photos" should initialize modal event dropdown to match.
+4. **Admin Drive folder import tool** — Admin pastes Drive folder ID, sees file list, selects event association, confirms; creates photo_uploads rows for existing Drive files (no re-upload).
+5. **#085** — Music Library: show file extension on PDF file rows.
 
 ### Deferred Items
 - **ZIP photo import** — client-side extraction via `fflate`; browser unzips, feeds individual files into existing upload pipeline sequentially; no Edge Function changes needed; existing 8-file limit and progress counter apply naturally. Build when demand warrants.

@@ -641,7 +641,7 @@
         function setNormal () {
           row.innerHTML = `
             <div class="file-icon ${type}">${type.toUpperCase()}</div>
-            <span class="file-name" title="${escHtml(file.name)}">${escHtml(file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,''))}</span>
+            <span class="file-name" title="${escHtml(file.name)}">${type === 'pdf' ? escHtml(file.name) : escHtml(file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,''))}</span>
             <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">${type === 'pdf' ? 'Open' : 'Download'}</a>
             ${isAdmin ? `<button class="file-delete-btn" title="Delete file">${trashSvg}</button>` : ''}`
           if (isAdmin) {

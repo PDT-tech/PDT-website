@@ -2,7 +2,27 @@
 
 **Archive of completed session logs.**
 **Current state is in `pdt-session-context.md`.**
-**Last entry: Session 19 — 2026-05-04**
+**Last entry: Session 21 — 2026-05-11**
+
+---
+
+## Session 21 — 2026-05-11
+
+- ✅ Netlify account migration (#083) resolved via Option B — GitHub repo rebound
+  to kevin36v personal Netlify account; repo made public on GitHub; old two-var
+  Netlify snippet injection deleted; inject-env.js is now sole env var injection
+  mechanism
+- ✅ Credential audit performed before making repo public — three real Drive folder
+  IDs redacted from pdt-decisions.md and pdt-tech-maintainers-guide.md; all else clean
+- ✅ Music Library upload/delete feature (#083 blocker) deployed and fully tested —
+  all five test cases passed (create folder, upload file, duplicate dedup, delete file,
+  wrong file type rejection)
+- ✅ admin role added to Music Library upload/delete gate (was musical_director + tech only)
+- ✅ Service account impersonation fix applied to drive-music-upload.js (same pattern
+  as upload-photo.js — sub claim set to tech@pdtsingers.org)
+- ✅ Netlify function cache-busting added for all write operations (create, upload, delete)
+- ✅ Upload modal now requires explicit folder selection — no pre-populated default
+- ✅ Issue #085 opened — Music Library: show file extension on PDF file rows
 
 ---
 

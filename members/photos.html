@@ -104,13 +104,19 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="upload-file-input">
-            Upload these photos <span class="form-hint">(JPEG or HEIC, up to 8):</span>
+            Upload these photos <span class="form-hint">(JPEG or HEIC):</span>
           </label>
           <input type="file" id="upload-file-input" class="form-input"
                  accept="image/jpeg,image/heic" multiple>
         </div>
         <p id="upload-error" class="form-error modal-hidden" style="margin-top: var(--space-xs);"></p>
         <p id="upload-progress" class="form-hint modal-hidden" style="margin-top: var(--space-xs);"></p>
+        <div class="form-group pdt-admin-only" style="display:none">
+          <label class="photos-filter-check-label">
+            <input type="checkbox" id="upload-bulk-override">
+            Upload more than 8 photos (admin only)
+          </label>
+        </div>
         <div class="post-modal-actions">
           <button type="submit" class="btn-primary btn-forest" id="upload-submit">Upload</button>
           <button type="button" class="btn-secondary" id="upload-cancel">Cancel</button>
@@ -426,8 +432,12 @@
     const errEl  = document.getElementById('upload-error')
     const progEl = document.getElementById('upload-progress')
     const files  = Array.from(e.target.files || [])
-    if (files.length > 8) {
-      errEl.textContent = 'Please select up to 8 photos at a time.'
+    const limit  = (window.__PDT_USER?.role === 'admin' &&
+                   document.getElementById('upload-bulk-override').checked) ? 100 : 8
+    if (files.length > limit) {
+      errEl.textContent = limit === 100
+        ? 'Please select up to 100 photos at a time.'
+        : 'Please select up to 8 photos at a time.'
       errEl.classList.remove('modal-hidden')
       progEl.classList.add('modal-hidden')
       e.target.value = ''
@@ -442,7 +452,11 @@
       return
     }
     errEl.classList.add('modal-hidden')
-    progEl.textContent = `Ready to upload ${files.length} photo${files.length === 1 ? '' : 's'}`
+    if (files.length > 8 && document.getElementById('upload-bulk-override').checked) {
+      progEl.textContent = 'Large upload — keep this tab open until complete.'
+    } else {
+      progEl.textContent = `Ready to upload ${files.length} photo${files.length === 1 ? '' : 's'}`
+    }
     progEl.classList.remove('modal-hidden')
   })
 

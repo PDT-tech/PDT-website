@@ -1,7 +1,7 @@
 # PDT Singers — Architecture & Design Decision Log
 # Owned by Kevin + claude.ai. Updated in chat; re-uploaded to Project Memory when changed.
 # CC never modifies this file.
-# Last updated: 2026-05-04
+# Last updated: 2026-05-13
 
 ---
 
@@ -389,3 +389,49 @@ If this is revisited: The forcing function would be if non-admin members are eve
 **Rationale:** The ZIP flow was motivated by the need to upload large batches of event photos without hitting the 8-file cap. The admin bulk override solves the same problem more simply: admin unchecks locally, selects up to 100 JPEG/HEIC files, uploads sequentially through the existing pipeline. No new parsing logic, no fflate dependency, no ZIP edge cases (nested folders, non-image files, macOS __MACOSX artifacts). The constraint is JPEG/HEIC only (already enforced by file picker validation), which eliminates the file-type ambiguity that makes ZIP contents unpredictable. Direct Drive upload by non-admins remains unsupported by policy — the portal uploader is the only sanctioned write path for all non-admin roles.
 
 Standing rule: Direct write access to Drive /Photos/ is admin-only. All other roles upload exclusively through the member portal uploader.
+
+---
+
+## 2026-05-13 — Supabase migration boilerplate: explicit GRANTs required
+
+**Question:** What SQL must every new `CREATE TABLE` migration include to ensure
+Data API access after Supabase's October 30, 2026 enforcement deadline?
+
+**Decision:** Every migration that creates a table in the `public` schema must
+include three explicit GRANT statements and `ENABLE ROW LEVEL SECURITY` before
+any policies are defined. This is non-negotiable boilerplate — omitting it will
+cause PostgREST 42501 errors after October 30.
+
+**Required boilerplate (after every `CREATE TABLE`):**
+
+```sql
+-- Required: explicit grants for Data API access (enforced 2026-10-30)
+grant select on public.your_table to anon;
+grant select, insert, update, delete on public.your_table to authenticated;
+grant select, insert, update, delete on public.your_table to service_role;
+
+-- RLS (always paired with grants)
+alter table public.your_table enable row level security;
+
+-- Policies follow...
+```
+
+**Adjust grants to match actual access requirements** — e.g., if `anon` should
+never read the table, omit that grant. The boilerplate above is the common case
+for member-facing tables; tighten as needed per table.
+
+**Backfill:** Issue #087 tracks the audit and migration to add missing grants to
+all existing tables (profiles, events, absences, event_attendance, photo_uploads,
+posts). Complete before 2026-09-01; hard deadline 2026-10-30.
+
+**Pending migrations:** Verify that `20260426_photo_uploads.sql` and
+`20260426_photo_uploads_carousel_file_id.sql` include these grants before
+running them post-Netlify-unblock. If missing, add grants in a follow-on
+migration rather than editing the original files.
+
+**Rationale:** Supabase announced (May 2026) that new projects created after
+May 30 will not expose `public` schema tables to the Data API by default.
+Existing projects are enforced October 30. Our existing migrations rely on
+Supabase's legacy implicit grants and will break at enforcement. Front-loading
+grants in every migration from this point forward eliminates the failure mode
+permanently.

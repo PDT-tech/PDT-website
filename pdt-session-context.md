@@ -157,6 +157,11 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 
 ### Session 27 — Completed ✅
 - ✅ Netlify account transfer to tech@pdtsingers.org complete (case 561988) — #083 fully closed
+- ✅ Login flow: OTP lifetime extended to 1800s (30 min) in Supabase Auth settings
+- ✅ Login flow: `_pendingEmail` persisted to localStorage — fixes "invalid code" error caused by navigating away to check email; auto-restores code entry UI on return
+- ✅ From address changed from noreply@ to tech@pdtsingers.org in Supabase SMTP settings
+- ✅ Root cause identified for Ray/Sam login failures: navigation away from login page destroyed `_pendingEmail` JS variable; Comcast batch-delayed email delivery compounded the issue; both addressed by above fixes
+- ✅ #089 opened — verify SPF/DKIM/DMARC records in Resend dashboard
 - ✅ Calendar absence modal z-index / click-through bug fixed
   Root cause: `.cal-detail-overlay` and `.post-modal-overlay` both had `z-index: 200`;
   DOM order gave `#event-detail-modal` the win, blocking `#absence-modal`.

@@ -418,9 +418,9 @@ on next load — no code changes, no deploy needed.
 
 Login codes (6-digit OTP) are sent via Resend (resend.com), wired into Supabase SMTP.
 
-**From address:** noreply@pdtsingers.org  
+**From address:** tech@pdtsingers.org  
 **Resend domain:** pdtsingers.org — verified April 2026  
-**OTP expiry:** 10 minutes / 600 seconds (confirmed in Supabase → Authentication → Settings)  
+**OTP expiry:** 30 minutes / 1800 seconds (Supabase → Authentication → Configuration)  
 **Template:** Supabase dashboard → Authentication → Email Templates → Magic Link (code display template)
 
 **Login flow:**
@@ -444,6 +444,12 @@ If members report not receiving login codes:
 2. Ask member to check spam folder
 3. Verify their email address in Supabase matches exactly what they're entering
 4. Confirm their account has `is_active = true` in the profiles table
+
+If member reports "invalid code" even with a fresh code:
+- Confirm they did not navigate away from the login tab before entering the code.
+  The login page now restores state from localStorage, but only if they return to
+  pdtsingers.org/login — opening a new tab or a different browser loses the session.
+- Comcast and some ISPs batch-delay email delivery; the 30-minute OTP window accommodates this.
 
 **Session lifetime:**
 - Access token: 1 hour (Supabase default)

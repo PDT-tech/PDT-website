@@ -145,7 +145,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ Decisions logged — flat /Photos/ folder rationale; ZIP import retired; admin bulk upload replaces both
 
 ### Session 25 — Completed ✅
-- ✅ Netlify migration blocker resolved — repo rebound to PDT-tech GitHub org (2026-05-12); account transfer to tech@ still pending Netlify support (case 561988) but not blocking
+- ✅ Netlify migration blocker resolved — repo rebound to PDT-tech GitHub org (2026-05-12)
 - ✅ Moss Egli onboarding — confirmed complete (onboarded April 2026); removed from all backlog items
 - ✅ Succession planning resolved — role-account strategy documented: tech@ is primary, president@ is backup; treasurer@ planned as low-priority addition; maintainers guide is authoritative reference
 - ✅ pdt-tech-maintainers-guide.md §2 rewritten — role-account ownership model, "why we use it" rationale per service, stale migration notes updated, GitHub repo URL corrected to PDT-tech org
@@ -156,6 +156,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ #071 Option C — events.html rewritten as calendar-driven view; public_notes column added to events table; board_meeting events included; calendar form updated with Public description field; cancelled event badge; data migration run (2 events posts migrated and retired); Moss workflow doc added (pdt-moss-events-guide.md)
 
 ### Session 27 — Completed ✅
+- ✅ Netlify account transfer to tech@pdtsingers.org complete (case 561988) — #083 fully closed
 - ✅ Calendar absence modal z-index / click-through bug fixed
   Root cause: `.cal-detail-overlay` and `.post-modal-overlay` both had `z-index: 200`;
   DOM order gave `#event-detail-modal` the win, blocking `#absence-modal`.

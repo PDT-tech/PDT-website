@@ -171,6 +171,9 @@
     linkError.hidden = false
   }
 
+  let _pendingEmail  = ''
+  let _cooldownTimer = null
+
   // Check for an existing session before showing anything.
   // state-form starts hidden in HTML so there's no flash while this resolves.
   const session = await getSession()
@@ -179,7 +182,22 @@
   } else if (params.get('reason') === 'inactive') {
     showState('inactive')
   } else {
-    showState('form')
+    const _storedEmail = localStorage.getItem('pdt_pending_email')
+    const _storedTs    = parseInt(localStorage.getItem('pdt_pending_email_ts') || '0', 10)
+    const _thirtyMin   = 30 * 60 * 1000
+    if (_storedEmail && (Date.now() - _storedTs) < _thirtyMin) {
+      _pendingEmail = _storedEmail
+      document.getElementById('verify-email-display').textContent = _storedEmail
+      document.getElementById('otp-input').value  = ''
+      document.getElementById('otp-error').hidden = true
+      showState('verify')
+    } else {
+      if (_storedEmail) {
+        localStorage.removeItem('pdt_pending_email')
+        localStorage.removeItem('pdt_pending_email_ts')
+      }
+      showState('form')
+    }
   }
 
   // SIGNED_IN fires for both magic link callbacks and OTP verifyOtp success.
@@ -204,9 +222,6 @@
   const submitBtn   = document.getElementById('submit-btn')
   const emailError  = document.getElementById('email-error')
   const submitError = document.getElementById('submit-error')
-
-  let _pendingEmail  = ''
-  let _cooldownTimer = null
 
   function startCooldown () {
     let remaining = 60
@@ -284,6 +299,8 @@
       }
 
       _pendingEmail = email
+      localStorage.setItem('pdt_pending_email', email)
+      localStorage.setItem('pdt_pending_email_ts', Date.now().toString())
       document.getElementById('verify-email-display').textContent = email
       document.getElementById('otp-input').value = ''
       document.getElementById('otp-error').hidden = true
@@ -316,12 +333,16 @@
     })
 
     if (error) {
+      localStorage.removeItem('pdt_pending_email')
+      localStorage.removeItem('pdt_pending_email_ts')
       otpError.textContent  = 'Invalid or expired code. Please request a new one.'
       otpError.hidden       = false
       verifyBtn.textContent = 'Verify code'
       verifyBtn.disabled    = false
       return
     }
+    localStorage.removeItem('pdt_pending_email')
+    localStorage.removeItem('pdt_pending_email_ts')
     // onAuthStateChange(SIGNED_IN) handles the redirect
   })
 

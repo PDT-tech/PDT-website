@@ -191,29 +191,6 @@
     </div>
   </div>
 
-  <!-- ABSENCE NOTE MODAL -->
-  <div class="post-modal-overlay modal-hidden" id="absence-modal">
-    <div class="post-modal" style="max-width: 420px;">
-      <div class="post-modal-header">
-        <h2 class="post-modal-title">Mark Absence</h2>
-        <button class="post-modal-close" id="absence-modal-close">&times;</button>
-      </div>
-      <form id="absence-form">
-        <div class="form-group">
-          <label class="form-label" for="absence-note">
-            Reason <span class="form-hint">(optional)</span>
-          </label>
-          <input type="text" id="absence-note" class="form-input"
-                 placeholder="e.g. vacation, doctor, work">
-        </div>
-        <div class="post-modal-actions">
-          <button type="button" class="btn-secondary" id="absence-modal-cancel">Cancel</button>
-          <button type="submit" class="btn-primary btn-forest" id="absence-modal-save">Confirm absence</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- EVENT DETAIL MODAL -->
   <div class="cal-detail-overlay modal-hidden" id="event-detail-modal">
     <div class="cal-detail-card" id="event-detail-card">
@@ -688,6 +665,7 @@
   document.getElementById('dm-mark-absent-btn').addEventListener('click', () => {
     document.getElementById('absence-note').value = ''
     document.getElementById('absence-modal').classList.remove('modal-hidden')
+    document.getElementById('event-detail-modal').style.pointerEvents = 'none'
   })
 
   document.getElementById('absence-form').addEventListener('submit', async (e) => {
@@ -891,6 +869,7 @@
 
   function closeAbsenceModal () {
     document.getElementById('absence-modal').classList.add('modal-hidden')
+    document.getElementById('event-detail-modal').style.pointerEvents = ''
   }
   document.getElementById('absence-modal-close').addEventListener('click', closeAbsenceModal)
   document.getElementById('absence-modal-cancel').addEventListener('click', closeAbsenceModal)
@@ -994,5 +973,28 @@
 </script>
 
 <script src="/js/nav-member.js"></script>
+
+<!-- ABSENCE NOTE MODAL — body-level so it renders above event detail overlay -->
+<div class="post-modal-overlay modal-hidden" id="absence-modal">
+  <div class="post-modal" style="max-width: 420px;">
+    <div class="post-modal-header">
+      <h2 class="post-modal-title">Mark Absence</h2>
+      <button class="post-modal-close" id="absence-modal-close">&times;</button>
+    </div>
+    <form id="absence-form">
+      <div class="form-group">
+        <label class="form-label" for="absence-note">
+          Reason <span class="form-hint">(optional)</span>
+        </label>
+        <input type="text" id="absence-note" class="form-input"
+               placeholder="e.g. vacation, doctor, work">
+      </div>
+      <div class="post-modal-actions">
+        <button type="button" class="btn-secondary" id="absence-modal-cancel">Cancel</button>
+        <button type="submit" class="btn-primary btn-forest" id="absence-modal-save">Confirm absence</button>
+      </div>
+    </form>
+  </div>
+</div>
 </body>
 </html>

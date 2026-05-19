@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-12 (Session 26 — #071 Option C complete; cross-doc currency audit)
+**Last updated:** 2026-05-18 (Session 27 — calendar absence modal z-index / click-through fix)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -155,7 +155,19 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - ✅ Issues closed — #026 (profile already correct), #029, #030 (email forwarding: ops procedure, documented in maintainers guide §2), #061 (GitHub transfer already done), #064, #068 (moot under Option C), #071 (Option C implemented)
 - ✅ #071 Option C — events.html rewritten as calendar-driven view; public_notes column added to events table; board_meeting events included; calendar form updated with Public description field; cancelled event badge; data migration run (2 events posts migrated and retired); Moss workflow doc added (pdt-moss-events-guide.md)
 
-### Session 27 Priorities
+### Session 27 — Completed ✅
+- ✅ Calendar absence modal z-index / click-through bug fixed
+  Root cause: `.cal-detail-overlay` and `.post-modal-overlay` both had `z-index: 200`;
+  DOM order gave `#event-detail-modal` the win, blocking `#absence-modal`.
+  Three-part fix:
+  (1) `css/calendar.css` — `.cal-detail-overlay` z-index: 200 → 150 (sits between nav
+      at 100 and full-screen modals at 200)
+  (2) `members/calendar.html` — `#absence-modal` hoisted from inside `<main>` to direct
+      `<body>` child after scripts; eliminates ancestor stacking context risk
+  (3) `members/calendar.html` JS — `pointer-events: none` applied to `#event-detail-modal`
+      when absence modal opens; cleared on `closeAbsenceModal()` (belt-and-suspenders)
+
+### Session 27 Remaining Priorities
 1. Polling/voting feature — design discussion (spec drafted Session 19, not yet built)
 2. Sunday HTML doc sync — pdt-tech-maintainers-guide.html (deferred from Session 26; do on a Sunday)
 

@@ -170,6 +170,25 @@ modal.setAttribute('hidden', '')
 
 ---
 
+## Modal Z-Index Layering
+
+Established z-index hierarchy for `calendar.html` (apply consistently to any new modals):
+
+| Layer | z-index | Elements |
+|-------|---------|----------|
+| Navigation | 100 | Site nav, sticky headers |
+| Event detail overlay | 150 | `.cal-detail-overlay` (`#event-detail-modal`) |
+| Full-screen modals | 200 | `.post-modal-overlay`, `#absence-modal`, and all other top-level modals |
+
+**Rules:**
+- Full-screen modals must be **direct children of `<body>`** — never nested inside another
+  positioned element. Nesting creates a stacking context that caps the child's effective
+  z-index regardless of its declared value.
+- When a full-screen modal is open, apply `pointer-events: none` to any lower-z-index
+  overlay that could intercept clicks. Clear it when the modal closes.
+
+---
+
 ## Netlify Deploy
 
 Auto-publishing is **locked**. Pushes to GitHub do not auto-deploy.

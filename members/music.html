@@ -619,9 +619,6 @@
       document.addEventListener('pdt:profile-loaded', (e) => applyVoicePill(e.detail))
     }
 
-    // ── API — local dev uses Drive directly; production uses Netlify function ──
-    const IS_LOCAL = ['localhost','127.0.0.1'].includes(window.location.hostname)
-
     // Cache the session token for the page lifetime
     function escHtml (s) {
       return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -636,14 +633,6 @@
     }
 
     async function fetchFolders (bustCache = false) {
-      if (IS_LOCAL) {
-        const key    = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
-        const folder = window.__PDT_ENV?.GOOGLE_DRIVE_MUSIC_FOLDER_ID || ''
-        const q = encodeURIComponent(`'${folder}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`)
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&orderBy=name&key=${key}`)
-        if (!res.ok) throw new Error(`Drive ${res.status}`)
-        return (await res.json()).files || []
-      }
       const url = '/.netlify/functions/drive-music?type=folders' + (bustCache ? `&_t=${Date.now()}` : '')
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${await getToken()}` }
@@ -653,13 +642,6 @@
     }
 
     async function fetchFiles (folderId, bustCache = false) {
-      if (IS_LOCAL) {
-        const key = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
-        const q   = encodeURIComponent(`'${folderId}' in parents and trashed=false`)
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,modifiedTime)&orderBy=name&key=${key}`)
-        if (!res.ok) throw new Error(`Drive ${res.status}`)
-        return (await res.json()).files || []
-      }
       const url = `/.netlify/functions/drive-music?type=files&folderId=${folderId}` + (bustCache ? `&_t=${Date.now()}` : '')
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${await getToken()}` }
@@ -670,14 +652,6 @@
 
     // Stream the file through the Edge Function proxy — no token in URL, no size ceiling.
     async function proxyDownload (fileId, filename) {
-      if (IS_LOCAL) {
-        const a = Object.assign(document.createElement('a'), {
-          href: `https://drive.google.com/uc?export=download&id=${fileId}`,
-          download: filename, target: '_blank'
-        })
-        document.body.appendChild(a); a.click(); document.body.removeChild(a)
-        return
-      }
       const res = await fetch(
         `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
         { headers: { Authorization: `Bearer ${await getToken()}` } }

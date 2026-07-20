@@ -36,6 +36,8 @@ CC is the sole maintainer of `pdt-issues.md` in the repo root.
 
 When something fails repeatedly, when Kevin has to re-explain, or when a workaround is found for a platform/tools limitation, add a one-line bullet here. Keep each bullet under 15 words. No explanations. Only add things that will save time in future sessions.
 
+- Netlify deploy has a separate Publish step; unpublished builds don't go live.
+
 
 ## Commit Discipline
 

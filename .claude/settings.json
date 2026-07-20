@@ -7,7 +7,14 @@
       "Glob(/home/k7vi/Downloads/*)",
       "Read(/var/home/k7vi/PDT-website/*)",
       "Edit",
-      "Write"
+      "Write",
+      "Bash"
+    ],
+    "ask": [
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r *)",
+      "Bash(sudo *)"
     ]
   }
 }

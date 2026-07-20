@@ -848,6 +848,10 @@
               ${nameHtml}
               <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">Open</a>
               ${delHtml}`
+            row.querySelector('.file-download-link').addEventListener('click', (e) => {
+              e.preventDefault()
+              proxyDownload(file.id, file.name)
+            })
           } else {
             // Audio row: ▶ Play button + ⋮ actions menu (Download). #095
             row.innerHTML = `
@@ -930,13 +934,6 @@
 
         setNormal()
         grid.appendChild(row)
-      })
-
-      grid.addEventListener('click', async (e) => {
-        const link = e.target.closest('.file-download-link')
-        if (!link) return
-        e.preventDefault()
-        await proxyDownload(link.dataset.fileId, link.dataset.filename)
       })
     }
 

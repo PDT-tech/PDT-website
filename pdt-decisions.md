@@ -465,3 +465,30 @@ via CSS. Rationale: mobile browsers (iOS Safari, Android Chrome) do not handle
 forced-download responses cleanly — iOS triggers an app-picker, Android saves a
 file to device. Mobile members use the Play button and Recently Played view
 instead. Revisit if members request bulk mobile download capability.
+
+---
+
+## 2026-07 — Music Library cache queue shape: add `filename`
+
+The `pdt-music-cache-queue` localStorage entry shape (introduced with the #095
+audio player) gains a `filename` field. Canonical shape is now:
+
+```js
+{
+  fileId: string,        // Drive file id; cache-key component
+  modifiedTime: string,  // ISO; cache-key component + staleness check
+  filename: string,      // original file name WITH extension (for the download/stream URL)
+  songName: string,      // folder name, for Recently Played display
+  trackName: string,     // filename display-formatted (extension stripped)
+  playedAt: number       // Date.now() at play time, for sort order
+}
+```
+
+**Why:** Recently Played (#092) rebuilds Play buttons from queue entries alone
+and calls the shared `playTrack()`, which needs the true `filename` (with
+extension) for the `/api/music-download` request. The queue previously stored
+only `trackName` (extension-stripped display name), so a queue-sourced play had
+no correct filename. Playback still succeeded (the Edge Function streams by
+`fileId` and the cache key is `fileId+modifiedTime`), but the request carried
+`filename=undefined`. Storing `filename` closes the gap. `playTrack()` now
+writes all six fields on every play.

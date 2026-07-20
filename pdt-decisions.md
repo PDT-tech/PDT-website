@@ -435,3 +435,33 @@ Existing projects are enforced October 30. Our existing migrations rely on
 Supabase's legacy implicit grants and will break at enforcement. Front-loading
 grants in every migration from this point forward eliminates the failure mode
 permanently.
+
+---
+
+## 2026-07 — Migration authoring standard: explicit GRANTs required
+
+Per Supabase policy change (enforcement 2026-10-30, see issue #087), every
+`CREATE TABLE` migration must include explicit GRANT statements after the
+`ENABLE ROW LEVEL SECURITY` line. Required boilerplate:
+
+```sql
+GRANT SELECT ON public.<table> TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.<table> TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.<table> TO service_role;
+```
+
+Apply to all future migrations. Existing tables covered by the #087 audit.
+Also verify that `20260426_photo_uploads.sql` and
+`20260426_photo_uploads_carousel_file_id.sql` include these grants before any
+re-run is needed.
+
+---
+
+## 2026-07 — Music Library: bulk download buttons hidden on mobile
+
+The "My Tracks + Sheet Music" and "Download All" bulk action buttons
+(`div.download-actions` inside each song panel) are hidden on mobile viewports
+via CSS. Rationale: mobile browsers (iOS Safari, Android Chrome) do not handle
+forced-download responses cleanly — iOS triggers an app-picker, Android saves a
+file to device. Mobile members use the Play button and Recently Played view
+instead. Revisit if members request bulk mobile download capability.

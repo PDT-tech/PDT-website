@@ -90,7 +90,7 @@ async function listFolders (token, musicFolderId) {
 
 async function listFiles (token, folderId) {
   const q   = `'${folderId}' in parents and trashed=false`
-  const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name,mimeType)&orderBy=name`
+  const url = `${DRIVE_BASE}?q=${encodeURIComponent(q)}&fields=files(id,name,mimeType,modifiedTime)&orderBy=name`
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` }
   })

@@ -543,7 +543,7 @@
       if (IS_LOCAL) {
         const key = window.__PDT_ENV?.GOOGLE_DRIVE_API_KEY || ''
         const q   = encodeURIComponent(`'${folderId}' in parents and trashed=false`)
-        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType)&orderBy=name&key=${key}`)
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,modifiedTime)&orderBy=name&key=${key}`)
         if (!res.ok) throw new Error(`Drive ${res.status}`)
         return (await res.json()).files || []
       }

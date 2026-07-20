@@ -364,6 +364,67 @@
     .file-del-cancel { background: #f0f0f0; color: #2a2a2a; border: 1px solid rgba(0,0,0,0.2); }
     .file-del-cancel:hover { background: rgba(0,0,0,0.05); }
     .file-delete-error { font-family: var(--font-ui); font-size: var(--text-xs); color: #c0392b; padding: 2px 8px 4px; }
+
+    /* Music Library — audio player (#095) */
+    .file-play-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--sky-deep);
+      font-size: 1rem;
+      min-width: 2rem;
+      text-align: center;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .file-play-btn:disabled { opacity: 0.5; cursor: default; }
+    .file-audio-player {
+      display: block;
+      width: 100%;
+      margin: 4px 0 8px 0;
+    }
+    .file-actions-menu { position: relative; display: inline-block; flex-shrink: 0; }
+    .file-menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 1.1rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .file-menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      z-index: 50;
+      min-width: 120px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .file-menu-dropdown.open { display: block; }
+    .file-menu-download {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .file-menu-download:hover { background: rgba(0,0,0,0.04); }
+    @media (prefers-color-scheme: dark) {
+      .file-menu-download:hover { background: rgba(255,255,255,0.06); }
+    }
+    @media (max-width: 600px) {
+      .download-actions  { display: none; }
+      .file-actions-menu { display: none; }
+    }
   </style>
 </head>
 <body class="members-page">
@@ -584,6 +645,140 @@
       files.forEach((f, i) => setTimeout(() => proxyDownload(f.id, f.name), i * 400))
     }
 
+    // ── Audio cache (Cache API) — #095 ───────────────────────
+    const CACHE_NAME = 'pdt-music-v1'
+    const QUEUE_KEY  = 'pdt-music-cache-queue'
+    const QUEUE_CAP  = 10
+
+    function cacheUrl (fileId, modifiedTime) {
+      return `https://pdt-music-cache/${fileId}/${encodeURIComponent(modifiedTime)}`
+    }
+
+    function getQueue () {
+      try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]') }
+      catch { return [] }
+    }
+
+    function saveQueue (q) {
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(q))
+    }
+
+    async function pushToQueue (entry) {
+      // Option A: remove-if-exists, insert at front, trim tail with eviction
+      let q = getQueue()
+      q = q.filter(e => e.fileId !== entry.fileId)
+      q.unshift(entry)
+      if (q.length > QUEUE_CAP) {
+        const evicted = q.splice(QUEUE_CAP)
+        try {
+          const cache = await caches.open(CACHE_NAME)
+          for (const e of evicted) {
+            await cache.delete(cacheUrl(e.fileId, e.modifiedTime))
+          }
+        } catch { /* eviction failure is non-fatal */ }
+      }
+      saveQueue(q)
+    }
+
+    async function cleanStaleCache (files) {
+      // files: array of {id, modifiedTime} from listing response for this folder
+      const q = getQueue()
+      if (!q.length) return
+      const listingMap = new Map(files.map(f => [f.id, f.modifiedTime]))
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        for (const entry of q) {
+          const currentMT = listingMap.get(entry.fileId)
+          if (currentMT !== undefined && currentMT !== entry.modifiedTime) {
+            await cache.delete(cacheUrl(entry.fileId, entry.modifiedTime))
+          }
+        }
+      } catch { /* non-fatal */ }
+      const cleaned = q.filter(e => {
+        const currentMT = listingMap.get(e.fileId)
+        return currentMT === undefined || currentMT === e.modifiedTime
+      })
+      if (cleaned.length !== q.length) saveQueue(cleaned)
+    }
+
+    async function getOrFetchAudio (fileId, modifiedTime, filename) {
+      const key = cacheUrl(fileId, modifiedTime)
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        const cached = await cache.match(key)
+        if (cached) {
+          return URL.createObjectURL(await cached.blob())
+        }
+      } catch { /* fall through to network */ }
+      const token = await getToken()
+      const url = `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`
+      const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } })
+      if (!res.ok) throw new Error('Download failed')
+      try {
+        const cache = await caches.open(CACHE_NAME)
+        await cache.put(key, res.clone())
+      } catch { /* cache write failure is non-fatal */ }
+      return URL.createObjectURL(await res.blob())
+    }
+
+    // ── Shared audio player state — #095 ─────────────────────
+    let _activeAudio   = null  // current HTMLAudioElement
+    let _activePlayBtn = null  // current ▶/⏸ button
+    let _activeBlobUrl = null  // current objectURL
+
+    function stopActiveAudio () {
+      if (!_activeAudio) return
+      _activeAudio.pause()
+      _activeAudio.src = ''
+      _activeAudio.remove()
+      if (_activeBlobUrl) { URL.revokeObjectURL(_activeBlobUrl); _activeBlobUrl = null }
+      if (_activePlayBtn) { _activePlayBtn.textContent = '▶'; _activePlayBtn.disabled = false }
+      _activeAudio = null
+      _activePlayBtn = null
+    }
+
+    async function playTrack (btn) {
+      const { fileId, modifiedTime, filename, songName, trackName } = btn.dataset
+
+      // Same track button: toggle pause/play via native controls sync
+      if (_activePlayBtn === btn && _activeAudio) {
+        _activeAudio.paused ? _activeAudio.play() : _activeAudio.pause()
+        return
+      }
+
+      stopActiveAudio()
+      btn.textContent = '…'
+      btn.disabled = true
+
+      let src
+      try {
+        src = await getOrFetchAudio(fileId, modifiedTime, filename)
+      } catch {
+        btn.textContent = '▶'
+        btn.disabled = false
+        alert('Playback failed — please try again.')
+        return
+      }
+
+      const audio = document.createElement('audio')
+      audio.controls = true
+      audio.className = 'file-audio-player'
+      audio.src = src
+      btn.closest('.file-row').insertAdjacentElement('afterend', audio)
+
+      _activeAudio   = audio
+      _activePlayBtn = btn
+      _activeBlobUrl = src
+
+      audio.addEventListener('play',  () => { btn.textContent = '⏸'; btn.disabled = false })
+      audio.addEventListener('pause', () => { btn.textContent = '▶'; btn.disabled = false })
+      audio.addEventListener('ended', () => { btn.textContent = '▶'; btn.disabled = false })
+
+      audio.play().catch(() => { btn.textContent = '▶'; btn.disabled = false })
+
+      pushToQueue({ fileId, modifiedTime, songName, trackName, playedAt: Date.now() })
+    }
+
     // ── Helpers ──────────────────────────────────────────────
     const FILE_EXTS = { pdf: 'pdf', mp3: 'mp3', m4a: 'mp3', wav: 'mp3', aiff: 'mp3' }
 
@@ -599,7 +794,7 @@
     }
 
     // ── Render file list ─────────────────────────────────────
-    function renderFiles (files, item) {
+    function renderFiles (files, item, songName) {
       const vp       = window.__PDT_USER?.voice_part
       const pdfs     = files.filter(f => getFileType(f.name) === 'pdf')
       const myTracks = files.filter(f => getFileType(f.name) === 'mp3' && isMyTrack(f.name, vp))
@@ -638,12 +833,64 @@
         const row  = document.createElement('div')
         row.className = `file-row${mine ? ' my-track' : ''}`
 
+        const displayName = type === 'pdf'
+          ? file.name
+          : file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,'')
+
         function setNormal () {
-          row.innerHTML = `
-            <div class="file-icon ${type}">${type.toUpperCase()}</div>
-            <span class="file-name" title="${escHtml(file.name)}">${type === 'pdf' ? escHtml(file.name) : escHtml(file.name.replace(/\.(mp3|m4a|wav|aiff|pdf)$/i,''))}</span>
-            <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">${type === 'pdf' ? 'Open' : 'Download'}</a>
-            ${isAdmin ? `<button class="file-delete-btn" title="Delete file">${trashSvg}</button>` : ''}`
+          const iconHtml = `<div class="file-icon ${type}">${type.toUpperCase()}</div>`
+          const nameHtml = `<span class="file-name" title="${escHtml(file.name)}">${escHtml(displayName)}</span>`
+          const delHtml  = isAdmin ? `<button class="file-delete-btn" title="Delete file">${trashSvg}</button>` : ''
+
+          if (type === 'pdf') {
+            row.innerHTML = `
+              ${iconHtml}
+              ${nameHtml}
+              <a class="file-download-link" href="#" data-file-id="${file.id}" data-filename="${escHtml(file.name)}">Open</a>
+              ${delHtml}`
+          } else {
+            // Audio row: ▶ Play button + ⋮ actions menu (Download). #095
+            row.innerHTML = `
+              ${iconHtml}
+              ${nameHtml}
+              <button class="file-play-btn"
+                data-file-id="${file.id}"
+                data-filename="${escHtml(file.name)}"
+                data-modified-time="${escHtml(file.modifiedTime || '')}"
+                data-song-name="${escHtml(songName || '')}"
+                data-track-name="${escHtml(displayName)}"
+                title="Play">▶</button>
+              <div class="file-actions-menu">
+                <button class="file-menu-btn" title="More actions">⋮</button>
+                <div class="file-menu-dropdown">
+                  <button class="file-menu-download">Download</button>
+                </div>
+              </div>
+              ${delHtml}`
+
+            const playBtn = row.querySelector('.file-play-btn')
+            playBtn.addEventListener('click', () => playTrack(playBtn))
+
+            const menuBtn  = row.querySelector('.file-menu-btn')
+            const dropdown = row.querySelector('.file-menu-dropdown')
+            menuBtn.addEventListener('click', (e) => {
+              e.stopPropagation()
+              const willOpen = !dropdown.classList.contains('open')
+              document.querySelectorAll('.file-menu-dropdown.open').forEach(d => d.classList.remove('open'))
+              if (willOpen) {
+                dropdown.classList.add('open')
+                document.addEventListener('click', function closeOnce () {
+                  dropdown.classList.remove('open')
+                  document.removeEventListener('click', closeOnce)
+                }, { once: true })
+              }
+            })
+            row.querySelector('.file-menu-download').addEventListener('click', () => {
+              dropdown.classList.remove('open')
+              proxyDownload(file.id, file.name)
+            })
+          }
+
           if (isAdmin) {
             row.querySelector('.file-delete-btn').addEventListener('click', setConfirm)
           }
@@ -741,11 +988,12 @@
 
         try {
           const files = await fetchFiles(folder.id, bustCache)
+          cleanStaleCache(files)
           grid.innerHTML = ''
           if (!files.length) {
             grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
           } else {
-            renderFiles(files, item)
+            renderFiles(files, item, folder.name)
           }
           item.dataset.loaded = 'true'
         } catch (err) {
@@ -943,11 +1191,13 @@
               grid.innerHTML = '<div class="panel-loading"><div class="mini-spinner"></div> Loading files…</div>'
               try {
                 const files = await fetchFiles(openFolderId, true)
+                cleanStaleCache(files)
+                const openSongName = openPanel.querySelector('.song-title')?.textContent || ''
                 grid.innerHTML = ''
                 if (!files.length) {
                   grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
                 } else {
-                  renderFiles(files, openPanel)
+                  renderFiles(files, openPanel, openSongName)
                 }
                 openPanel.dataset.loaded = 'true'
               } catch {

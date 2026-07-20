@@ -265,7 +265,7 @@
     }).join('')
   }
 
-  // ── Load upcoming events (all types, time-aware cutoff) ────
+  // ── Load upcoming events (non-rehearsal types, time-aware cutoff) ────
   async function loadUpcomingEvents (containerId) {
     const now     = new Date()
     const today   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
@@ -275,6 +275,7 @@
       .from('events')
       .select('id, title, event_date, start_time')
       .eq('is_cancelled', false)
+      .neq('event_type', 'rehearsal')
       .gte('event_date', today)
       .order('event_date', { ascending: true })
       .order('start_time', { ascending: true })

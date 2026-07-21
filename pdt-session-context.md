@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-05-18 (Session 27 — calendar absence modal z-index / click-through fix)
+**Last updated:** 2026-07-20 (Session 28 — Music Library audio player, Cache API, mobile UX, Member Home reorder)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -39,7 +39,7 @@ NOT affiliated with BHS — state clearly on About page.
   (streaming downloads), `drive-music-upload.js` (Music Library admin writes), `upload-photo.js`,
   `photo-proxy.js`, `curate-photo.js`
 - Source control: **GitHub** — https://github.com/PDT-tech/PDT-website
-- Email (transactional): **Resend** (resend.com) — noreply@pdtsingers.org
+- Email (transactional): **Resend** (resend.com) — tech@pdtsingers.org
 - Email (group): **Google Workspace for Nonprofits** — president@pdtsingers.org (active)
 - Music + Photo files: **Google Workspace Drive** — president@pdtsingers.org, served via service
   account proxy (impersonates tech@pdtsingers.org via domain-wide delegation)
@@ -69,14 +69,17 @@ all repo changes. claude.ai produces new files that don't yet exist; everything 
 a CC prompt. Always commit AND push to origin after changes. Netlify auto-publish is
 always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
+**Deploy budget:** 15 credits per deploy, 20 deploys per month. Queue as much work as
+possible between deploys — never ship a single-issue deploy when more work is ready.
+
 ---
 
-## Current State (as of 2026-05-12)
+## Current State (as of 2026-07-20)
 
 ### Phase 1 — Member Portal ✅ Complete
 All member portal features are live and functional:
-- Login (OTP email code, 10-minute expiry, 60-second cooldown on resend)
-- Member dashboard with role-based card display
+- Login (OTP email code, 30-minute expiry, 1800s TTL; `_pendingEmail` persisted to localStorage)
+- Member dashboard with role-based card display (Quick Links first, Upcoming Events second, Director last)
 - Director's Notes blog (musical_director + admin)
 - Poohbahs' Prattlings blog (admin only)
 - Events blog (events_editor + admin) — with calendar → blog prompts for new/cancelled events
@@ -85,7 +88,8 @@ All member portal features are live and functional:
 - "Can You Be There?" attendance page — two-cluster dropdown UI (sing-outs left, rehearsals right)
 - Admin attendance override page
 - Sing-out attendance census report (admin/director)
-- Music Library (Drive-backed, accordion UI, voice-part sorting, streaming downloads, admin upload/delete live — musical_director + tech + admin roles)
+- Music Library (Drive-backed, accordion UI, voice-part sorting, **audio player with Cache API**,
+  admin upload/delete live — musical_director + tech + admin roles)
 - Member account management (admin-created accounts only)
 - **Member Photos** — upload, gallery, curation, carousel ✅ fully live (#014/#015 closed Session 22)
 
@@ -114,81 +118,65 @@ All public pages live:
 - Duane Lundsten memorial plaque approved
 - Photos Drive folders live: `/Photos/` and `/Photos/Mainpage_Carousel/` under president@pdtsingers.org
 - GitHub Actions HEIC workflow re-enabled ✅ (Session 22)
+- Netlify account transferred to tech@pdtsingers.org ✅ (Session 27, #083 closed)
 
 ### Open Items
-Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
+Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-07-20:
 
 | # | Item |
 |---|------|
-| 026 | Kevin Bier profile: role='member', voice_part=null — should be admin/bass. Fix manually in Supabase. |
 | 028 | Migrate all website tool accounts to tech@pdtsingers.org |
 | 031 | Attendance escalation pipeline — deferred post-launch |
-| 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table (performance/sing-out types, next 90 days) |
-| 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table, same logic as #081 |
+| 081 | POST-V1: Home page UPCOMING SING-OUTS — populate dynamically from events table |
+| 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table |
+| 084 | Supabase account migration to tech@ — pending Supabase support |
+| 086 | Carousel responsive width fix on wide desktop (low priority, cosmetic) |
+| 087 | GRANT audit — existing tables missing explicit grants; soft target 2026-09-01, hard deadline 2026-10-30 |
+| 089 | Verify SPF/DKIM/DMARC DNS records in Resend dashboard |
 
-### Session 23 Completed
-- **#080** ✅ — Carousel moved to correct position in index.html (between WHO WE ARE and UPCOMING SING-OUTS)
-- **#079** ✅ — Carousel re-enabled on index.html and friends.html; max-width: var(--max-width), margin: 0 auto
-- **Carousel DWD scope bug** ✅ — drive-music.js getAccessToken now uses `drive` scope when subject is non-null (DWD path), `drive.readonly` otherwise. Root cause: Workspace Admin DWD grant covers `drive` but not `drive.readonly` as a distinct scope string.
-- **pdt-conventions.md** ✅ — claude.ai/CC division of responsibility documented
+**Next available issue number: #101**
 
-### Session 24 — Completed ✅
-- ✅ Event dropdown 90-day cutoff bug — extended to 180 days; Feb 1st sing-out now visible
-- ✅ Rehearsals excluded from both event dropdowns by default
-- ✅ Future events excluded from both event dropdowns
-- ✅ Upload modal label clarity — "View photos from this event:", "Upload photos for this event:", "Upload these photos (JPEG or HEIC):"
-- ✅ "Show older events" checkbox → "Include events older than 6 months"; correctly excludes future events even when checked
-- ✅ Upload modal pre-populates event from view filter on open
-- ✅ Stale upload status message fixed — cleared on modal open; shows "Ready to upload N photo(s)" on file selection
-- ✅ Admin bulk upload override — #upload-bulk-override checkbox (admin-only, pdt-admin-only class); raises limit 8→100; large-upload warning shown; ZIP import retired
-- ✅ #085 — PDF extension now visible in Music Library file label; audio rows unchanged
-- ✅ Decisions logged — flat /Photos/ folder rationale; ZIP import retired; admin bulk upload replaces both
+### Session 28 — Completed ✅
+- ✅ **#090** — Duplicate event listeners on re-rendered `.file-grid` fixed; PDF rows now use direct click listener
+- ✅ **#092** — Recently Played section live on Music Library: top of page, outside `#library-content`, renders
+  instantly from localStorage; collapsed by default; last 3 tracks sorted by `playedAt`; clicking plays inline
+  via shared `playTrack()` and Cache API (always a cache hit); same-tab refresh wired directly, cross-tab via
+  `storage` event
+- ✅ **#093** — Mobile bulk-download hide decision recorded in `pdt-decisions.md`
+- ✅ **#094** — `modifiedTime` added to `listFiles()` fields in `drive-music.js` and IS_LOCAL branch of
+  `fetchFiles()` in `music.html` (prerequisite for Cache API)
+- ✅ **#095** — Audio player with Cache API shipped: Play button (▶/⏸) replaces Download on MP3 rows; native
+  `<audio controls>` injected below row on play; single shared instance (new play stops prior); Cache API
+  `pdt-music-v1` keyed on `fileId + modifiedTime`; FIFO localStorage queue capped at 10 (Option A re-play
+  bump); stale-key cleanup on panel open; desktop ⋮ menu exposes Download; mobile hides ⋮ and
+  `.download-actions`; resolves iOS iTunes app-picker and Android file-save issues for all members
+- ✅ **#096** — IS_LOCAL dead code removed from `music.html` (declaration + fetchFolders / fetchFiles /
+  proxyDownload branches); local dev via `python3 -m http.server` no longer used or supported
+- ✅ **#097** — Chorus Rehearsal events suppressed from Member Home Upcoming Events block (server-side
+  `.neq('event_type', 'rehearsal')` filter; `event_type` added to query select)
+- ✅ **#098** — Member Home content blocks reordered: Quick Links → Upcoming Events → Latest from the
+  Director (Sunburst / Poohbahs / Admin follow in prior relative order)
+- ✅ **#099** — Quick Links reordered: Music Library → Calendar → Upload Photos → Can You Be There?
+- ✅ **#100** — Member portal nav reordered across all 11 pages: Music Library → Calendar → Photos →
+  Can You Be There? → remaining items; supersedes #091
+- ✅ **#091** — CLOSED, superseded by #100
+- ✅ **#088** — Migration GRANT boilerplate decision recorded in `pdt-decisions.md` (doc-only)
+- ✅ **PII CSV** — `PDT Members (public) - Sheet1.csv` added to `.gitignore`; can no longer be swept
+  into a commit by `git add -A`
+- ✅ **Queue entry shape amended** — `filename` field added to `pdt-music-cache-queue` entries (required
+  by Recently Played play button); decision recorded in `pdt-decisions.md`
 
-### Session 25 — Completed ✅
-- ✅ Netlify migration blocker resolved — repo rebound to PDT-tech GitHub org (2026-05-12)
-- ✅ Moss Egli onboarding — confirmed complete (onboarded April 2026); removed from all backlog items
-- ✅ Succession planning resolved — role-account strategy documented: tech@ is primary, president@ is backup; treasurer@ planned as low-priority addition; maintainers guide is authoritative reference
-- ✅ pdt-tech-maintainers-guide.md §2 rewritten — role-account ownership model, "why we use it" rationale per service, stale migration notes updated, GitHub repo URL corrected to PDT-tech org
-
-### Session 26 — Completed ✅
-- ✅ Cross-doc currency audit — #014 and #015 closed in issues, pdt-photo-feature.md updated to as-built status, session-context architecture diagram completed with all 5 Edge Functions, photo_uploads added to DB tables line
-- ✅ Issues closed — #026 (profile already correct), #029, #030 (email forwarding: ops procedure, documented in maintainers guide §2), #061 (GitHub transfer already done), #064, #068 (moot under Option C), #071 (Option C implemented)
-- ✅ #071 Option C — events.html rewritten as calendar-driven view; public_notes column added to events table; board_meeting events included; calendar form updated with Public description field; cancelled event badge; data migration run (2 events posts migrated and retired); Moss workflow doc added (pdt-moss-events-guide.md)
-
-### Session 27 — Completed ✅
-- ✅ Netlify account transfer to tech@pdtsingers.org complete (case 561988) — #083 fully closed
-- ✅ Login flow: OTP lifetime extended to 1800s (30 min) in Supabase Auth settings
-- ✅ Login flow: `_pendingEmail` persisted to localStorage — fixes "invalid code" error caused by navigating away to check email; auto-restores code entry UI on return
-- ✅ From address changed from noreply@ to tech@pdtsingers.org in Supabase SMTP settings
-- ✅ Root cause identified for Ray/Sam login failures: navigation away from login page destroyed `_pendingEmail` JS variable; Comcast batch-delayed email delivery compounded the issue; both addressed by above fixes
-- ✅ #089 opened — verify SPF/DKIM/DMARC records in Resend dashboard
-- ✅ Calendar absence modal z-index / click-through bug fixed
-  Root cause: `.cal-detail-overlay` and `.post-modal-overlay` both had `z-index: 200`;
-  DOM order gave `#event-detail-modal` the win, blocking `#absence-modal`.
-  Three-part fix:
-  (1) `css/calendar.css` — `.cal-detail-overlay` z-index: 200 → 150 (sits between nav
-      at 100 and full-screen modals at 200)
-  (2) `members/calendar.html` — `#absence-modal` hoisted from inside `<main>` to direct
-      `<body>` child after scripts; eliminates ancestor stacking context risk
-  (3) `members/calendar.html` JS — `pointer-events: none` applied to `#event-detail-modal`
-      when absence modal opens; cleared on `closeAbsenceModal()` (belt-and-suspenders)
-
-### Session 27 Remaining Priorities
+### Session 28 Remaining Priorities
 1. Polling/voting feature — design discussion (spec drafted Session 19, not yet built)
-2. Sunday HTML doc sync — pdt-tech-maintainers-guide.html (deferred from Session 26; do on a Sunday)
+2. Sunday HTML doc sync — `pdt-tech-maintainers-guide.html` (deferred from Session 26)
 
 ### Deferred (do not pick up unless Kevin raises)
 - #086 — Carousel responsive width fix on wide desktop (low priority, cosmetic)
 - See Standing Backlog below.
 
-### Retired This Session
-- ZIP photo import — replaced by admin bulk upload override (100-file cap)
-- Admin Drive folder import tool — obviated by bulk upload override
-
 ### Standing Backlog
-- Supabase account migration — pending support (email suppression issue)
+- Supabase account migration — pending support (#084)
 - Create treasurer@pdtsingers.org in Workspace Admin Console and grant Workspace admin rights (low priority)
-- May 28: verify Workspace nonprofit SKU billing zeroed before May 31 charge date (tickler on Kevin's calendar)
 - Attendance escalation pipeline (#031) — 10-day nudge emails, 7-day auto-mark
 - SEO: meta tags, XML sitemap, Google Search Console
 - Mobile responsiveness audit (WCAG AA)
@@ -197,6 +185,8 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-05-11:
 - Vacation block feature — member self-service away window (design discussion needed)
 - Facebook Events cross-posting — requirements TBD with Moss (Phase 3+)
 - #081/#082: Dynamic sing-out listings on home page and performances page from events table
+- Custom Music Library playback controls (loop toggle, progress scrubber, track label) — to replace
+  native `<audio controls>`; spec in #095; file as new issue when ready to build
 
 ---
 
@@ -225,6 +215,7 @@ Browser
         ├── drive-music.js (Netlify Function)
         │     └── Authenticates to Google Drive via service account JWT
         │     └── Returns song listings (music-list) and Sunburst PDF listings (sunburst-list)
+        │     └── listFiles() returns id, name, mimeType, modifiedTime per file
         ├── drive-music-download.js (Netlify Edge Function — /api/music-download)
         │     └── Streams Drive file content directly to browser
         │     └── No buffering, no size ceiling; service account token never leaves function
@@ -256,13 +247,13 @@ Service account: pdt-music-library@pdt-singers-music-library.iam.gserviceaccount
 
 ---
 
-## Netlify Environment Variables (6 set)
+## Netlify Environment Variables (9 set)
 
 | Key | What it is |
 |-----|-----------|
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Supabase publishable anon key |
-| `GOOGLE_DRIVE_API_KEY` | Drive API key (local dev direct calls only) |
+| `GOOGLE_DRIVE_API_KEY` | Drive API key (legacy; no longer used in production) |
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | ID of the Music folder in Workspace Drive |
 | `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Workspace Drive |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (secret); used by Netlify Function |
@@ -301,7 +292,7 @@ PDT-website/                      ← repo root
 │   ├── events.html               ← Events blog (performances, sing-outs, socials)
 │   ├── sunburst.html             ← The Sunburst newsletter (Drive-backed PDF listing)
 │   ├── calendar.html             ← Chorus calendar + event CRUD + absence tracking
-│   ├── music.html                ← Music Library (Drive proxy, streaming downloads)
+│   ├── music.html                ← Music Library (Drive proxy, audio player, Cache API)
 │   ├── attendance.html           ← "Can You Be There?" member self-service
 │   ├── admin-attendance.html     ← Admin override + sing-out census report
 │   ├── resources.html            ← Suppressed from nav (file retained, content TBD)
@@ -397,7 +388,8 @@ PDT-website/                      ← repo root
 - **PDT Singers is NOT BHS** — stated on About page; some visitors assume BHS affiliation
 - **Auth is OTP only** — 6-digit code via Resend; `USE_MAGIC_LINKS = false` in `login.html`;
   magic link code preserved behind the flag — do not delete it
-- **OTP settings** — 10-minute expiry (600s), 6-digit code; confirmed working April 2026
+- **OTP settings** — 30-minute expiry (1800s), 6-digit code; `_pendingEmail` persisted to
+  localStorage with 30-min TTL — survives tab navigation during OTP flow
 - **shouldCreateUser: false** — strangers get no response when entering an email; only
   admin-created accounts receive codes
 - **Five member blogs** — Director's Notes (`directors_notes`), Poohbahs' Prattlings
@@ -408,15 +400,19 @@ PDT-website/                      ← repo root
 - **Roles** — `admin` (Kevin), `musical_director` (Chris), `events_editor` (Moss + others),
   `calendar_manager`, `council_member` (High Council), `member`
 - **Music Library** — Drive is source of truth; no Supabase songs table. Production uses
-  Netlify Function + service account JWT. Local dev uses API key + direct Drive calls
-  (requires Music folder temporarily set to "Anyone with link" — revert after)
+  Netlify Function + service account JWT. No local dev support — IS_LOCAL branches removed (#096)
+- **Music Library audio player** — MP3 rows use Play button (▶/⏸); native `<audio controls>`
+  injected below row on play. Cache API `pdt-music-v1` keyed on `fileId + modifiedTime`;
+  FIFO queue in `localStorage` key `pdt-music-cache-queue` (cap 10, Option A re-play bump).
+  Desktop shows ⋮ Download menu; mobile hides it. PDF rows unchanged ("Open" link).
+- **Music cache queue entry shape** — `{ fileId, modifiedTime, songName, trackName, filename, playedAt }`
 - **Authenticated downloads** — must use fetch → blob → `URL.createObjectURL` → synthetic
   anchor pattern. `window.open()` and `<a download>` cannot carry Authorization headers
   to the Edge Function (returns 401). See `pdt-conventions.md`
 - **Sunburst file naming** — `YYYY-MM-DD — Title.pdf` (em dash U+2014, spaces around it);
   filename is the sole metadata source
 - **Sunburst folder ID** — stored in `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` Netlify env var
-- **inject-env.js** — injects all 6 env vars into `window.__PDT_ENV`; safe to commit
+- **inject-env.js** — injects all env vars into `window.__PDT_ENV`; safe to commit
 - **env.local.js** — gitignored local file; mirrors `window.__PDT_ENV`; never commit
 - **Role visibility** — use `applyRoleVisibility()` checking `window.__PDT_USER` directly,
   falling back to `pdt:profile-loaded` event; direct event listener alone has a timing race
@@ -426,11 +422,14 @@ PDT-website/                      ← repo root
 - **members/comms.html** — retired April 2026; file deleted; posts table rows retained
 - **members/resources.html** — suppressed from nav; file retained; content TBD
 - **Netlify auto-publish** — always locked; Kevin manually triggers deploys
-- **Netlify build credits** — Personal plan; ~65 deploys/month before ceiling
+- **Netlify deploy budget** — 15 credits per deploy, 20 deploys per month; queue
+  aggressively — never ship a single-issue deploy when more work is ready
 - **Supabase cold-start** — free tier pauses after ~1 week inactivity; first load may be
   slow (Issue #048, low priority)
 - **pdtsingers.music@gmail.com** — staging account, not used; may dispose
-- **Service account succession** — tech@ is primary owner of all services; president@ is backup; role-account strategy documented in pdt-tech-maintainers-guide.md §2. treasurer@ planned as additional backup (low priority). No single-person dependency.
+- **Service account succession** — tech@ is primary owner of all services; president@ is backup;
+  role-account strategy documented in pdt-tech-maintainers-guide.md §2. treasurer@ planned as
+  additional backup (low priority). No single-person dependency.
 - **WBQA SEO** — lodge list page is nearly empty; PDT SEO work is important
 - **convert-heic Edge Function** — uses `heic-to@1.4.2` (WASM, `npm:heic-to`); confirmed
   deployable in Supabase Edge Runtime. Triggered by GitHub Actions every 15 min via
@@ -441,3 +440,6 @@ PDT-website/                      ← repo root
   via domain-wide delegation. Applies to: `upload-photo.js`, `photo-proxy.js`,
   `curate-photo.js`, `drive-music-upload.js`. Service account acting as itself is insufficient
   — Drive files owned by president@ require DWD to write.
+- **Supabase Data API GRANT deadline** — explicit GRANTs required on all tables by 2026-10-30
+  (enforcement date); soft target 2026-09-01. See issue #087. Migration boilerplate standard
+  documented in `pdt-decisions.md`.

@@ -82,8 +82,9 @@ Open: http://localhost:8080
 **Required:** `env.local.js` must be present in the repo root. This file is gitignored
 and sets `window.__PDT_ENV` with Supabase and Google Drive credentials. Never commit it.
 
-For Music Library local testing: temporarily set the Music folder in Google Drive to
-"Anyone with link" (Viewer), test, then revert to Restricted. Don't forget to revert.
+The Music Library has no local dev path — its Edge Functions and service account JWT
+can't run under `python3 -m http.server`. Test it on a Netlify preview or the live
+deploy instead (see §9).
 
 ---
 

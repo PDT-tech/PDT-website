@@ -34,16 +34,22 @@ CC is the sole maintainer of `pdt-issues.md` in the repo root.
 
 ## Operating Document Edits
 
-`pdt-decisions.md` and `pdt-session-context.md` are authored by claude.ai but
-**CC applies edits to them** when given verbatim replacement text in a prompt.
+CC applies verbatim text to **all project documents** when claude.ai provides
+exact replacement text in a prompt. This covers every markdown doc in the repo:
+`pdt-decisions.md`, `pdt-session-context.md`, `pdt-conventions.md`,
+`pdt-tech-maintainers-guide.md`, `pdt-requirements.md`, `pdt-session-history.md`,
+`CLAUDE.md`, `pdt-moss-events-guide.md`, `investigate-before-you-design.md`,
+`README.md`, `pdt-agenda-guide.md`, and any future project docs.
 
 Rules:
 - CC never drafts or improvises content for these docs
 - When claude.ai provides exact replacement text, CC applies it verbatim,
   commits, and pushes — no interpretation, no paraphrasing
-- CC never edits these docs on its own initiative
+- CC never edits project docs on its own initiative
 - Kevin re-uploads changed files to Project Memory after each update —
   CC cannot do this step
+- Exception: genuinely new files that don't yet exist in the repo are
+  produced by claude.ai as artifacts and downloaded by Kevin
 
 This replaces the old "claude.ai/Kevin-owned, CC never touches" model.
 CC is the applier; claude.ai is the author.

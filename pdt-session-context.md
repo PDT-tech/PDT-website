@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-07-20 (Session 28 — Music Library audio player, Cache API, mobile UX, Member Home reorder)
+**Last updated:** 2026-07-20 (Session 28 — Music Library audio player, Cache API, mobile UX, Member Home reorder, Supabase security hardening, CC apply-verbatim protocol)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -69,8 +69,14 @@ all repo changes. claude.ai produces new files that don't yet exist; everything 
 a CC prompt. Always commit AND push to origin after changes. Netlify auto-publish is
 always locked — Kevin manually triggers deploys from the Netlify dashboard.
 
-**Deploy budget:** 15 credits per deploy, 20 deploys per month. Queue as much work as
-possible between deploys — never ship a single-issue deploy when more work is ready.
+**Operating doc edits:** CC applies verbatim text to `pdt-decisions.md` and
+`pdt-session-context.md` when claude.ai provides exact replacement text in a prompt.
+CC never drafts or improvises content for these docs. Kevin re-uploads changed files
+to Project Memory — CC cannot do this step.
+
+**Deploy budget:** 15 credits per deploy, 300 credits/month, 20 deploys/month. Queue
+as much work as possible between deploys — never ship a single-issue deploy when more
+work is ready.
 
 ---
 
@@ -131,10 +137,9 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-07-20:
 | 082 | POST-V1: Performances page — populate sing-out listings dynamically from events table |
 | 084 | Supabase account migration to tech@ — pending Supabase support |
 | 086 | Carousel responsive width fix on wide desktop (low priority, cosmetic) |
-| 087 | GRANT audit — existing tables missing explicit grants; soft target 2026-09-01, hard deadline 2026-10-30 |
 | 089 | Verify SPF/DKIM/DMARC DNS records in Resend dashboard |
 
-**Next available issue number: #101**
+**Next available issue number: #102**
 
 ### Session 28 — Completed ✅
 - ✅ **#090** — Duplicate event listeners on re-rendered `.file-grid` fixed; PDF rows now use direct click listener
@@ -160,11 +165,23 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-07-20:
 - ✅ **#100** — Member portal nav reordered across all 11 pages: Music Library → Calendar → Photos →
   Can You Be There? → remaining items; supersedes #091
 - ✅ **#091** — CLOSED, superseded by #100
-- ✅ **#088** — Migration GRANT boilerplate decision recorded in `pdt-decisions.md` (doc-only)
-- ✅ **PII CSV** — `PDT Members (public) - Sheet1.csv` added to `.gitignore`; can no longer be swept
-  into a commit by `git add -A`
-- ✅ **Queue entry shape amended** — `filename` field added to `pdt-music-cache-queue` entries (required
-  by Recently Played play button); decision recorded in `pdt-decisions.md`
+- ✅ **#087** — Supabase GRANT audit complete. Audit finding: all six tables already had full grants
+  including `anon` (over-grant, not missing grant). Reframed to defense-in-depth: `anon` revoked on
+  all six member tables (`profiles`, `events`, `absences`, `event_attendance`, `photo_uploads`, `posts`)
+  via `20260720_tighten_table_grants.sql` (run 2026-07-20). Behavior-neutral — RLS already blocked anon
+  at the row level. Member PII no longer relies solely on RLS to stay off the public anon key.
+- ✅ **#101** — `handle_new_user()` trigger function hardened: EXECUTE revoked from public/anon/authenticated;
+  `search_path` pinned to `public`. Migration `20260720_harden_handle_new_user.sql` run 2026-07-20.
+- ✅ **#088** — Migration GRANT boilerplate amended in `pdt-decisions.md`: omit `anon` by default for all
+  member-facing tables; add only for genuinely public tables. Older 2026-05-13 section superseded.
+- ✅ **CC apply-verbatim protocol** — `CLAUDE.md` and `pdt-conventions.md` updated: CC now applies
+  verbatim text to `pdt-decisions.md` and `pdt-session-context.md` when provided by claude.ai.
+  Replaces the old "CC never touches these files" rule.
+- ✅ **Deploy budget docs aligned** — 15 credits/deploy, 300 credits/month, 20 deploys/month now
+  stated consistently across maintainers guide §4 and `pdt-conventions.md`.
+- ✅ **PII CSV** — `PDT Members (public) - Sheet1.csv` added to `.gitignore`
+- ✅ **Queue entry shape** — `filename` field added to `pdt-music-cache-queue` entries; decision
+  recorded in `pdt-decisions.md`
 
 ### Session 28 Remaining Priorities
 1. Polling/voting feature — design discussion (spec drafted Session 19, not yet built)
@@ -253,13 +270,13 @@ Service account: pdt-music-library@pdt-singers-music-library.iam.gserviceaccount
 |-----|-----------|
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Supabase publishable anon key |
-| `GOOGLE_DRIVE_API_KEY` | Drive API key (legacy; no longer used in production) |
+| `GOOGLE_DRIVE_API_KEY` | Drive API key — legacy, no longer used; IS_LOCAL branches removed (#096) |
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | ID of the Music folder in Workspace Drive |
 | `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Workspace Drive |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Full service account JSON (secret); used by Netlify Function |
 | `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of the /Photos/ folder in Workspace Drive |
 | `GOOGLE_DRIVE_CAROUSEL_FOLDER_ID` | ID of the /Photos/Mainpage_Carousel/ folder in Workspace Drive |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key; used by GitHub Actions to trigger convert-heic |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key — privileged server-side writes from Edge Functions; also a GitHub Actions secret (see §18 of maintainers guide) |
 
 Supabase Edge Function secrets (separate system — set via `supabase secrets set`):
 
@@ -316,7 +333,9 @@ PDT-website/                      ← repo root
 │   │   └── convert-heic/         ← HEIC → JPEG conversion (heic-to@1.4.2); triggered by GitHub Actions
 │   └── migrations/
 │       ├── 20260426_photo_uploads.sql              ← photo_uploads table ✅ run
-│       └── 20260426_photo_uploads_carousel_file_id.sql ← carousel_file_id column ✅ run
+│       ├── 20260426_photo_uploads_carousel_file_id.sql ← carousel_file_id column ✅ run
+│       ├── 20260720_tighten_table_grants.sql       ← revoke anon on 6 member tables ✅ run
+│       └── 20260720_harden_handle_new_user.sql     ← revoke execute + pin search_path ✅ run
 ├── css/
 │   ├── reset.css
 │   ├── variables.css             ← Design tokens (palette, type, spacing)
@@ -341,10 +360,10 @@ PDT-website/                      ← repo root
 ├── netlify.toml                  ← Netlify config (edge function order matters)
 ├── CLAUDE.md                     ← CC standing instructions (conventions, issue tracking)
 ├── pdt-issues.md                 ← Issue tracker (CC-owned, never manually edited)
-├── pdt-decisions.md              ← Architecture/design decision log (Kevin + claude.ai)
+├── pdt-decisions.md              ← Architecture/design decision log (claude.ai authors; CC applies verbatim)
 ├── pdt-conventions.md            ← Coding conventions (CC reads at session start)
 ├── pdt-requirements.md           ← Full project requirements
-├── pdt-session-context.md        ← This file (current state; uploaded to Project Memory)
+├── pdt-session-context.md        ← This file (claude.ai authors; CC applies verbatim; Kevin uploads to PK)
 ├── pdt-session-history.md        ← Session log archive (Sessions 1–14)
 ├── pdt-tech-maintainers-guide.md ← Human-readable tech reference (markdown authoritative)
 ├── pdt-tech-maintainers-guide.html ← Presentation version of maintainers guide
@@ -422,8 +441,8 @@ PDT-website/                      ← repo root
 - **members/comms.html** — retired April 2026; file deleted; posts table rows retained
 - **members/resources.html** — suppressed from nav; file retained; content TBD
 - **Netlify auto-publish** — always locked; Kevin manually triggers deploys
-- **Netlify deploy budget** — 15 credits per deploy, 20 deploys per month; queue
-  aggressively — never ship a single-issue deploy when more work is ready
+- **Netlify deploy budget** — 15 credits per deploy, 300 credits/month, 20 deploys/month;
+  queue aggressively — never ship a single-issue deploy when more work is ready
 - **Supabase cold-start** — free tier pauses after ~1 week inactivity; first load may be
   slow (Issue #048, low priority)
 - **pdtsingers.music@gmail.com** — staging account, not used; may dispose
@@ -440,6 +459,9 @@ PDT-website/                      ← repo root
   via domain-wide delegation. Applies to: `upload-photo.js`, `photo-proxy.js`,
   `curate-photo.js`, `drive-music-upload.js`. Service account acting as itself is insufficient
   — Drive files owned by president@ require DWD to write.
-- **Supabase Data API GRANT deadline** — explicit GRANTs required on all tables by 2026-10-30
-  (enforcement date); soft target 2026-09-01. See issue #087. Migration boilerplate standard
-  documented in `pdt-decisions.md`.
+- **Supabase table grants** — `anon` grants revoked on all six member tables (#087, 2026-07-20).
+  Migration boilerplate omits `anon` by default — see `pdt-decisions.md` 2026-07 entry.
+  Add `anon` SELECT only for genuinely public tables (e.g. future public events feed).
+- **CC apply-verbatim protocol** — CC edits `pdt-decisions.md` and `pdt-session-context.md`
+  only when claude.ai provides exact replacement text. CC never drafts content for these docs.
+  Kevin re-uploads changed files to Project Memory after each update.

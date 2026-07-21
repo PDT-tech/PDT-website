@@ -38,3 +38,6 @@ pdt-singers-music-library-*.json
 
 # One-time seeding utility — contains member PII, never commit
 seed-members.mjs
+
+# Member roster export — contains member names/emails (PII), never commit
+PDT Members (public) - Sheet1.csv

@@ -438,22 +438,31 @@ permanently.
 
 ---
 
-## 2026-07 — Migration authoring standard: explicit GRANTs required
+## 2026-07 — Migration authoring standard: explicit GRANTs required (amended 2026-07-20)
 
 Per Supabase policy change (enforcement 2026-10-30, see issue #087), every
 `CREATE TABLE` migration must include explicit GRANT statements after the
-`ENABLE ROW LEVEL SECURITY` line. Required boilerplate:
+`ENABLE ROW LEVEL SECURITY` line.
+
+**Standard boilerplate for this application** — omit `anon` by default.
+All six member tables use RLS policies that gate on `auth.uid()` or
+`auth.role() = 'authenticated'`; there are no public Data API consumers:
 
 ```sql
-GRANT SELECT ON public.<table> TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.<table> TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.<table> TO service_role;
 ```
 
+Add `GRANT SELECT ON public.<table> TO anon;` only if the table
+intentionally serves unauthenticated public requests — for example, a
+future public events feed (#081/#082). No current table requires this.
+
+The `anon` over-grant on the original six tables
+(`profiles`, `events`, `absences`, `event_attendance`, `photo_uploads`,
+`posts`) was audited and revoked in issue #087 (migration
+`20260720_tighten_table_grants.sql`, run 2026-07-20).
+
 Apply to all future migrations. Existing tables covered by the #087 audit.
-Also verify that `20260426_photo_uploads.sql` and
-`20260426_photo_uploads_carousel_file_id.sql` include these grants before any
-re-run is needed.
 
 ---
 

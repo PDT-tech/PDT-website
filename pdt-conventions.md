@@ -8,6 +8,11 @@
 
 claude.ai handles requirements, design, architecture tradeoffs, troubleshooting logic, spec decisions, document authoring, and CC prompt generation. CC handles all source code reading, writing, execution, git commits, and pushes. When claude.ai needs source-level detail before writing a CC prompt, it asks Kevin to query CC first — it does not read code files directly. Repo file edits are never produced as claude.ai chat artifacts; a CC prompt is written instead. Exception: new files not yet in the repo may be produced directly by claude.ai.
 
+**Operating doc edits:** CC applies verbatim text to `pdt-decisions.md` and
+`pdt-session-context.md` when claude.ai provides exact replacement text in a
+prompt. CC never drafts content for these docs independently. See `CLAUDE.md`
+§ Operating Document Edits for the full rule.
+
 ---
 
 ## Investigate Before You Design
@@ -195,7 +200,9 @@ Auto-publishing is **locked**. Pushes to GitHub do not auto-deploy.
 
 - Do not unlock auto-publishing
 - Deploys are triggered manually from the Netlify dashboard
-- One manual deploy per day max unless there's a specific reason for more
+- Deploy budget: 20 deploys per month on the free plan (15 credits each,
+  300 total). Queue as much work as possible before each deploy — never
+  ship a single-issue change when more committed work is ready.
 
 ---
 
@@ -229,12 +236,11 @@ on the About page, blog attribution, and anywhere the director is mentioned.
 
 ## Music Library Local Dev
 
-When testing the Music Library locally:
-1. Temporarily set the Google Drive Music folder to "Anyone with link" (Viewer)
-2. Test
-3. **Revert to Restricted immediately** — do not leave it open
-
-The `/api/music-upload` Edge Function calls Drive write APIs. It cannot be tested locally using the `GOOGLE_DRIVE_API_KEY` direct-call path. Test upload/delete on a Netlify preview deploy, or against a personal test Drive folder with the service account shared as Editor.
+The Music Library has **no local dev path**. IS_LOCAL branches were removed
+in issue #096. The Edge Functions and service account JWT cannot run under
+`python3 -m http.server`. Test all Music Library changes on a Netlify preview
+deploy or against the live site. Do not attempt to re-introduce IS_LOCAL
+branches without explicit instruction from Kevin.
 
 ---
 

@@ -103,13 +103,12 @@ Netlify auto-publishing is **locked** — pushes to GitHub do not auto-deploy.
 The manual deploy step is intentional — it prevents accidental deploys of
 work-in-progress commits and conserves build credits.
 
-**Netlify build credits:** The site is on the Personal plan ($9/month), which includes
-1,000 build credits/month. Each production deploy costs approximately 15 credits (~65
-deploys/month before hitting the ceiling). That's generous for normal maintenance but
-easy to burn during active development if you deploy after every small change.
-Mitigation: test all changes on localhost:8080 before deploying. Batch related changes
-into a single deploy. During active feature work, one deploy per working session is a
-reasonable target unless something is genuinely broken in production.
+**Deploy budget:** PDT Singers is on Netlify's free plan, which allows **20 deploys per
+month** (no build credit pool — the limit is a flat deploy count). At 20/month, each
+deploy is meaningful. Always queue as much work as possible before triggering a deploy —
+never ship a single-issue change when more committed work is ready. The site was developed
+on the $10/month plan (1,000 build credits/month) and downgraded to free once the site
+reached maintenance phase.
 
 ---
 
@@ -124,7 +123,8 @@ Never hardcode credentials in committed files.
 |----------|-----------|
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Supabase publishable anon key |
-| `GOOGLE_DRIVE_API_KEY` | Drive API key (local dev only) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key — privileged server-side writes from Edge Functions (`drive-music-upload`, `upload-photo`, `curate-photo`). Same key is also a GitHub Actions secret; see §18. |
+| `GOOGLE_DRIVE_API_KEY` | Drive API key — legacy, no longer used; IS_LOCAL local dev branches removed (#096) |
 | `GOOGLE_DRIVE_MUSIC_FOLDER_ID` | Music folder ID in Drive |
 | `GOOGLE_DRIVE_SUNBURST_FOLDER_ID` | ID of the Sunburst newsletter folder in Drive |
 | `GOOGLE_DRIVE_PHOTOS_FOLDER_ID` | ID of `/Photos/` folder in Workspace Drive |
@@ -324,7 +324,8 @@ The script skips past Mondays and only inserts from today forward when run mid-y
 
 Sheet music and learning tracks are served from Google Workspace Drive
 (`president@pdtsingers.org`). The Music Library is fully populated. Members never
-interact with Google directly.
+interact with Google directly. Drive is the source of truth — there is no Supabase
+songs table.
 
 **Drive location:** `Music/` folder in president@pdtsingers.org Workspace Drive  
 **Folder ID:** set in Netlify — Site configuration → Environment variables → `GOOGLE_DRIVE_MUSIC_FOLDER_ID`  
@@ -333,13 +334,50 @@ interact with Google directly.
 **Photos folder ID:** [REDACTED — real value in Netlify env vars as GOOGLE_DRIVE_PHOTOS_FOLDER_ID] (Workspace Drive, `/Photos/`)  
 **Carousel folder ID:** [REDACTED — real value in Netlify env vars as GOOGLE_DRIVE_CAROUSEL_FOLDER_ID] (Workspace Drive, `/Photos/Mainpage_Carousel/`)
 
-**How downloads work:**
-- **Folder and file listings** — `netlify/functions/drive-music.js` (serverless). Returns JSON; no file content passes through.
-- **File downloads** — `netlify/edge-functions/drive-music-download.js` (Deno Edge Function, `/api/music-download`). Streams file content directly from Drive to the browser — no buffering, no size ceiling, service account token never leaves the function.
+### How playback works
 
-Do not construct direct `drive.google.com` download URLs in client code — they bypass the service account and will 403.
+MP3 rows show a Play button (▶/⏸). Clicking Play injects a native `<audio controls>`
+element directly below the row. Only one track plays at a time — starting a second
+track stops the first. PDF rows show an "Open" link that opens the file in a new tab;
+their behavior is unchanged.
 
-**File size note:** keep individual files under ~6MB raw (~4.5MB before base64 expansion) as a soft guideline for audio quality and load time. Very large MP3s at high bitrate are worth compressing.
+### Cache API layer
+
+Audio is cached in the browser via the Cache API (cache name `pdt-music-v1`). The
+cache key is a synthetic URL combining `fileId` and `modifiedTime` from the Drive
+listing. On Play:
+- **Cache hit** — blob served instantly, no network request
+- **Cache miss** — file streamed from `/api/music-download`, cloned into cache, fed to `<audio>`
+
+A FIFO queue in `localStorage` (`pdt-music-cache-queue`, cap 10) tracks what's cached.
+Re-playing a track bumps it to the front of the queue with an updated timestamp
+(Option A). Stale cache entries (where the director has updated a track in Drive) are
+purged automatically when a song panel is opened, by comparing the queue's stored
+`modifiedTime` against the current listing.
+
+**Queue entry shape:** `{ fileId, modifiedTime, songName, trackName, filename, playedAt }`
+
+### Recently Played
+
+A "Recently Played" section sits above the song accordion, outside `#library-content`,
+so it renders instantly from `localStorage` without waiting for the Drive listing. It
+shows the last 3 tracks played (most recent first), collapsed by default. Clicking a
+track invokes the player inline — always a cache hit. Updates in the same tab after
+each play; updates in other tabs via the `storage` event.
+
+### Desktop vs. mobile
+
+- Desktop: Play button + ⋮ menu alongside each MP3 row; ⋮ menu contains "Download" (calls `proxyDownload()` for file save)
+- Mobile (iOS and Android): ⋮ menu and bulk `.download-actions` buttons hidden via CSS; Play-only interface
+
+### Edge Functions involved
+
+- `drive-music.js` (Netlify Function) — returns folder and file listings; fields: `id`, `name`, `mimeType`, `modifiedTime`
+- `drive-music-download.js` (Netlify Edge Function, `/api/music-download`) — streams file bytes; auth-gated
+- `drive-music-upload.js` (Netlify Edge Function, `/api/music-upload`) — admin writes (upload, delete, create folder)
+
+Do not construct direct `drive.google.com` download URLs in client code — they bypass
+the service account and will 403.
 
 **To add a new song:**
 1. Create a new folder inside `Music/` named exactly as you want it to appear on the page
@@ -366,7 +404,10 @@ These actions call `netlify/edge-functions/drive-music-upload.js` (→ `/api/mus
 - **Duplicate filenames:** if a file with the same name exists in the folder, the function automatically appends a suffix (`-1`, `-2`, … `-99`).
 - **Service account permission:** the service account now has **Editor** access on the `Music/` folder (changed from Viewer on 2026-05-04).
 
-**Local dev limitation:** upload and delete cannot be tested locally with `GOOGLE_DRIVE_API_KEY` — write operations require the service account. Test on a Netlify preview deploy, or share a personal test Drive folder with the service account as Editor.
+**No local dev path:** IS_LOCAL branches were removed in issue #096. The Music Library
+cannot be tested via `python3 -m http.server` — the Edge Function and service account
+JWT are required. All Music Library testing must be done against the live Netlify deploy
+or a Netlify preview deploy.
 
 ---
 

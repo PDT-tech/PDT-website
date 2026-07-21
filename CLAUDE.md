@@ -32,6 +32,24 @@ CC is the sole maintainer of `pdt-issues.md` in the repo root.
 
 ---
 
+## Operating Document Edits
+
+`pdt-decisions.md` and `pdt-session-context.md` are authored by claude.ai but
+**CC applies edits to them** when given verbatim replacement text in a prompt.
+
+Rules:
+- CC never drafts or improvises content for these docs
+- When claude.ai provides exact replacement text, CC applies it verbatim,
+  commits, and pushes — no interpretation, no paraphrasing
+- CC never edits these docs on its own initiative
+- Kevin re-uploads changed files to Project Memory after each update —
+  CC cannot do this step
+
+This replaces the old "claude.ai/Kevin-owned, CC never touches" model.
+CC is the applier; claude.ai is the author.
+
+---
+
 ## Applied Learning
 
 When something fails repeatedly, when Kevin has to re-explain, or when a workaround is found for a platform/tools limitation, add a one-line bullet here. Keep each bullet under 15 words. No explanations. Only add things that will save time in future sessions.
@@ -87,8 +105,9 @@ so they are visible at session start regardless of which tools load.
 | File | Purpose |
 |------|---------|
 | `pdt-issues.md` | Issue tracker — CC-owned |
-| `pdt-requirements.md` | Requirements and decisions — claude.ai/Kevin-owned |
-| `pdt-session-context.md` | Session handoff doc — claude.ai/Kevin-owned |
+| `pdt-requirements.md` | Requirements — claude.ai/Kevin-owned |
+| `pdt-session-context.md` | Session handoff doc — CC applies verbatim text from claude.ai |
+| `pdt-decisions.md` | Decision log — CC applies verbatim text from claude.ai |
 | `css/variables.css` | Design tokens |
 | `js/supabase.js` | Supabase client and auth helpers |
 | `env.local.js` | Local credentials — GITIGNORED, never commit |

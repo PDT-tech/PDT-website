@@ -105,7 +105,7 @@ The manual deploy step is intentional — it prevents accidental deploys of
 work-in-progress commits and conserves build credits.
 
 **Deploy budget:** PDT Singers is on Netlify's free plan, which allows **20 deploys per
-month** (no build credit pool — the limit is a flat deploy count). At 20/month, each
+month** (15 build credits per deploy, 300 credits/month). At 20/month, each
 deploy is meaningful. Always queue as much work as possible before triggering a deploy —
 never ship a single-issue change when more committed work is ready. The site was developed
 on the $10/month plan (1,000 build credits/month) and downgraded to free once the site

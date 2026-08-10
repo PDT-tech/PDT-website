@@ -335,6 +335,48 @@
       border-top: 1px solid rgba(0,0,0,0.07);
     }
     .post-modal-msg { font-family: var(--font-ui); font-size: var(--text-sm); }
+    .upload-file-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+    }
+    .upload-file-row { display: flex; align-items: center; gap: var(--space-xs); }
+    .upload-file-status {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .upload-file-status .mini-spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--rule);
+      border-top-color: var(--sky-deep);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .upload-file-name {
+      color: #1a1a1a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .upload-file-reason {
+      color: #c0392b;
+      margin-left: auto;
+      flex-shrink: 0;
+      font-size: var(--text-xs);
+    }
+    .upload-file-row[data-state="pending"] .upload-file-status,
+    .upload-file-row[data-state="pending"] .upload-file-name { color: var(--muted); }
+    .upload-file-row[data-state="done"] .upload-file-status { color: #2e7d32; }
+    .upload-file-row[data-state="failed"] .upload-file-status { color: #c0392b; }
     .file-delete-btn {
       background: none;
       border: none;
@@ -578,12 +620,10 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="upload-file-input">File</label>
-        <input type="file" id="upload-file-input" class="form-input" accept=".pdf,.mp3">
+        <input type="file" id="upload-file-input" class="form-input" accept=".pdf,.mp3" multiple>
       </div>
-      <div id="upload-progress" class="panel-loading" style="display:none">
-        <div class="mini-spinner"></div>
-        Uploading…
-      </div>
+      <p id="upload-summary" class="post-modal-msg" style="display:none"></p>
+      <ul id="upload-file-list" class="upload-file-list" style="display:none"></ul>
       <p id="upload-modal-msg" class="post-modal-msg" style="display:none"></p>
       <div class="post-modal-actions">
         <button type="button" class="btn-secondary" id="upload-modal-cancel">Cancel</button>
@@ -1181,6 +1221,66 @@
     // ── Upload File modal ────────────────────────────────────
     const uploadModal = document.getElementById('upload-modal')
     const uploadForm  = document.getElementById('upload-form')
+    let uploadBatchActive  = false   // true while a batch is uploading — locks close/cancel
+    let uploadBatchDidRun  = false   // true when a batch uploaded ≥1 file — triggers reload on close
+    let uploadBatchSummary = ''      // last batch summary, echoed to the admin bar on close
+
+    function setUploadRowState (li, state, reason) {
+      li.dataset.state = state
+      const statusEl = li.querySelector('.upload-file-status')
+      if (state === 'uploading') {
+        statusEl.innerHTML = '<span class="mini-spinner"></span>'
+      } else if (state === 'done') {
+        statusEl.innerHTML = ''; statusEl.textContent = '✓'
+      } else if (state === 'failed') {
+        statusEl.innerHTML = ''; statusEl.textContent = '✗'
+      } else {
+        statusEl.innerHTML = ''; statusEl.textContent = '•'
+      }
+      let reasonEl = li.querySelector('.upload-file-reason')
+      if (state === 'failed' && reason) {
+        if (!reasonEl) {
+          reasonEl = document.createElement('span')
+          reasonEl.className = 'upload-file-reason'
+          li.appendChild(reasonEl)
+        }
+        reasonEl.textContent = reason
+      } else if (reasonEl) {
+        reasonEl.remove()
+      }
+    }
+
+    // Reload the folder listing and re-open the currently-open panel.
+    // Moved verbatim from the single-upload success branch; now runs once
+    // per batch, after the modal is closed.
+    async function refreshOpenPanelAfterUpload () {
+      const openFolderId = document.querySelector('.song-item.open')?.dataset.folderId
+      await reloadListing(true)
+      if (openFolderId) {
+        const openPanel = document.querySelector(`.song-item[data-folder-id="${openFolderId}"]`)
+        if (openPanel) {
+          openPanel.classList.add('open')
+          openPanel.querySelector('.song-trigger')?.setAttribute('aria-expanded', 'true')
+          const grid = openPanel.querySelector('.file-grid')
+          grid.innerHTML = '<div class="panel-loading"><div class="mini-spinner"></div> Loading files…</div>'
+          try {
+            const files = await fetchFiles(openFolderId, true)
+            cleanStaleCache(files)
+            const openSongName = openPanel.querySelector('.song-title')?.textContent || ''
+            grid.innerHTML = ''
+            if (!files.length) {
+              grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
+            } else {
+              renderFiles(files, openPanel, openSongName)
+            }
+            openPanel.dataset.loaded = 'true'
+          } catch {
+            grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">Could not load files. Please try again.</p>'
+            openPanel.dataset.loaded = 'false'
+          }
+        }
+      }
+    }
 
     function populateFolderDropdown () {
       const sel = document.getElementById('upload-folder-select')
@@ -1204,15 +1304,34 @@
 
     document.getElementById('upload-file-btn').addEventListener('click', () => {
       uploadForm.reset()
+      const listEl = document.getElementById('upload-file-list')
+      listEl.innerHTML = ''
+      listEl.style.display = 'none'
+      document.getElementById('upload-summary').style.display = 'none'
       document.getElementById('upload-modal-msg').style.display = 'none'
-      document.getElementById('upload-progress').style.display = 'none'
+      document.getElementById('upload-modal-submit').disabled = false
+      const cancelBtn = document.getElementById('upload-modal-cancel')
+      cancelBtn.disabled = false
+      cancelBtn.textContent = 'Cancel'
+      document.getElementById('upload-modal-close').disabled = false
       populateFolderDropdown()
       uploadModal.classList.remove('modal-hidden')
     })
 
-    function closeUploadModal () {
+    async function closeUploadModal () {
+      if (uploadBatchActive) return   // can't close mid-batch
       uploadModal.classList.add('modal-hidden')
       uploadForm.reset()
+      const listEl = document.getElementById('upload-file-list')
+      listEl.innerHTML = ''
+      listEl.style.display = 'none'
+      document.getElementById('upload-summary').style.display = 'none'
+      document.getElementById('upload-modal-msg').style.display = 'none'
+      if (uploadBatchDidRun) {
+        uploadBatchDidRun = false
+        if (uploadBatchSummary) showAdminMsg(uploadBatchSummary)
+        await refreshOpenPanelAfterUpload()
+      }
     }
     document.getElementById('upload-modal-close').addEventListener('click', closeUploadModal)
     document.getElementById('upload-modal-cancel').addEventListener('click', closeUploadModal)
@@ -1222,7 +1341,7 @@
       e.preventDefault()
       const folderId = document.getElementById('upload-folder-select').value
       const fileEl   = document.getElementById('upload-file-input')
-      const file     = fileEl.files?.[0]
+      const files    = Array.from(fileEl.files || [])
       const msg      = document.getElementById('upload-modal-msg')
       if (!folderId) {
         msg.textContent = 'Please select a song folder.'
@@ -1230,69 +1349,88 @@
         msg.style.display = 'block'
         return
       }
-      if (!file) return
-      const progress = document.getElementById('upload-progress')
-      const submit   = document.getElementById('upload-modal-submit')
-      submit.disabled = true
+      if (!files.length) return
+
+      const summary   = document.getElementById('upload-summary')
+      const listEl    = document.getElementById('upload-file-list')
+      const submit    = document.getElementById('upload-modal-submit')
+      const cancelBtn = document.getElementById('upload-modal-cancel')
+      const closeBtn  = document.getElementById('upload-modal-close')
+
       msg.style.display = 'none'
-      progress.style.display = 'flex'
+      summary.style.display = 'none'
 
-      const fd = new FormData()
-      fd.append('action', 'upload_file')
-      fd.append('parentFolderId', folderId)
-      fd.append('file', file)
-      fd.append('filename', file.name)
+      // Render one row per selected file in the "pending" state.
+      listEl.innerHTML = ''
+      const rows = files.map(file => {
+        const li = document.createElement('li')
+        li.className = 'upload-file-row'
+        const status = document.createElement('span')
+        status.className = 'upload-file-status'
+        const name = document.createElement('span')
+        name.className = 'upload-file-name'
+        name.textContent = file.name
+        li.appendChild(status)
+        li.appendChild(name)
+        setUploadRowState(li, 'pending')
+        listEl.appendChild(li)
+        return li
+      })
+      listEl.style.display = 'flex'
 
-      try {
-        const res  = await fetch('/api/music-upload', {
-          method : 'POST',
-          headers: { Authorization: `Bearer ${await getToken()}` },
-          body   : fd
-        })
-        progress.style.display = 'none'
-        const data = await res.json()
-        if (!res.ok || !data.success) {
-          msg.textContent = res.status === 415 ? data.error : 'Upload failed. Please try again.'
-          msg.style.color = '#c0392b'
-          msg.style.display = 'block'
-        } else {
-          closeUploadModal()
-          showAdminMsg(`"${data.name}" uploaded.`)
-          const openFolderId = document.querySelector('.song-item.open')?.dataset.folderId
-          await reloadListing(true)
-          if (openFolderId) {
-            const openPanel = document.querySelector(`.song-item[data-folder-id="${openFolderId}"]`)
-            if (openPanel) {
-              openPanel.classList.add('open')
-              openPanel.querySelector('.song-trigger')?.setAttribute('aria-expanded', 'true')
-              const grid = openPanel.querySelector('.file-grid')
-              grid.innerHTML = '<div class="panel-loading"><div class="mini-spinner"></div> Loading files…</div>'
-              try {
-                const files = await fetchFiles(openFolderId, true)
-                cleanStaleCache(files)
-                const openSongName = openPanel.querySelector('.song-title')?.textContent || ''
-                grid.innerHTML = ''
-                if (!files.length) {
-                  grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">No files in this folder yet.</p>'
-                } else {
-                  renderFiles(files, openPanel, openSongName)
-                }
-                openPanel.dataset.loaded = 'true'
-              } catch {
-                grid.innerHTML = '<p style="color:var(--muted);font-family:var(--font-ui);font-size:var(--text-sm)">Could not load files. Please try again.</p>'
-                openPanel.dataset.loaded = 'false'
-              }
-            }
+      // Lock the whole batch (submit + close/cancel) for its duration.
+      uploadBatchActive = true
+      submit.disabled = true
+      cancelBtn.disabled = true
+      closeBtn.disabled = true
+
+      let ok = 0
+      // Sequential — the server's duplicate-filename suffix check is not
+      // safe under concurrent requests to the same folder. Continue past
+      // failures; never abort the batch.
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const li   = rows[i]
+        setUploadRowState(li, 'uploading')
+
+        const fd = new FormData()
+        fd.append('action', 'upload_file')
+        fd.append('parentFolderId', folderId)
+        fd.append('file', file)
+        fd.append('filename', file.name)
+
+        try {
+          const res  = await fetch('/api/music-upload', {
+            method : 'POST',
+            headers: { Authorization: `Bearer ${await getToken()}` },
+            body   : fd
+          })
+          const data = await res.json().catch(() => ({}))
+          if (!res.ok || !data.success) {
+            setUploadRowState(li, 'failed', res.status === 415 ? (data.error || 'Upload failed') : 'Upload failed')
+          } else {
+            setUploadRowState(li, 'done')
+            ok++
           }
+        } catch {
+          setUploadRowState(li, 'failed', 'Upload failed')
         }
-      } catch {
-        progress.style.display = 'none'
-        msg.textContent = 'Upload failed. Please try again.'
-        msg.style.color = '#c0392b'
-        msg.style.display = 'block'
-      } finally {
-        submit.disabled = false
       }
+
+      // Batch done — show summary, keep the modal open, unlock close/cancel.
+      uploadBatchSummary = ok === files.length
+        ? `All ${files.length} uploaded.`
+        : `${ok} of ${files.length} uploaded.`
+      summary.textContent = uploadBatchSummary
+      summary.style.color = ok === files.length ? '#2e7d32' : '#c0392b'
+      summary.style.display = 'block'
+
+      uploadBatchActive = false
+      uploadBatchDidRun = ok > 0    // reload happens once, on modal close
+      cancelBtn.disabled = false
+      cancelBtn.textContent = 'Done'
+      closeBtn.disabled = false
+      // Submit stays disabled: files already sent — reopen the modal to upload more.
     })
 
     // ── Init ──────────────────────────────────────────────────

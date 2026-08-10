@@ -1,6 +1,6 @@
 # PDT Singers Website — Session Context
 
-**Last updated:** 2026-07-20 (Session 28 — Music Library audio player, Cache API, mobile UX, Member Home reorder, Supabase security hardening, CC apply-verbatim protocol)
+**Last updated:** 2026-08-10 (Session 28 — Music Library audio player, Cache API, mobile UX, Member Home reorder, Supabase security hardening, CC apply-verbatim protocol, OTP subject-line code + multi-select upload)
 **Requirements doc:** `pdt-requirements.md`
 **Decision log:** `pdt-decisions.md`
 **Issue tracker:** `pdt-issues.md` (CC-owned, repo root)
@@ -139,7 +139,7 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-07-20:
 | 086 | Carousel responsive width fix on wide desktop (low priority, cosmetic) |
 | 089 | Verify SPF/DKIM/DMARC DNS records in Resend dashboard |
 
-**Next available issue number: #102**
+**Next available issue number: #103**
 
 ### Session 28 — Completed ✅
 - ✅ **#090** — Duplicate event listeners on re-rendered `.file-grid` fixed; PDF rows now use direct click listener
@@ -182,6 +182,15 @@ Tracked in `pdt-issues.md` (CC-owned). Current open issues as of 2026-07-20:
 - ✅ **PII CSV** — `PDT Members (public) - Sheet1.csv` added to `.gitignore`
 - ✅ **Queue entry shape** — `filename` field added to `pdt-music-cache-queue` entries; decision
   recorded in `pdt-decisions.md`
+- ✅ **OTP login subject line** — Supabase Magic Link email template subject changed to
+  `PDT Singers login {{ .Token }}`, code now visible in inbox/notification preview.
+  Dashboard-only change, no code/deploy.
+- ✅ **iOS Security Code AutoFill spec** — `pdt-ios-otp-autofill.md` written (not yet
+  applied): adds `autocomplete="one-time-code"` + `inputmode="numeric"` + `pattern="[0-9]*"`
+  to the OTP verify-code input in `login.html` so iOS Mail can offer the code via
+  QuickType. CC prompt included in the doc; pending Kevin's go-ahead to apply.
+- ✅ **#102** — Music Library Upload File modal supports multi-select; sequential upload
+  with per-file status list and partial-failure handling; see #102 for full detail
 
 ### Session 28 Remaining Priorities
 1. Polling/voting feature — design discussion (spec drafted Session 19, not yet built)

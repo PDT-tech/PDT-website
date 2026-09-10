@@ -3,8 +3,8 @@
  * trim-christmas-folders.js
  *
  * One-time cleanup: in each of the four Christmas voice-part folders
- * (Bari, Bass, Lead, Tenor), delete every file EXCEPT tracks belonging
- * to the five songs being kept for the season.
+ * (Bari, Bass, Lead, Tenor), delete every file EXCEPT items whose
+ * filename matches one of the titles on the KEEP_TITLES list below.
  *
  * Matching is done by normalizing filenames and checking whether they
  * contain one of the keep-list song titles as a substring. This means
@@ -59,6 +59,8 @@ const KEEP_TITLES = [
   'O Holy Night',
   'Jingle Bells',
   "Children's Medley",
+  'We Wish You a Merry Christmas',
+  'Yuletide Favorites Volume 1',
 ];
 
 const FOLDERS = [

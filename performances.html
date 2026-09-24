@@ -15,6 +15,54 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/main.css">
   <script src="/env.local.js" onerror="void 0"></script>
+
+  <!-- Scoped styles for the time-limited Featured Show block -->
+  <style>
+    .featured-show-card {
+      display: grid;
+      grid-template-columns: 1fr minmax(220px, 340px);
+      gap: var(--space-xl);
+      align-items: start;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--gold);
+      border-radius: var(--border-radius);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-sm);
+    }
+    .featured-details { margin: 0; }
+    .featured-details > div { margin-bottom: var(--space-sm); }
+    .featured-details dt {
+      font-family: var(--font-ui);
+      font-size: var(--text-xs);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--sky-deep);
+      margin-bottom: 0.2rem;
+    }
+    .featured-details dd {
+      margin: 0;
+      font-size: var(--text-base);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .featured-details dd a {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: var(--sky-deep);
+    }
+    .featured-show-media { display: block; }
+    .featured-show-media img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      display: block;
+    }
+    @media (max-width: 720px) {
+      .featured-show-card { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -48,6 +96,64 @@
     <p class="page-hero-subhead">Upcoming sing-outs and community performances</p>
   </div>
 </div>
+
+<!-- FEATURED SHOW (self-expiring — see script near </body>) -->
+<section class="page-section" id="featured-show" data-expires="2026-09-28">
+  <div class="page-section-inner">
+    <div class="featured-show-card">
+      <div class="featured-show-text">
+        <p class="info-label">Featured Show</p>
+        <h2 class="info-title" style="margin-bottom: var(--space-md);">
+          Ballad Town Harmony Presents: Last Blast of Summer
+        </h2>
+
+        <dl class="featured-details">
+          <div>
+            <dt>When</dt>
+            <dd>Sunday, September 27, 2026 &middot; 3:01 PM</dd>
+          </div>
+          <div>
+            <dt>Where</dt>
+            <dd>
+              Forest Grove Army National Guard Armory<br>
+              2950 Taylor Way, Forest Grove, OR
+            </dd>
+          </div>
+          <div>
+            <dt>Tickets</dt>
+            <dd>
+              $20 &mdash; all General Admission &nbsp;
+              <a href="https://www.tualatinvalley.com/" target="_blank" rel="noopener noreferrer">Get tickets &rarr;</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Performers</dt>
+            <dd>
+              Ballad Town Harmony Chorus, Daytime Singers Chorus (that's us),
+              Sasquatch Five, Family Ties, Sassafras; guest quartet Timeless;
+              MC Will Fox
+            </dd>
+          </div>
+        </dl>
+
+        <p class="info-body" style="margin-top: var(--space-md);">
+          PDT Singers will perform a set on this show.
+        </p>
+      </div>
+
+      <a class="featured-show-media"
+         href="/assets/images/ballad-town-harmony-last-blast-2026-09-27.png"
+         target="_blank" rel="noopener noreferrer">
+        <picture>
+          <source srcset="/assets/images/ballad-town-harmony-last-blast-2026-09-27.webp" type="image/webp">
+          <img src="/assets/images/ballad-town-harmony-last-blast-2026-09-27.png"
+               width="816" height="1056" loading="lazy"
+               alt="Ballad Town Harmony presents Last Blast of Summer — Sunday, September 27, 2026, 3:01 PM at the Forest Grove Army National Guard Armory, Forest Grove, OR. Tickets $20 general admission.">
+        </picture>
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- UPCOMING SING-OUTS -->
 <section class="page-section">
@@ -177,5 +283,20 @@
 </footer>
 
 <script src="/js/nav.js"></script>
+
+<!-- Hide any [data-expires] element once the visitor's local date is on or after its value -->
+<script>
+  (function () {
+    var now = new Date();
+    var todayStr = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0');
+    document.querySelectorAll('[data-expires]').forEach(function (el) {
+      if (todayStr >= el.getAttribute('data-expires')) {
+        el.style.display = 'none';
+      }
+    });
+  })();
+</script>
 </body>
 </html>

@@ -144,6 +144,15 @@
     <p class="info-label">Upcoming Sing-Outs</p>
     <h2 class="info-title" style="margin-bottom: var(--space-lg);">On the calendar</h2>
 
+    <!-- Featured show teaser (self-expiring — see script near </body>) -->
+    <a class="rehearsal-card" href="/performances.html#featured-show"
+       data-expires="2026-09-28"
+       style="display: block; text-decoration: none;">
+      <div class="detail-label">Sunday, September 27, 2026 &middot; 3:01 PM</div>
+      <div class="detail-value">Ballad Town Harmony's Last Blast of Summer</div>
+      <div class="detail-sub">Forest Grove, OR</div>
+    </a>
+
     <div class="rehearsal-card">
       <div class="detail-label">Friday, May 1, 2026 &middot; 6:00 PM</div>
       <div class="detail-value">First Fridays — Downtown Vancouver</div>
@@ -222,5 +231,20 @@
 
 <script src="/js/nav.js"></script>
 <script src="/js/carousel.js"></script>
+
+<!-- Hide any [data-expires] element once the visitor's local date is on or after its value -->
+<script>
+  (function () {
+    var now = new Date();
+    var todayStr = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0');
+    document.querySelectorAll('[data-expires]').forEach(function (el) {
+      if (todayStr >= el.getAttribute('data-expires')) {
+        el.style.display = 'none';
+      }
+    });
+  })();
+</script>
 </body>
 </html>

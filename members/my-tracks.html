@@ -19,8 +19,8 @@
 
   <style>
     .mt-header {
-      background: var(--forest);
-      color: var(--white);
+      background: #1a1a1a;
+      color: #ffffff;
       padding: var(--space-xl) var(--space-lg) var(--space-lg);
     }
     .mt-header > .container { max-width: var(--max-width); margin: 0 auto; }
@@ -31,7 +31,7 @@
     }
     .mt-header h1 {
       font-family: var(--font-display); font-size: var(--text-3xl);
-      color: var(--white); margin-bottom: var(--space-xs);
+      color: #ffffff; margin-bottom: var(--space-xs);
     }
     .mt-header p { color: rgba(255,255,255,0.65); font-size: var(--text-base); max-width: 560px; }
 
@@ -40,15 +40,15 @@
 
     .mt-context {
       font-family: var(--font-ui); font-size: var(--text-sm);
-      color: var(--muted); margin-bottom: var(--space-md);
+      color: #5a5a5a; margin-bottom: var(--space-md);
     }
-    .mt-context strong { color: var(--sky-deep); }
+    .mt-context strong { color: #6a9ab8; }
 
     /* ── Sticky mini-player ─────────────────────────────── */
     .mt-player {
       position: sticky; top: 0; z-index: 20;
-      background: var(--white);
-      border: 1px solid var(--rule);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.12);
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-md);
       padding: var(--space-md);
@@ -56,7 +56,7 @@
     }
     .mt-now {
       font-family: var(--font-ui); font-weight: 600;
-      font-size: var(--text-base); color: var(--forest);
+      font-size: var(--text-base); color: #1a1a1a;
       margin-bottom: var(--space-sm);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
@@ -64,51 +64,67 @@
     .mt-controls { display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center; }
     .mt-btn {
       font-family: var(--font-ui); font-size: var(--text-sm);
-      padding: 0.5rem 0.9rem; border: 1px solid var(--rule);
+      padding: 0.5rem 0.9rem; border: 1px solid rgba(0,0,0,0.12);
       border-radius: var(--border-radius); background: #f0f0f0;
-      color: var(--forest); cursor: pointer; transition: background 0.15s;
+      color: #1a1a1a; cursor: pointer; transition: background 0.15s;
     }
     .mt-btn:hover { background: #e6e6e6; }
     .mt-btn:disabled { opacity: 0.45; cursor: default; }
-    .mt-btn-primary { background: var(--sky); border-color: var(--sky); }
-    .mt-btn-primary:hover { background: var(--sky-deep); color: #fff; }
-    .mt-btn.mt-on { background: var(--sky-deep); color: #fff; border-color: var(--sky-deep); }
+    .mt-btn-primary { background: #c8dce8; border-color: #c8dce8; }
+    .mt-btn-primary:hover { background: #6a9ab8; color: #fff; }
+    .mt-btn.mt-on { background: #6a9ab8; color: #fff; border-color: #6a9ab8; }
+    /* Primary Play — big, full-width, first: the obvious tap target on a phone */
+    #mt-play {
+      width: 100%;
+      font-size: var(--text-lg);
+      font-weight: 700;
+      padding: 1rem 1.4rem;
+      margin-bottom: var(--space-xs);
+    }
 
     /* ── Toolbar + list ─────────────────────────────────── */
     .mt-toolbar {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: var(--space-sm);
-      font-family: var(--font-ui); font-size: var(--text-sm); color: var(--muted);
+      font-family: var(--font-ui); font-size: var(--text-sm); color: #5a5a5a;
     }
     .mt-selall { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
 
     .mt-song {
+      border: 1px solid rgba(0,0,0,0.12); border-radius: var(--border-radius);
+      margin-bottom: 0.5rem; background: #ffffff; overflow: hidden;
+    }
+    .mt-song-head {
       display: flex; align-items: center; gap: var(--space-sm);
-      padding: 0.7rem var(--space-sm);
-      border: 1px solid var(--rule); border-radius: var(--border-radius);
-      margin-bottom: 0.5rem; background: var(--white);
+      padding: 0.6rem var(--space-sm);
+      background: #fafafa; border-bottom: 1px solid rgba(0,0,0,0.06);
     }
-    .mt-song[data-playing="1"] { background: rgba(106,154,184,0.10); border-color: var(--sky-deep); }
-    .mt-check input, .mt-song-check { width: 18px; height: 18px; cursor: pointer; }
+    .mt-song-head:last-child { border-bottom: none; }   /* "no part track" songs */
+    .mt-song-name { flex: 1 1 auto; min-width: 0; font-family: var(--font-display); font-weight: 700; color: #1a1a1a; }
+    .mt-check input { width: 18px; height: 18px; cursor: pointer; }
+    .mt-tracks { padding: 0.25rem var(--space-sm) 0.4rem; }
+    .mt-track {
+      display: flex; align-items: center; gap: var(--space-sm);
+      padding: 0.4rem 0.25rem 0.4rem 1.5rem; border-radius: var(--border-radius);
+    }
+    .mt-track[data-playing="1"] { background: rgba(106,154,184,0.12); }
+    .mt-track-name { flex: 1 1 auto; min-width: 0; font-size: var(--text-sm); color: #2a2a2a; line-height: 1.4; }
     .mt-row-play {
-      flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
-      border: 1px solid var(--rule); background: #f0f0f0; color: var(--forest);
-      font-size: 0.9rem; cursor: pointer;
+      flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.12); background: #f0f0f0; color: #1a1a1a;
+      font-size: 0.85rem; cursor: pointer;
     }
-    .mt-row-play:hover:not(:disabled) { background: var(--sky); }
+    .mt-row-play:hover:not(:disabled) { background: #c8dce8; }
     .mt-row-play:disabled { opacity: 0.4; cursor: default; }
-    .mt-song-info { flex: 1 1 auto; min-width: 0; }
-    .mt-song-name { font-family: var(--font-display); font-weight: 700; color: var(--forest); }
-    .mt-track-name { font-size: var(--text-sm); color: var(--muted); line-height: 1.4; }
-    .mt-none { font-style: italic; color: #b0b0b0; }
+    .mt-none { font-style: italic; color: #b0b0b0; font-size: var(--text-sm); }
 
     .mt-empty, .mt-loading, .mt-error {
-      font-family: var(--font-ui); color: var(--muted);
+      font-family: var(--font-ui); color: #5a5a5a;
       text-align: center; padding: var(--space-2xl) var(--space-lg);
     }
     .mt-spinner {
       width: 32px; height: 32px; margin: 0 auto var(--space-md);
-      border: 3px solid var(--rule); border-top-color: var(--sky-deep);
+      border: 3px solid rgba(0,0,0,0.12); border-top-color: #6a9ab8;
       border-radius: 50%; animation: mt-spin 0.8s linear infinite;
     }
     @keyframes mt-spin { to { transform: rotate(360deg); } }
@@ -259,10 +275,23 @@
     return partKeywords(vp).some(k => f.includes(k))
   }
   function resolveTracks (tracks, vp) {
-    if (vp) return tracks.filter(t => isPartTrack(t.name, vp))       // list all matches
+    if (vp) {
+      const part = tracks.filter(t => isPartTrack(t.name, vp))
+      if (part.length) return part
+      // No part track for this song — fall back to the full-mix track(s) so
+      // mix-only songs (e.g. Summer Time, Yuletide Favs) still appear.
+      return tracks.filter(t => t.name.toLowerCase().includes('mix'))
+    }
     const mix = tracks.filter(t => t.name.toLowerCase().includes('mix'))
     if (mix.length) return mix
     return tracks.filter(t => t.name.toLowerCase().includes('lead'))
+  }
+
+  // Songs (folders) to hide from this page entirely, matched by normalized-name substring.
+  const EXCLUDE_SONGS = ['youre as welcome']
+  function isExcluded (name) {
+    const n = name.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim()
+    return EXCLUDE_SONGS.some(e => n.includes(e))
   }
 
   // ── State ─────────────────────────────────────────────────
@@ -285,8 +314,8 @@
   const CONFIG_KEY = 'pdt-mytracks-config'
   function loadConfig () { try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null') } catch { return null } }
   function saveConfig () {
-    const selected = [...document.querySelectorAll('.mt-song[data-selected="1"]')].map(r => r.dataset.folderId)
-    try { localStorage.setItem(CONFIG_KEY, JSON.stringify({ selected, shuffle, repeat: repeatMode, lastFileId: _lastFileId })) } catch {}
+    const selectedTracks = [...document.querySelectorAll('.mt-track[data-selected="1"]')].map(el => el.dataset.fileId)
+    try { localStorage.setItem(CONFIG_KEY, JSON.stringify({ selectedTracks, shuffle, repeat: repeatMode, lastFileId: _lastFileId })) } catch {}
   }
   function applyShuffleUI () {
     shuffleBtn.classList.toggle('mt-on', shuffle)
@@ -296,24 +325,36 @@
     repeatBtn.textContent = { off: 'Repeat: Off', all: 'Repeat: All', one: 'Repeat: One' }[repeatMode]
     repeatBtn.classList.toggle('mt-on', repeatMode !== 'off')
   }
-  function syncSelectAll () {
-    const all = [...document.querySelectorAll('.mt-song-check:not([disabled])')]
-    document.getElementById('mt-select-all').checked = all.length > 0 && all.every(cb => cb.checked)
+  // Reflect a song's per-track state onto its master checkbox (checked / dash / off).
+  function updateMaster (songEl) {
+    const checks = [...songEl.querySelectorAll('.mt-track-check')]
+    const master = songEl.querySelector('.mt-song-master')
+    if (!master || master.disabled || !checks.length) return
+    const n = checks.filter(c => c.checked).length
+    master.checked = n === checks.length
+    master.indeterminate = n > 0 && n < checks.length
+  }
+  function updateSelectAll () {
+    const all = [...document.querySelectorAll('.mt-track-check')]
+    const sa = document.getElementById('mt-select-all')
+    const n = all.filter(c => c.checked).length
+    sa.checked = all.length > 0 && n === all.length
+    sa.indeterminate = n > 0 && n < all.length
   }
   function restoreConfig () {
     const cfg = loadConfig()
     if (!cfg) return
     shuffle = !!cfg.shuffle; applyShuffleUI()
     repeatMode = ['off', 'all', 'one'].includes(cfg.repeat) ? cfg.repeat : 'off'; applyRepeatUI()
-    if (Array.isArray(cfg.selected)) {
-      const sel = new Set(cfg.selected)
-      document.querySelectorAll('.mt-song').forEach(row => {
-        const cb = row.querySelector('.mt-song-check')
-        if (!cb || cb.disabled) return
-        const on = sel.has(row.dataset.folderId)
-        cb.checked = on; row.dataset.selected = on ? '1' : '0'
+    if (Array.isArray(cfg.selectedTracks)) {
+      const sel = new Set(cfg.selectedTracks)
+      document.querySelectorAll('.mt-track').forEach(el => {
+        const cb = el.querySelector('.mt-track-check')
+        const on = sel.has(el.dataset.fileId)
+        cb.checked = on; el.dataset.selected = on ? '1' : '0'
       })
-      syncSelectAll()
+      document.querySelectorAll('.mt-song').forEach(updateMaster)
+      updateSelectAll()
       updateCount()
     }
     _lastFileId = cfg.lastFileId || null
@@ -324,26 +365,22 @@
     return a
   }
 
+  function itemFromEl (el) {
+    return {
+      fileId: el.dataset.fileId, modifiedTime: el.dataset.mt, filename: el.dataset.fn,
+      songName: el.dataset.song, trackName: el.dataset.tn
+    }
+  }
   function itemsFromSelection () {
-    const items = []
-    document.querySelectorAll('.mt-song[data-selected="1"]').forEach(row => {
-      const idx = +row.dataset.idx
-      songs[idx].resolved.forEach(t => {
-        items.push({
-          fileId: t.id, modifiedTime: t.modifiedTime, filename: t.name,
-          songName: songs[idx].songName, trackName: displayName(t.name), songIdx: idx
-        })
-      })
-    })
-    return items
+    return [...document.querySelectorAll('.mt-track[data-selected="1"]')].map(itemFromEl)
   }
 
   function setNowPlaying (text) { nowEl.textContent = text }
 
-  function highlightRow (songIdx) {
-    document.querySelectorAll('.mt-song[data-playing="1"]').forEach(r => r.dataset.playing = '0')
-    const row = document.querySelector(`.mt-song[data-idx="${songIdx}"]`)
-    if (row) row.dataset.playing = '1'
+  function highlightTrack (fileId) {
+    document.querySelectorAll('.mt-track[data-playing="1"]').forEach(r => r.dataset.playing = '0')
+    const el = document.querySelector(`.mt-track[data-file-id="${fileId}"]`)
+    if (el) el.dataset.playing = '1'
   }
 
   async function playCurrent () {
@@ -358,7 +395,7 @@
     audio.src = src
     audio.play().catch(() => {})
     setNowPlaying(`${it.songName} — ${it.trackName}`)
-    highlightRow(it.songIdx)
+    highlightTrack(it.fileId)
     _lastFileId = it.fileId
     saveConfig()
     pushToQueue({ fileId: it.fileId, modifiedTime: it.modifiedTime, filename: it.filename,
@@ -367,7 +404,12 @@
 
   async function startFrom (fileId) {
     let items = itemsFromSelection()
-    if (!items.length) { setNowPlaying('Select at least one song first.'); return }
+    // Playing a specific track via its ▶ that isn't currently checked — include it.
+    if (fileId && !items.some(x => x.fileId === fileId)) {
+      const el = document.querySelector(`.mt-track[data-file-id="${fileId}"]`)
+      if (el) items.unshift(itemFromEl(el))
+    }
+    if (!items.length) { setNowPlaying('Select at least one track first.'); return }
     if (shuffle) {
       shuffleArr(items)
       if (fileId) {
@@ -432,9 +474,9 @@
 
   // ── Rendering ─────────────────────────────────────────────
   function updateCount () {
-    const sel = document.querySelectorAll('.mt-song[data-selected="1"]').length
-    const withTracks = songs.filter(s => s.resolved.length).length
-    document.getElementById('mt-count').textContent = `${sel} of ${withTracks} selected`
+    const total = document.querySelectorAll('.mt-track').length
+    const sel = document.querySelectorAll('.mt-track[data-selected="1"]').length
+    document.getElementById('mt-count').textContent = `${sel} of ${total} track${total !== 1 ? 's' : ''} selected`
   }
 
   function render () {
@@ -442,45 +484,62 @@
     if (!songs.length) { list.innerHTML = '<p class="mt-empty">No songs found in the library.</p>'; return }
     list.innerHTML = songs.map((s, i) => {
       const has = s.resolved.length > 0
-      const tracks = has
-        ? s.resolved.map(t => escHtml(displayName(t.name))).join('<br>')
-        : '<span class="mt-none">no part track</span>'
+      const trackRows = has ? s.resolved.map(t => {
+        const tn = displayName(t.name)
+        return `
+          <div class="mt-track" data-selected="1" data-playing="0"
+               data-file-id="${escHtml(t.id)}" data-mt="${escHtml(t.modifiedTime || '')}"
+               data-fn="${escHtml(t.name)}" data-song="${escHtml(s.songName)}" data-tn="${escHtml(tn)}">
+            <label class="mt-check"><input type="checkbox" class="mt-track-check" checked></label>
+            <button class="mt-row-play" type="button" title="Play from here" aria-label="Play ${escHtml(tn)}">▶</button>
+            <span class="mt-track-name">${escHtml(tn)}</span>
+          </div>`
+      }).join('') : ''
       return `
-        <div class="mt-song" data-idx="${i}" data-folder-id="${escHtml(s.folderId)}" data-selected="${has ? '1' : '0'}" data-playing="0">
-          <label class="mt-check">
-            <input type="checkbox" class="mt-song-check" ${has ? 'checked' : 'disabled'}>
-          </label>
-          <button class="mt-row-play" type="button" ${has ? '' : 'disabled'}
-                  data-file-id="${has ? escHtml(s.resolved[0].id) : ''}"
-                  aria-label="Play ${escHtml(s.songName)} from here" title="Play from here">▶</button>
-          <div class="mt-song-info">
+        <div class="mt-song" data-song-idx="${i}">
+          <div class="mt-song-head">
+            <label class="mt-check"><input type="checkbox" class="mt-song-master" ${has ? 'checked' : 'disabled'}></label>
             <div class="mt-song-name">${escHtml(s.songName)}</div>
-            <div class="mt-track-name">${tracks}</div>
+            ${has ? '' : '<span class="mt-none">no part track</span>'}
           </div>
+          ${trackRows ? `<div class="mt-tracks">${trackRows}</div>` : ''}
         </div>`
     }).join('')
 
     list.addEventListener('change', e => {
-      const cb = e.target.closest('.mt-song-check')
-      if (!cb) return
-      cb.closest('.mt-song').dataset.selected = cb.checked ? '1' : '0'
-      syncSelectAll()
-      updateCount()
-      saveConfig()
+      const tc = e.target.closest('.mt-track-check')
+      if (tc) {
+        tc.closest('.mt-track').dataset.selected = tc.checked ? '1' : '0'
+        updateMaster(tc.closest('.mt-song'))
+        updateSelectAll(); updateCount(); saveConfig()
+        return
+      }
+      const mc = e.target.closest('.mt-song-master')
+      if (mc) {
+        const songEl = mc.closest('.mt-song')
+        songEl.querySelectorAll('.mt-track-check').forEach(c => {
+          c.checked = mc.checked
+          c.closest('.mt-track').dataset.selected = mc.checked ? '1' : '0'
+        })
+        mc.indeterminate = false
+        updateSelectAll(); updateCount(); saveConfig()
+      }
     })
     list.addEventListener('click', e => {
       const b = e.target.closest('.mt-row-play')
-      if (b && !b.disabled) startFrom(b.dataset.fileId)
+      if (b && !b.disabled) startFrom(b.closest('.mt-track').dataset.fileId)
     })
     updateCount()
   }
 
   document.getElementById('mt-select-all').addEventListener('change', e => {
     const on = e.target.checked
-    document.querySelectorAll('.mt-song-check:not([disabled])').forEach(cb => {
-      cb.checked = on
-      cb.closest('.mt-song').dataset.selected = on ? '1' : '0'
+    e.target.indeterminate = false
+    document.querySelectorAll('.mt-track-check').forEach(c => {
+      c.checked = on
+      c.closest('.mt-track').dataset.selected = on ? '1' : '0'
     })
+    document.querySelectorAll('.mt-song-master').forEach(m => { if (!m.disabled) { m.checked = on; m.indeterminate = false } })
     updateCount()
     saveConfig()
   })
@@ -489,7 +548,7 @@
     const el = document.getElementById('mt-context')
     if (vp) {
       const label = vp.charAt(0).toUpperCase() + vp.slice(1)
-      el.innerHTML = `Showing your part: <strong>${escHtml(label)}</strong> — one row per song.`
+      el.innerHTML = `Showing your part: <strong>${escHtml(label)}</strong> — check the tracks you want to play (use a song's top checkbox to toggle all of its tracks).`
     } else {
       el.innerHTML = `No voice part is set on your profile, so we're showing <strong>full-mix</strong> tracks (or the Lead part where there's no mix). Ask an admin to set your voice part for your own part tracks.`
     }
@@ -510,7 +569,10 @@
       if (!res.ok) throw new Error('HTTP ' + res.status)
       const data = await res.json()
       const vp = window.__PDT_USER?.voice_part || null
-      songs = (data || []).map(s => ({ ...s, resolved: resolveTracks(s.tracks || [], vp) }))
+      songs = (data || [])
+        .filter(s => !isExcluded(s.songName))
+        .map(s => ({ ...s, resolved: resolveTracks(s.tracks || [], vp) }))
+        .filter(s => s.resolved.length > 0)   // hide folders with no playable tracks for this member
       setContext(vp)
       render()
       restoreConfig()

@@ -99,6 +99,20 @@ async function listFiles (token, folderId) {
   return data.files || []
 }
 
+// Browser-playable audio only (WMA is intentionally excluded — <audio> can't
+// decode it). Recursively gathers audio under a folder so song folders whose
+// tracks live in sub-folders (e.g. "WBQA Tags" → Series 1..6) are covered.
+const AUDIO_RE = /\.(mp3|m4a|wav|aiff)$/i
+async function collectAudioFiles (token, folderId) {
+  const files = await listFiles(token, folderId)
+  let audio = files
+    .filter(f => f.mimeType !== 'application/vnd.google-apps.folder' && AUDIO_RE.test(f.name))
+    .map(f => ({ id: f.id, name: f.name, modifiedTime: f.modifiedTime }))
+  const subs = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder')
+  for (const sub of subs) audio = audio.concat(await collectAudioFiles(token, sub.id))
+  return audio
+}
+
 // ── Auth ─────────────────────────────────────────────────────
 
 async function validateSession (event) {
@@ -222,10 +236,7 @@ export const handler = async (event) => {
       const token   = await getAccessToken(serviceAccount)
       const folders = await listFolders(token, musicFolderId)
       const songs   = await Promise.all(folders.map(async (folder) => {
-        const files  = await listFiles(token, folder.id)
-        const tracks = files
-          .filter(f => /\.(mp3|m4a|wav|aiff)$/i.test(f.name))
-          .map(f => ({ id: f.id, name: f.name, modifiedTime: f.modifiedTime }))
+        const tracks = await collectAudioFiles(token, folder.id)
         return { folderId: folder.id, songName: folder.name, tracks }
       }))
       songs.sort((a, b) => a.songName.localeCompare(b.songName))

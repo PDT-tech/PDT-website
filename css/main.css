@@ -799,7 +799,25 @@ body {
    carousel). Its watercolor has a light background that cannot be transparent, so
    this band stays light in BOTH modes to prevent a white box on a dark page. */
 .cityscape-band {
-  background: #f7f3ee;
-  padding: var(--space-xl) var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
   text-align: center;
+}
+
+/* Cityscape sized to 2/3 the max width of the content column used by the other
+   sections (--max-width), centered; shrinks to fit on narrow screens.
+   Overrides the hero's 70% sizing. */
+.cityscape-band .hero-cityscape {
+  width: 100%;
+  max-width: calc(var(--max-width) * 2 / 3);
+  margin: 0 auto;
+}
+
+/* The tall gaps above/below the cityscape come from the neighboring sections'
+   own vertical padding (info-section: --space-3xl bottom; page-section:
+   --space-2xl top). Tighten only where they border the cityscape band. */
+.info-section:has(+ .cityscape-band) {
+  padding-bottom: var(--space-md);
+}
+.cityscape-band + .page-section {
+  padding-top: var(--space-md);
 }

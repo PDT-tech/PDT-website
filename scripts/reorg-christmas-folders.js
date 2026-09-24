@@ -296,8 +296,14 @@ async function main() {
   }
 
   // ---- LIVE ----
+  // Resilient + re-runnable: per-file try/catch (so a file tech@ can't edit is
+  // skipped, not fatal), and a target-name guard so a partial prior run doesn't
+  // create duplicates on re-run (if the standardized name is already in the
+  // target folder, the leftover source copy is trashed instead of moved).
   console.log('\n=== Executing ===');
   const folderIdByName = new Map(existingFolders);
+  const targetNames = new Map();  // folderName -> Set of names already in the target folder
+
   async function ensureFolder(name) {
     if (folderIdByName.has(name)) return folderIdByName.get(name);
     const res = await drive.files.create({ requestBody: { name, mimeType: FOLDER_MIME, parents: [parentId] }, fields: 'id' });
@@ -305,17 +311,50 @@ async function main() {
     console.log(`  created ${name}`);
     return res.data.id;
   }
+  async function namesInTarget(name, id) {
+    if (!targetNames.has(name)) {
+      const existing = await listAllFiles(drive, id);
+      targetNames.set(name, new Set(existing.map((f) => f.name)));
+    }
+    return targetNames.get(name);
+  }
+
+  const skipped = [];
+  let didMove = 0, didTrash = 0;
   for (const a of actions) {
-    if (a.type === 'move') {
-      const targetId = await ensureFolder(a.folderName);
-      await drive.files.update({ fileId: a.file.id, addParents: targetId, removeParents: sourceIdByLabel.get(a.file.from), requestBody: { name: a.std }, fields: 'id' });
-    } else if (a.type === 'trash') {
-      await drive.files.update({ fileId: a.file.id, requestBody: { trashed: true }, fields: 'id' });
+    try {
+      if (a.type === 'move') {
+        const targetId = await ensureFolder(a.folderName);
+        const names = await namesInTarget(a.folderName, targetId);
+        if (names.has(a.std)) {
+          // Already migrated in a prior run — this leftover copy is redundant.
+          await drive.files.update({ fileId: a.file.id, requestBody: { trashed: true }, fields: 'id' });
+          didTrash++;
+        } else {
+          await drive.files.update({ fileId: a.file.id, addParents: targetId, removeParents: sourceIdByLabel.get(a.file.from), requestBody: { name: a.std }, fields: 'id' });
+          names.add(a.std);
+          didMove++;
+        }
+      } else if (a.type === 'trash') {
+        await drive.files.update({ fileId: a.file.id, requestBody: { trashed: true }, fields: 'id' });
+        didTrash++;
+      }
+    } catch (err) {
+      skipped.push(a);
+      console.log(`  ⚠ SKIP ${a.type} [${a.file.from}] ${a.file.name} — ${err.message}`);
     }
   }
-  console.log(`\nDone. Moved+renamed ${moveCount}, trashed ${trashCount} duplicate(s).`);
-  console.log('Conflicts (if any) were left in their voice-part folders for manual review;');
-  console.log('once those are resolved, the four voice-part folders can be deleted by hand.');
+
+  console.log(`\nDone. Moved ${didMove}, trashed ${didTrash}, skipped ${skipped.length}.`);
+  if (skipped.length) {
+    console.log('\n=== SKIPPED (left in place) — tech@pdtsingers.org is not the owner/editor of these ===');
+    skipped.forEach((s) => console.log(`  ${s.type}  [${s.file.from}] ${s.file.name}`));
+    console.log('\nTo finish: in Drive, transfer ownership of these files to tech@pdtsingers.org');
+    console.log('(or grant it Editor), then re-run with --live. Already-migrated files are detected');
+    console.log('and skipped, so re-running is safe and will not create duplicates.');
+  } else {
+    console.log('All actions applied. The four voice-part folders should be empty and safe to delete by hand.');
+  }
 }
 
 main().catch((err) => { console.error('Error:', err.message); process.exit(1); });

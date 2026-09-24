@@ -72,10 +72,13 @@
     <p class="hero-subhead">Singing together. Sharing the joy.</p>
     <div class="tagline-pill">Music, Fellowship &amp; Fun</div>
 
-    <!-- Cityscape — bottom logo piece, bleeds to edges -->
-    <img src="assets/images/Portland_DayTime_Singers_Cityscape_cropped.webp"
-         alt="Portland skyline, Mt Hood, and Pacific Northwest forest — Portland DayTime Singers"
-         class="hero-cityscape">
+    <!-- Carousel — moved here (swapped with the cityscape) -->
+    <section class="carousel-section">
+      <div id="carousel" class="carousel-container">
+        <img class="carousel-img carousel-active" id="carousel-placeholder"
+             src="/assets/images/PDT_logo_color_2.jpeg" alt="Portland DayTime Singers">
+      </div>
+    </section>
 
   </div>
 
@@ -131,12 +134,13 @@
 
 </div>
 
-<section class="carousel-section">
-  <div id="carousel" class="carousel-container">
-    <img class="carousel-img carousel-active" id="carousel-placeholder"
-         src="/assets/images/PDT_logo_color_2.jpeg" alt="Portland DayTime Singers">
-  </div>
-</section>
+<!-- Cityscape — moved here (swapped with the carousel). Light backing band keeps
+     its watercolor background readable in both light and dark mode. -->
+<div class="cityscape-band">
+  <img src="assets/images/Portland_DayTime_Singers_Cityscape_cropped.webp"
+       alt="Portland skyline, Mt Hood, and Pacific Northwest forest — Portland DayTime Singers"
+       class="hero-cityscape">
+</div>
 
 <!-- UPCOMING PERFORMANCES -->
 <section class="page-section">

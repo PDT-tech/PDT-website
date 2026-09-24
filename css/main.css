@@ -767,6 +767,7 @@ body {
 
 /* ── Carousel ───────────────────────────────────────────────── */
 .carousel-section {
+  width: 100%;  /* fill the hero column (flex align-items:center would otherwise collapse it to 0) */
   max-width: var(--max-width);
   margin: 0 auto;  /* spacing handled by hero-spacer above and coming-soon-band below */
 }
@@ -792,4 +793,13 @@ body {
 
 .carousel-img.carousel-active {
   opacity: 1;
+}
+
+/* Cityscape band — the cityscape was relocated out of the hero (swapped with the
+   carousel). Its watercolor has a light background that cannot be transparent, so
+   this band stays light in BOTH modes to prevent a white box on a dark page. */
+.cityscape-band {
+  background: #f7f3ee;
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
 }

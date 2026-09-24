@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>My Part Tracks — Portland DayTime Singers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/members.css">
+  <script src="/env.local.js" onerror="void 0"></script>
+
+  <style>
+    .mt-header {
+      background: var(--forest);
+      color: var(--white);
+      padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    }
+    .mt-header > .container { max-width: var(--max-width); margin: 0 auto; }
+    .mt-header .music-eyebrow {
+      font-family: var(--font-ui); font-size: var(--text-xs);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); margin-bottom: 0.4rem;
+    }
+    .mt-header h1 {
+      font-family: var(--font-display); font-size: var(--text-3xl);
+      color: var(--white); margin-bottom: var(--space-xs);
+    }
+    .mt-header p { color: rgba(255,255,255,0.65); font-size: var(--text-base); max-width: 560px; }
+
+    .mt-content { padding: var(--space-lg); }
+    .mt-content > .container { max-width: var(--max-width); margin: 0 auto; }
+
+    .mt-context {
+      font-family: var(--font-ui); font-size: var(--text-sm);
+      color: var(--muted); margin-bottom: var(--space-md);
+    }
+    .mt-context strong { color: var(--sky-deep); }
+
+    /* ── Sticky mini-player ─────────────────────────────── */
+    .mt-player {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    .mt-now {
+      font-family: var(--font-ui); font-weight: 600;
+      font-size: var(--text-base); color: var(--forest);
+      margin-bottom: var(--space-sm);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #mt-audio { width: 100%; margin-bottom: var(--space-sm); }
+    .mt-controls { display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center; }
+    .mt-btn {
+      font-family: var(--font-ui); font-size: var(--text-sm);
+      padding: 0.5rem 0.9rem; border: 1px solid var(--rule);
+      border-radius: var(--border-radius); background: #f0f0f0;
+      color: var(--forest); cursor: pointer; transition: background 0.15s;
+    }
+    .mt-btn:hover { background: #e6e6e6; }
+    .mt-btn:disabled { opacity: 0.45; cursor: default; }
+    .mt-btn-primary { background: var(--sky); border-color: var(--sky); }
+    .mt-btn-primary:hover { background: var(--sky-deep); color: #fff; }
+    .mt-btn.mt-on { background: var(--sky-deep); color: #fff; border-color: var(--sky-deep); }
+
+    /* ── Toolbar + list ─────────────────────────────────── */
+    .mt-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: var(--space-sm);
+      font-family: var(--font-ui); font-size: var(--text-sm); color: var(--muted);
+    }
+    .mt-selall { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+
+    .mt-song {
+      display: flex; align-items: center; gap: var(--space-sm);
+      padding: 0.7rem var(--space-sm);
+      border: 1px solid var(--rule); border-radius: var(--border-radius);
+      margin-bottom: 0.5rem; background: var(--white);
+    }
+    .mt-song[data-playing="1"] { background: rgba(106,154,184,0.10); border-color: var(--sky-deep); }
+    .mt-check input, .mt-song-check { width: 18px; height: 18px; cursor: pointer; }
+    .mt-row-play {
+      flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--rule); background: #f0f0f0; color: var(--forest);
+      font-size: 0.9rem; cursor: pointer;
+    }
+    .mt-row-play:hover:not(:disabled) { background: var(--sky); }
+    .mt-row-play:disabled { opacity: 0.4; cursor: default; }
+    .mt-song-info { flex: 1 1 auto; min-width: 0; }
+    .mt-song-name { font-family: var(--font-display); font-weight: 700; color: var(--forest); }
+    .mt-track-name { font-size: var(--text-sm); color: var(--muted); line-height: 1.4; }
+    .mt-none { font-style: italic; color: #b0b0b0; }
+
+    .mt-empty, .mt-loading, .mt-error {
+      font-family: var(--font-ui); color: var(--muted);
+      text-align: center; padding: var(--space-2xl) var(--space-lg);
+    }
+    .mt-spinner {
+      width: 32px; height: 32px; margin: 0 auto var(--space-md);
+      border: 3px solid var(--rule); border-top-color: var(--sky-deep);
+      border-radius: 50%; animation: mt-spin 0.8s linear infinite;
+    }
+    @keyframes mt-spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .mt-controls { justify-content: space-between; }
+      .mt-btn { flex: 1 1 auto; text-align: center; }
+      .mt-btn-primary { flex-basis: 100%; }
+    }
+  </style>
+</head>
+<body class="members-page">
+
+<!-- MEMBER NAV -->
+<nav class="member-nav">
+  <a href="/" class="member-nav-brand">PDT Singers</a>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="member-nav-links">
+    <li><a href="/members/music.html">Music</a></li>
+    <li><a href="/members/calendar.html">Calendar</a></li>
+    <li><a href="/members/photos.html">Photos</a></li>
+    <li><a href="/members/attendance.html">Can You Be There?</a></li>
+    <li><a href="/members/">Member Home</a></li>
+    <li><a href="/members/directors-notes.html">Director's Notes</a></li>
+    <li><a href="/members/poohbah.html">Poohbahs' Prattlings</a></li>
+    <li><a href="/members/events.html">Events</a></li>
+    <li><a href="/members/sunburst.html">The Sunburst</a></li>
+    <li class="pdt-census-link" style="display:none"><a href="/members/admin-attendance.html">Attendance Report</a></li>
+  </ul>
+  <div class="member-nav-right">
+    <span class="member-nav-user">👋 <span class="pdt-user-name">Member</span></span>
+    <a href="#" class="pdt-logout-btn nav-logout">Sign out</a>
+  </div>
+</nav>
+
+<header class="mt-header">
+  <div class="container">
+    <p class="music-eyebrow">Portland DayTime Singers — Member Portal</p>
+    <h1>My Part Tracks</h1>
+    <p>Your voice part's learning track for every song, in one place. Pick the songs you want and play them straight through, on shuffle, or on repeat.</p>
+  </div>
+</header>
+
+<main class="mt-content">
+  <div class="container">
+    <p class="mt-context" id="mt-context"></p>
+
+    <!-- Mini player -->
+    <div class="mt-player">
+      <div class="mt-now" id="mt-now">Select songs and press Play.</div>
+      <audio id="mt-audio" controls preload="none"></audio>
+      <div class="mt-controls">
+        <button id="mt-play" class="mt-btn mt-btn-primary" type="button">▶ Play selected</button>
+        <button id="mt-prev" class="mt-btn" type="button" aria-label="Previous track">⏮ Prev</button>
+        <button id="mt-next" class="mt-btn" type="button" aria-label="Next track">Next ⏭</button>
+        <button id="mt-shuffle" class="mt-btn" type="button" aria-pressed="false">🔀 Shuffle</button>
+        <button id="mt-repeat" class="mt-btn" type="button">Repeat: Off</button>
+      </div>
+    </div>
+
+    <div id="mt-loading" class="mt-loading">
+      <div class="mt-spinner"></div>
+      Loading your tracks…
+    </div>
+    <div id="mt-error" class="mt-error" style="display:none">
+      Unable to load your tracks right now. Please try again in a moment.
+    </div>
+
+    <div id="mt-main" style="display:none">
+      <div class="mt-toolbar">
+        <label class="mt-selall"><input type="checkbox" id="mt-select-all" checked> Select all</label>
+        <span class="mt-count" id="mt-count"></span>
+      </div>
+      <div id="mt-list" class="mt-list"></div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="members-footer">
+  <div class="members-footer-inner">
+    <span>&copy; 2026 <a href="/">Portland DayTime Singers</a> &nbsp;&middot;&nbsp; Members Only</span>
+    <a href="/">Home Page</a>
+  </div>
+</footer>
+
+<script type="module">
+  import '../js/auth-guard.js'
+  import { supabase } from '../js/supabase.js'
+
+  // ── Helpers ───────────────────────────────────────────────
+  function escHtml (s) {
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  }
+  function displayName (n) { return n.replace(/\.(mp3|m4a|wav|aiff)$/i, '') }
+
+  let _token = null
+  async function getToken () {
+    if (_token) return _token
+    const { data } = await supabase.auth.getSession()
+    _token = data.session?.access_token ?? ''
+    return _token
+  }
+
+  // ── Audio cache (Cache API) — shared with music.html (#095) ──
+  const CACHE_NAME = 'pdt-music-v1'
+  const QUEUE_KEY  = 'pdt-music-cache-queue'
+  const QUEUE_CAP  = 10
+  function cacheUrl (id, mt) { return `https://pdt-music-cache/${id}/${encodeURIComponent(mt)}` }
+  function getQueue () { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]') } catch { return [] } }
+  function saveQueue (q) { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)) } catch {} }
+  async function pushToQueue (entry) {
+    let q = getQueue().filter(e => e.fileId !== entry.fileId)
+    q.unshift(entry)
+    if (q.length > QUEUE_CAP) {
+      const ev = q.splice(QUEUE_CAP)
+      try { const c = await caches.open(CACHE_NAME); for (const e of ev) await c.delete(cacheUrl(e.fileId, e.modifiedTime)) } catch {}
+    }
+    saveQueue(q)
+  }
+  async function getOrFetchAudio (fileId, modifiedTime, filename) {
+    const key = cacheUrl(fileId, modifiedTime)
+    try {
+      const c = await caches.open(CACHE_NAME)
+      const hit = await c.match(key)
+      if (hit) return URL.createObjectURL(await hit.blob())
+    } catch {}
+    const res = await fetch(
+      `/api/music-download?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`,
+      { headers: { Authorization: 'Bearer ' + await getToken() } }
+    )
+    if (!res.ok) throw new Error('Download failed')
+    try { const c = await caches.open(CACHE_NAME); await c.put(key, res.clone()) } catch {}
+    return URL.createObjectURL(await res.blob())
+  }
+
+  // ── Voice-part → track resolution ─────────────────────────
+  // Part tracks are identified by a keyword in the filename (same rule as the
+  // Music Library's isMyTrack). No voice part on the profile → prefer a
+  // "mix" (full-mix) track, else fall back to the Lead part.
+  function partKeywords (vp) {
+    return ({ tenor:['tenor'], lead:['lead'], baritone:['baritone','bari'], bass:['bass'] })[vp] || (vp ? [vp] : [])
+  }
+  function isPartTrack (name, vp) {
+    const f = name.toLowerCase()
+    return partKeywords(vp).some(k => f.includes(k))
+  }
+  function resolveTracks (tracks, vp) {
+    if (vp) return tracks.filter(t => isPartTrack(t.name, vp))       // list all matches
+    const mix = tracks.filter(t => t.name.toLowerCase().includes('mix'))
+    if (mix.length) return mix
+    return tracks.filter(t => t.name.toLowerCase().includes('lead'))
+  }
+
+  // ── State ─────────────────────────────────────────────────
+  let songs       = []       // [{ songName, tracks, resolved }]
+  let shuffle     = false
+  let repeatMode  = 'off'    // 'off' | 'all' | 'one'
+  let playOrder   = []       // array of item objects currently queued
+  let currentIndex = -1
+  let blobUrl     = null
+
+  const audio      = document.getElementById('mt-audio')
+  const nowEl      = document.getElementById('mt-now')
+  const shuffleBtn = document.getElementById('mt-shuffle')
+  const repeatBtn  = document.getElementById('mt-repeat')
+
+  let _lastFileId = null
+
+  // ── Persisted player config (settings only — no audio is pre-cached, so the
+  // phone-side Cache API stays at its existing FIFO cap of 10 tracks) ────────
+  const CONFIG_KEY = 'pdt-mytracks-config'
+  function loadConfig () { try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null') } catch { return null } }
+  function saveConfig () {
+    const selected = [...document.querySelectorAll('.mt-song[data-selected="1"]')].map(r => r.dataset.folderId)
+    try { localStorage.setItem(CONFIG_KEY, JSON.stringify({ selected, shuffle, repeat: repeatMode, lastFileId: _lastFileId })) } catch {}
+  }
+  function applyShuffleUI () {
+    shuffleBtn.classList.toggle('mt-on', shuffle)
+    shuffleBtn.setAttribute('aria-pressed', String(shuffle))
+  }
+  function applyRepeatUI () {
+    repeatBtn.textContent = { off: 'Repeat: Off', all: 'Repeat: All', one: 'Repeat: One' }[repeatMode]
+    repeatBtn.classList.toggle('mt-on', repeatMode !== 'off')
+  }
+  function syncSelectAll () {
+    const all = [...document.querySelectorAll('.mt-song-check:not([disabled])')]
+    document.getElementById('mt-select-all').checked = all.length > 0 && all.every(cb => cb.checked)
+  }
+  function restoreConfig () {
+    const cfg = loadConfig()
+    if (!cfg) return
+    shuffle = !!cfg.shuffle; applyShuffleUI()
+    repeatMode = ['off', 'all', 'one'].includes(cfg.repeat) ? cfg.repeat : 'off'; applyRepeatUI()
+    if (Array.isArray(cfg.selected)) {
+      const sel = new Set(cfg.selected)
+      document.querySelectorAll('.mt-song').forEach(row => {
+        const cb = row.querySelector('.mt-song-check')
+        if (!cb || cb.disabled) return
+        const on = sel.has(row.dataset.folderId)
+        cb.checked = on; row.dataset.selected = on ? '1' : '0'
+      })
+      syncSelectAll()
+      updateCount()
+    }
+    _lastFileId = cfg.lastFileId || null
+  }
+
+  function shuffleArr (a) {
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] }
+    return a
+  }
+
+  function itemsFromSelection () {
+    const items = []
+    document.querySelectorAll('.mt-song[data-selected="1"]').forEach(row => {
+      const idx = +row.dataset.idx
+      songs[idx].resolved.forEach(t => {
+        items.push({
+          fileId: t.id, modifiedTime: t.modifiedTime, filename: t.name,
+          songName: songs[idx].songName, trackName: displayName(t.name), songIdx: idx
+        })
+      })
+    })
+    return items
+  }
+
+  function setNowPlaying (text) { nowEl.textContent = text }
+
+  function highlightRow (songIdx) {
+    document.querySelectorAll('.mt-song[data-playing="1"]').forEach(r => r.dataset.playing = '0')
+    const row = document.querySelector(`.mt-song[data-idx="${songIdx}"]`)
+    if (row) row.dataset.playing = '1'
+  }
+
+  async function playCurrent () {
+    const it = playOrder[currentIndex]
+    if (!it) return
+    if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null }
+    setNowPlaying('Loading…')
+    let src
+    try { src = await getOrFetchAudio(it.fileId, it.modifiedTime, it.filename) }
+    catch { setNowPlaying('Playback failed — please try again.'); return }
+    blobUrl = src
+    audio.src = src
+    audio.play().catch(() => {})
+    setNowPlaying(`${it.songName} — ${it.trackName}`)
+    highlightRow(it.songIdx)
+    _lastFileId = it.fileId
+    saveConfig()
+    pushToQueue({ fileId: it.fileId, modifiedTime: it.modifiedTime, filename: it.filename,
+                  songName: it.songName, trackName: it.trackName, playedAt: Date.now() })
+  }
+
+  async function startFrom (fileId) {
+    let items = itemsFromSelection()
+    if (!items.length) { setNowPlaying('Select at least one song first.'); return }
+    if (shuffle) {
+      shuffleArr(items)
+      if (fileId) {
+        const k = items.findIndex(x => x.fileId === fileId)
+        if (k > 0) { const [it] = items.splice(k, 1); items.unshift(it) }
+      }
+      currentIndex = 0
+    } else {
+      currentIndex = fileId ? Math.max(0, items.findIndex(x => x.fileId === fileId)) : 0
+    }
+    playOrder = items
+    await playCurrent()
+  }
+
+  function next () {
+    if (!playOrder.length) return
+    if (currentIndex < playOrder.length - 1) { currentIndex++; playCurrent() }
+    else if (repeatMode === 'all') { if (shuffle) shuffleArr(playOrder); currentIndex = 0; playCurrent() }
+  }
+  function prev () {
+    if (!playOrder.length) return
+    if (currentIndex > 0) { currentIndex--; playCurrent() }
+    else if (repeatMode === 'all') { currentIndex = playOrder.length - 1; playCurrent() }
+  }
+
+  audio.addEventListener('ended', () => {
+    if (repeatMode === 'one') { audio.currentTime = 0; audio.play().catch(() => {}); return }
+    next()
+  })
+
+  // ── Controls ──────────────────────────────────────────────
+  document.getElementById('mt-play').addEventListener('click', () => startFrom(null))
+  document.getElementById('mt-next').addEventListener('click', next)
+  document.getElementById('mt-prev').addEventListener('click', prev)
+
+  shuffleBtn.addEventListener('click', () => {
+    shuffle = !shuffle
+    applyShuffleUI()
+    // If something is playing, re-order live, keeping the current track in place.
+    if (playOrder.length && currentIndex >= 0) {
+      const cur = playOrder[currentIndex]
+      if (shuffle) {
+        const rest = playOrder.filter((_, i) => i !== currentIndex)
+        shuffleArr(rest)
+        playOrder = [cur, ...rest]
+        currentIndex = 0
+      } else {
+        const nat = itemsFromSelection()
+        const k = nat.findIndex(x => x.fileId === cur.fileId)
+        playOrder = nat
+        currentIndex = k >= 0 ? k : 0
+      }
+    }
+    saveConfig()
+  })
+
+  repeatBtn.addEventListener('click', () => {
+    repeatMode = repeatMode === 'off' ? 'all' : repeatMode === 'all' ? 'one' : 'off'
+    applyRepeatUI()
+    saveConfig()
+  })
+
+  // ── Rendering ─────────────────────────────────────────────
+  function updateCount () {
+    const sel = document.querySelectorAll('.mt-song[data-selected="1"]').length
+    const withTracks = songs.filter(s => s.resolved.length).length
+    document.getElementById('mt-count').textContent = `${sel} of ${withTracks} selected`
+  }
+
+  function render () {
+    const list = document.getElementById('mt-list')
+    if (!songs.length) { list.innerHTML = '<p class="mt-empty">No songs found in the library.</p>'; return }
+    list.innerHTML = songs.map((s, i) => {
+      const has = s.resolved.length > 0
+      const tracks = has
+        ? s.resolved.map(t => escHtml(displayName(t.name))).join('<br>')
+        : '<span class="mt-none">no part track</span>'
+      return `
+        <div class="mt-song" data-idx="${i}" data-folder-id="${escHtml(s.folderId)}" data-selected="${has ? '1' : '0'}" data-playing="0">
+          <label class="mt-check">
+            <input type="checkbox" class="mt-song-check" ${has ? 'checked' : 'disabled'}>
+          </label>
+          <button class="mt-row-play" type="button" ${has ? '' : 'disabled'}
+                  data-file-id="${has ? escHtml(s.resolved[0].id) : ''}"
+                  aria-label="Play ${escHtml(s.songName)} from here" title="Play from here">▶</button>
+          <div class="mt-song-info">
+            <div class="mt-song-name">${escHtml(s.songName)}</div>
+            <div class="mt-track-name">${tracks}</div>
+          </div>
+        </div>`
+    }).join('')
+
+    list.addEventListener('change', e => {
+      const cb = e.target.closest('.mt-song-check')
+      if (!cb) return
+      cb.closest('.mt-song').dataset.selected = cb.checked ? '1' : '0'
+      syncSelectAll()
+      updateCount()
+      saveConfig()
+    })
+    list.addEventListener('click', e => {
+      const b = e.target.closest('.mt-row-play')
+      if (b && !b.disabled) startFrom(b.dataset.fileId)
+    })
+    updateCount()
+  }
+
+  document.getElementById('mt-select-all').addEventListener('change', e => {
+    const on = e.target.checked
+    document.querySelectorAll('.mt-song-check:not([disabled])').forEach(cb => {
+      cb.checked = on
+      cb.closest('.mt-song').dataset.selected = on ? '1' : '0'
+    })
+    updateCount()
+    saveConfig()
+  })
+
+  function setContext (vp) {
+    const el = document.getElementById('mt-context')
+    if (vp) {
+      const label = vp.charAt(0).toUpperCase() + vp.slice(1)
+      el.innerHTML = `Showing your part: <strong>${escHtml(label)}</strong> — one row per song.`
+    } else {
+      el.innerHTML = `No voice part is set on your profile, so we're showing <strong>full-mix</strong> tracks (or the Lead part where there's no mix). Ask an admin to set your voice part for your own part tracks.`
+    }
+  }
+
+  function showState (which) {
+    document.getElementById('mt-loading').style.display = which === 'loading' ? 'block' : 'none'
+    document.getElementById('mt-error').style.display   = which === 'error'   ? 'block' : 'none'
+    document.getElementById('mt-main').style.display    = which === 'content' ? 'block' : 'none'
+  }
+
+  // ── Load ──────────────────────────────────────────────────
+  async function load () {
+    try {
+      const res = await fetch('/.netlify/functions/drive-music?action=all-tracks', {
+        headers: { Authorization: 'Bearer ' + await getToken() }
+      })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      const data = await res.json()
+      const vp = window.__PDT_USER?.voice_part || null
+      songs = (data || []).map(s => ({ ...s, resolved: resolveTracks(s.tracks || [], vp) }))
+      setContext(vp)
+      render()
+      restoreConfig()
+      showState('content')
+
+      // Deep-linked from the dashboard "Play my tracks" button: resume the last
+      // configuration and start. Browsers may block autoplay on a fresh page
+      // load (especially on mobile) — the player is fully cued either way, so a
+      // single tap on the play control starts it.
+      if (new URLSearchParams(location.search).get('play') === '1') {
+        startFrom(_lastFileId || null)
+      }
+    } catch (e) {
+      console.error('my-tracks load:', e)
+      showState('error')
+    }
+  }
+
+  // Wait for the profile so we know the member's voice part before resolving.
+  if (window.__PDT_USER) load()
+  else document.addEventListener('pdt:profile-loaded', load, { once: true })
+</script>
+
+<script src="/js/nav-member.js"></script>
+</body>
+</html>

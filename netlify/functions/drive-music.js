@@ -209,6 +209,37 @@ export const handler = async (event) => {
     }
   }
 
+  // ── all-tracks action: every song folder + its audio files in one call ──
+  // Used by the "My Part Tracks" page so it doesn't have to make one request
+  // per song. Voice-part filtering happens client-side (keeps that logic in
+  // one place). Per-folder listings run in parallel to keep latency down.
+  if (action === 'all-tracks') {
+    const musicFolderId = process.env.GOOGLE_DRIVE_MUSIC_FOLDER_ID
+    if (!musicFolderId) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Music folder ID not configured' }) }
+    }
+    try {
+      const token   = await getAccessToken(serviceAccount)
+      const folders = await listFolders(token, musicFolderId)
+      const songs   = await Promise.all(folders.map(async (folder) => {
+        const files  = await listFiles(token, folder.id)
+        const tracks = files
+          .filter(f => /\.(mp3|m4a|wav|aiff)$/i.test(f.name))
+          .map(f => ({ id: f.id, name: f.name, modifiedTime: f.modifiedTime }))
+        return { folderId: folder.id, songName: folder.name, tracks }
+      }))
+      songs.sort((a, b) => a.songName.localeCompare(b.songName))
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, max-age=300' },
+        body: JSON.stringify(songs)
+      }
+    } catch (err) {
+      console.error('drive-music all-tracks error:', err)
+      return { statusCode: 500, body: JSON.stringify({ error: 'Drive API error', detail: err.message }) }
+    }
+  }
+
   if (!type || !['folders', 'files'].includes(type)) {
     return { statusCode: 400, body: JSON.stringify({ error: 'type must be folders or files' }) }
   }

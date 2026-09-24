@@ -74,6 +74,20 @@
   <!-- DASHBOARD GRID -->
   <div class="dashboard-grid">
 
+    <!-- MY PART TRACKS (featured, full width) -->
+    <div class="dash-card dash-card--featured" style="grid-column: 1 / -1;">
+      <div class="dash-card-label">My Part Tracks</div>
+      <div class="dash-card-title">Your learning tracks, ready to play</div>
+      <p class="dash-card-body">
+        Every song's track for your voice part in one playlist — play straight through,
+        shuffle, or repeat. Your selection and player settings are remembered between visits.
+      </p>
+      <div class="dash-card-actions">
+        <a href="/members/my-tracks.html?play=1" class="btn-primary">🎧 Play my tracks</a>
+        <a href="/members/my-tracks.html" class="dash-card-more" style="text-decoration:none; align-self:center;">Open the player &rarr;</a>
+      </div>
+    </div>
+
     <!-- QUICK LINKS -->
     <div class="dash-card">
       <div class="dash-card-label">Quick Links</div>
@@ -147,17 +161,6 @@
       </div>
       <a href="/members/sunburst.html" class="dash-card-more">
         All Issues &rarr;
-      </a>
-    </div>
-
-    <!-- LATEST FROM THE POOHBAHS -->
-    <div class="dash-card">
-      <div class="dash-card-label">Latest from the Poohbahs</div>
-      <div id="poohbah-preview" class="post-preview-list">
-        <div class="post-preview-empty">No posts yet.</div>
-      </div>
-      <a href="/members/poohbah.html" class="dash-card-more">
-        All Prattlings &rarr;
       </a>
     </div>
 
@@ -344,7 +347,6 @@
 
   try {
     loadRecentPosts('directors_notes', 'directors-notes-preview', '/members/directors-notes.html')
-    loadRecentPosts('poohbah', 'poohbah-preview', '/members/poohbah.html')
   } catch (e) {
     // Posts table not yet created — previews show "No posts yet"
   }

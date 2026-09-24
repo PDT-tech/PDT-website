@@ -362,6 +362,76 @@ body {
   color: var(--text);
 }
 
+/* ── Hero announcement badge (self-expiring via [data-expires]) ─────────────
+   Starburst "seal" pinned to the hero's upper-left, layered over the hero.
+   --badge-tilt is the single lever for rotation (negative = counter-clockwise). */
+.hero-badge {
+  --badge-tilt: -30deg;
+  position: absolute;
+  top: var(--space-xl);
+  left: var(--space-md);
+  z-index: 5;
+  width: 196px;
+  height: 196px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  text-decoration-line: none !important;   /* same !important needed as .nav-brand */
+  transform: rotate(var(--badge-tilt));
+  transform-origin: center;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.30));
+  transition: transform var(--transition);
+}
+.hero-badge:hover,
+.hero-badge:focus-visible {
+  transform: rotate(var(--badge-tilt)) scale(1.06);
+  text-decoration-line: none !important;
+}
+
+/* 12-point star seal. Points are the odd vertices at radius 50%; the even
+   vertices (inner radius ~37%) set the valleys — lower them for sharper points. */
+.hero-badge__burst {
+  position: absolute;
+  inset: 0;
+  background: var(--sky-mid);   /* logo sky blue */
+  clip-path: polygon(
+    50% 0%, 59.58% 14.26%, 75% 6.7%, 76.16% 23.84%, 93.3% 25%, 85.74% 40.42%,
+    100% 50%, 85.74% 59.58%, 93.3% 75%, 76.16% 76.16%, 75% 93.3%, 59.58% 85.74%,
+    50% 100%, 40.42% 85.74%, 25% 93.3%, 23.84% 76.16%, 6.7% 75%, 14.26% 59.58%,
+    0% 50%, 14.26% 40.42%, 6.7% 25%, 23.84% 23.84%, 25% 6.7%, 40.42% 14.26%
+  );
+}
+
+.hero-badge__text {
+  position: relative;   /* above the burst */
+  z-index: 1;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1.38rem;
+  line-height: 1.18;
+  letter-spacing: 0.01em;
+  color: var(--forest);
+  text-decoration-line: none !important;
+  padding: 0 0.4rem;
+}
+.hero-badge__text .badge-big {
+  display: inline-block;
+  font-size: 2.07rem;
+  font-weight: 700;
+  text-decoration-line: none !important;
+}
+
+@media (max-width: 720px) {
+  .hero-badge {
+    width: 150px;
+    height: 150px;
+    top: var(--space-md);
+    left: var(--space-sm);
+  }
+  .hero-badge__text { font-size: 1.1rem; }
+  .hero-badge__text .badge-big { font-size: 1.61rem; }
+}
+
 /* Cityscape — bottom logo piece, full bleed */
 .hero-cityscape {
   display: block;
@@ -416,6 +486,12 @@ body {
   max-width: 680px;
   margin: 0 auto;
   line-height: 1.75;
+}
+
+/* Slimmer intro band — less vertical space above/below the text */
+.coming-soon-band--tight {
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
 }
 
 .info-section {
@@ -778,6 +854,16 @@ body {
   width: 100%;
   aspect-ratio: 16 / 7;
   background: var(--forest);
+}
+
+/* Friends page: carousel matched to the narrow text column (--max-width-text,
+   680px) — same width as the home-page cityscape block, so it reads as
+   proportional to the page's text. Trim the gap above and add one below so the
+   carousel isn't crowding the following block. */
+.carousel-section--reduced {
+  max-width: var(--max-width-text);
+  margin-top: calc(-1 * var(--space-md));
+  margin-bottom: var(--space-md);
 }
 
 .carousel-img {

@@ -163,7 +163,7 @@ async function listAllFiles(drive, folderId) {
   do {
     const res = await drive.files.list({
       q: `'${folderId}' in parents and trashed = false`,
-      fields: 'nextPageToken, files(id, name, mimeType, md5Checksum, size)',
+      fields: 'nextPageToken, files(id, name, mimeType, md5Checksum, size, owners(emailAddress))',
       pageSize: 200,
       pageToken,
     });
@@ -232,7 +232,7 @@ async function main() {
       const c = classify(file.name, m.title);
       if (c.kind === 'unknown') { unknown.push({ name: file.name, from: folder.label, title: m.title }); continue; }
       if (!bySong.has(m.title)) bySong.set(m.title, []);
-      bySong.get(m.title).push({ id: file.id, name: file.name, from: folder.label, std: c.std, kind: c.kind, md5: file.md5Checksum });
+      bySong.get(m.title).push({ id: file.id, name: file.name, from: folder.label, std: c.std, kind: c.kind, md5: file.md5Checksum, owner: (file.owners && file.owners[0] && file.owners[0].emailAddress) || '(unknown)' });
     }
   }
 
@@ -284,6 +284,20 @@ async function main() {
   if (unknown.length)   { console.log('=== UNKNOWN part/type (LEFT IN PLACE) ===');       unknown.forEach((f) => console.log(`    [${f.from}] ${f.name}`)); console.log(''); }
   if (unmatched.length) { console.log('=== UNMATCHED (no song title — LEFT IN PLACE) ==='); unmatched.forEach((f) => console.log(`    [${f.from}] ${f.name}`)); console.log(''); }
   if (nested.length)    { console.log('=== SUB-FOLDERS (LEFT IN PLACE) ===');             nested.forEach((f) => console.log(`    [${f.from}] ${f.name}`)); console.log(''); }
+
+  // Ownership report — anything not owned by tech@ cannot be moved/trashed by it.
+  const notOwned = [];
+  for (const files of bySong.values()) for (const f of files) if (f.owner !== IMPERSONATE_USER) notOwned.push(f);
+  if (notOwned.length) {
+    console.log(`=== NOT OWNED BY ${IMPERSONATE_USER} (blocks move/trash until ownership changes) ===`);
+    const byOwner = {};
+    notOwned.forEach((f) => { (byOwner[f.owner] = byOwner[f.owner] || []).push(f); });
+    for (const [owner, list] of Object.entries(byOwner)) {
+      console.log(`  owner ${owner} — ${list.length} file(s):`);
+      list.forEach((f) => console.log(`      [${f.from}] ${f.name}`));
+    }
+    console.log('');
+  }
 
   console.log('=== Summary ===');
   console.log(`Files to move+rename: ${moveCount}`);
